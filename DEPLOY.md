@@ -31,7 +31,7 @@ Required:
 
 | Name | Value |
 |---|---|
-| `DATABASE_URL` | `postgresql://neondb_owner:npg_cRQP61LHEOYZ@ep-late-morning-aklc9hzx-pooler.c-3.us-west-2.aws.neon.tech/neondb?channel_binding=require&sslmode=require` |
+| `DATABASE_URL` | `postgresql://neondb_owner:npg_idAHTyWQs1w5@ep-green-credit-aoq6f8p8-pooler.c-2.ap-southeast-1.aws.neon.tech/neondb?sslmode=require&channel_binding=require` |
 | `ADMIN_SESSION_SECRET` | `uymh8WaiqdDRv24lqgj4CYWSJMcI335liFWtQ6iajJUQo56YNG9eak4qQRljJTrT` |
 
 Optional — fill in to enable the contact / refer-a-cause emails:
@@ -87,5 +87,5 @@ Test the staging domain end-to-end. Once happy, switch the apex `microcharity.co
 
 ## Notes for prod
 
-- The Neon DB sits in `us-west-2` (Oregon). Latency from India is ~250ms per query. Once we're past the smoke test we should migrate to a Singapore Neon project for ~30ms latency. Doing this later is a 10-minute job: spin up a Singapore project, `pg_dump` from Oregon, `pg_restore` to Singapore, swap `DATABASE_URL` in Vercel.
+- The Neon DB sits in `ap-southeast-1` (Singapore) — latency from Indian users is ~30ms.
 - Vercel auto-deploys on every push to `main`. To deploy a feature without going live, push to a different branch — Vercel gives a preview URL.
