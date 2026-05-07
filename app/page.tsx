@@ -14,42 +14,18 @@ export default function HomePage() {
 
   return (
     <>
-      {/* BANNER — Mother Teresa portrait with the quote overlaid */}
-      <section className="relative isolate overflow-hidden bg-[#3b6e6e]">
-        {/* Mobile crop: anchor face to upper-right of frame */}
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
-          src="/banners/mother-teresa.jpg"
-          alt=""
-          aria-hidden="true"
-          className="absolute inset-0 -z-10 w-full h-full object-cover md:hidden"
-          style={{ objectPosition: "30% 25%" }}
-        />
-        {/* Desktop crop: subject anchored on the left */}
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
-          src="/banners/mother-teresa.jpg"
-          alt=""
-          aria-hidden="true"
-          className="absolute inset-0 -z-10 w-full h-full object-cover hidden md:block"
-          style={{ objectPosition: "left 35%" }}
-        />
-        <div className="container-page relative min-h-[340px] md:min-h-[520px] py-8 md:py-20 flex items-end md:items-center">
-          <blockquote className="md:ml-auto md:max-w-xl text-white">
-            {/* box-decoration-clone gives each wrapped line its own tight highlight, instead of one chunky box */}
-            <p className="font-display text-2xl md:text-3xl lg:text-4xl leading-[1.6] italic">
-              <span className="box-decoration-clone bg-black/55 px-2 py-1">
-                &ldquo;If you can&rsquo;t feed a hundred people, then feed just one.&rdquo;
-              </span>
-            </p>
-            <footer className="not-italic text-sm md:text-base text-white/95 mt-3 md:mt-4 font-sans">
-              <span className="box-decoration-clone bg-black/55 px-2 py-1">
-                — Mother Teresa
-              </span>
-            </footer>
-          </blockquote>
-        </div>
-      </section>
+      {/* BANNER — editorial split (Option C). Quote-first on the left, photo accent on the right. */}
+      {/*
+        To revert to the previous Mother Teresa portrait banner:
+        1. Comment out this <BannerEditorial /> block.
+        2. Uncomment the <BannerPortrait /> block below.
+        Both components are defined at the bottom of this file.
+      */}
+      <BannerEditorial />
+
+      {/*
+      <BannerPortrait />
+      */}
 
       {/* HERO */}
       <section className="bg-white">
@@ -76,21 +52,44 @@ export default function HomePage() {
             </div>
           </div>
 
-          <div className="md:col-span-5">
-            <div className="rounded-2xl bg-white border border-[var(--color-line)] p-6 md:p-8">
-              <p className="text-sm font-semibold text-muted uppercase tracking-wider mb-2">Our impact so far</p>
-              <p className="font-display text-4xl md:text-5xl text-accent-600 leading-none">{site.totalRaised}</p>
-              <p className="text-sm text-muted mt-1">raised &amp; disbursed</p>
-              <div className="my-5 h-px bg-[var(--color-line)]"></div>
-              <div className="grid grid-cols-2 gap-4 text-center">
-                <div>
-                  <p className="font-display text-2xl text-ink">{site.totalDonations}</p>
-                  <p className="text-xs text-muted mt-1">micro-donations</p>
-                </div>
-                <div>
-                  <p className="font-display text-2xl text-ink">100%</p>
-                  <p className="text-xs text-muted mt-1">reaches the cause</p>
-                </div>
+          <div className="md:col-span-5 space-y-4">
+            {/* ₹1.61 cr raised */}
+            <div className="flex gap-4 items-start p-5 rounded-2xl bg-white border border-[var(--color-line)]">
+              <div className="w-10 h-10 rounded-full bg-accent-50 text-accent-600 flex items-center justify-center flex-shrink-0">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v10M9 9.5h4a2 2 0 0 1 0 4H10a2 2 0 0 0 0 4h5"/></svg>
+              </div>
+              <div className="min-w-0">
+                <h3 className="font-display text-lg text-ink mb-1">{site.totalRaised} raised &amp; disbursed</h3>
+                <p className="text-sm text-muted leading-relaxed">
+                  From {site.totalDonations} micro-donations, supporting hundreds of causes and touching thousands of lives across India.
+                </p>
+              </div>
+            </div>
+
+            {/* 80G tax benefits */}
+            <div className="flex gap-4 items-start p-5 rounded-2xl bg-white border border-[var(--color-line)]">
+              <div className="w-10 h-10 rounded-full bg-accent-50 text-accent-600 flex items-center justify-center flex-shrink-0">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><polyline points="9 14 11 16 15 12"/></svg>
+              </div>
+              <div className="min-w-0">
+                <h3 className="font-display text-lg text-ink mb-1">Tax benefits under 80G</h3>
+                <p className="text-sm text-muted leading-relaxed">
+                  All donations are eligible for tax deductions under Section 80G of the Income Tax Act.
+                  <span className="block text-xs text-muted/80 mt-1 font-mono">DIT(E)BLR/80G/K-70/AATFM6359B/ITO(E)-2/Vol2014-2015</span>
+                </p>
+              </div>
+            </div>
+
+            {/* 0% admin */}
+            <div className="flex gap-4 items-start p-5 rounded-2xl bg-white border border-[var(--color-line)]">
+              <div className="w-10 h-10 rounded-full bg-accent-50 text-accent-600 flex items-center justify-center flex-shrink-0">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+              </div>
+              <div className="min-w-0">
+                <h3 className="font-display text-lg text-ink mb-1">0% administrative expenses</h3>
+                <p className="text-sm text-muted leading-relaxed">
+                  Every rupee reaches the cause. MicroCharity is run entirely by volunteers, who absorb all overheads on their personal time.
+                </p>
               </div>
             </div>
           </div>
@@ -194,3 +193,124 @@ export default function HomePage() {
     </>
   );
 }
+
+/* -------------------------------------------------------------------------- */
+/*  Banner variants                                                           */
+/*                                                                            */
+/*  BannerEditorial   — current homepage banner (Option C from the preview).  */
+/*  BannerPortrait    — the earlier Mother Teresa portrait banner. Kept for   */
+/*                      revert; not rendered unless you swap the JSX above.   */
+/* -------------------------------------------------------------------------- */
+
+function BannerEditorial() {
+  return (
+    <section className="bg-[#fdecec] text-ink">
+      {/* Grid is NOT wrapped in container-page so the right column can bleed to the viewport edge. */}
+      <div className="md:grid md:grid-cols-2 md:items-stretch">
+        {/* Left — content padded to align with container-page on wide viewports */}
+        <div className="px-5 md:pl-[max(2rem,calc(50vw-568px))] md:pr-10 lg:pr-16 py-12 md:py-20 flex flex-col justify-center">
+          <div className="md:max-w-[560px]">
+            <p className="font-sans font-bold text-3xl md:text-5xl leading-[1.15] text-ink">
+              &ldquo;Not all of us can do great things. But we can do{" "}
+              <em className="not-italic italic font-bold text-accent-600">small things</em>{" "}
+              with great love.&rdquo;
+            </p>
+
+            <div className="mt-6 flex items-center gap-3">
+              <span className="block w-1 h-6 rounded-full bg-accent-600"></span>
+              <span className="text-sm text-muted">— Mother Teresa</span>
+            </div>
+
+            <div className="mt-8 flex flex-wrap items-center gap-4">
+              <Link
+                href="/current-causes"
+                className="inline-flex items-center gap-2 rounded-full bg-accent-600 hover:bg-accent-700 text-white font-semibold px-6 py-3 transition"
+              >
+                See current causes
+              </Link>
+              <Link
+                href="/how-we-work"
+                className="inline-flex items-center gap-2 text-sm font-semibold text-ink hover:text-accent-700"
+              >
+                How we work
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+              </Link>
+            </div>
+
+            <div className="mt-10 pt-6 grid grid-cols-3 gap-4 border-t border-ink/10">
+              <div>
+                <p className="font-display text-2xl text-ink">{site.totalDonations}+</p>
+                <p className="text-xs text-muted mt-0.5">Donations</p>
+              </div>
+              <div>
+                <p className="font-display text-2xl text-ink">100%</p>
+                <p className="text-xs text-muted mt-0.5">To the cause</p>
+              </div>
+              <div>
+                <p className="font-display text-2xl text-ink">₹1.61 crores</p>
+                <p className="text-xs text-muted mt-0.5">Raised</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Right — image bleeds to the viewport edge with a soft fade from the blush panel */}
+        <div className="relative min-h-[280px] md:min-h-0">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src="/banners/small-things.jpg"
+            alt=""
+            className="absolute inset-0 w-full h-full object-cover"
+            style={{ objectPosition: "center 40%" }}
+          />
+          <div
+            className="absolute inset-y-0 left-0 w-24 hidden md:block pointer-events-none"
+            style={{ background: "linear-gradient(to right, #fdecec, transparent)" }}
+          />
+        </div>
+      </div>
+    </section>
+  );
+}
+
+// Kept for revert. Not rendered by default.
+function BannerPortrait() {
+  return (
+    <section className="relative isolate overflow-hidden bg-[#3b6e6e]">
+      {/* Mobile crop */}
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img
+        src="/banners/mother-teresa.jpg"
+        alt=""
+        aria-hidden="true"
+        className="absolute inset-0 -z-10 w-full h-full object-cover md:hidden"
+        style={{ objectPosition: "30% 25%" }}
+      />
+      {/* Desktop crop */}
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img
+        src="/banners/mother-teresa.jpg"
+        alt=""
+        aria-hidden="true"
+        className="absolute inset-0 -z-10 w-full h-full object-cover hidden md:block"
+        style={{ objectPosition: "left 35%" }}
+      />
+      <div className="container-page relative min-h-[340px] md:min-h-[520px] py-8 md:py-20 flex items-end md:items-center">
+        <blockquote className="md:ml-auto md:max-w-xl text-white">
+          <p className="font-display text-2xl md:text-3xl lg:text-4xl leading-[1.6] italic">
+            <span className="box-decoration-clone bg-black/55 px-2 py-1">
+              &ldquo;If you can&rsquo;t feed a hundred people, then feed just one.&rdquo;
+            </span>
+          </p>
+          <footer className="not-italic text-sm md:text-base text-white/95 mt-3 md:mt-4 font-sans">
+            <span className="box-decoration-clone bg-black/55 px-2 py-1">
+              — Mother Teresa
+            </span>
+          </footer>
+        </blockquote>
+      </div>
+    </section>
+  );
+}
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+const _keepForRevert = BannerPortrait;
