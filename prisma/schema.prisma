@@ -6,8 +6,9 @@
 //   npx prisma migrate dev --name <change>   (once we go to prod migrations)
 
 generator client {
-  provider = "prisma-client-js"
-  output   = "../node_modules/.prisma/client"
+  provider      = "prisma-client-js"
+  // Generate binaries for both local dev (native) and the Linux runtime Vercel uses for serverless functions.
+  binaryTargets = ["native", "rhel-openssl-3.0.x"]
 }
 
 datasource db {
