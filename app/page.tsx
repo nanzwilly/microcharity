@@ -34,15 +34,12 @@ export default function HomePage() {
           className="absolute inset-0 -z-10 w-full h-full object-cover hidden md:block"
           style={{ objectPosition: "left 35%" }}
         />
-        {/* Mobile: bottom-up scrim. Desktop: right-side scrim where the quote sits. */}
-        <div className="absolute inset-0 -z-10 bg-gradient-to-t from-black/70 via-black/30 to-transparent md:bg-gradient-to-r md:from-black/0 md:via-black/10 md:to-black/45" />
-
         <div className="container-page relative min-h-[440px] md:min-h-[520px] py-10 md:py-20 flex items-end md:items-center">
-          <blockquote className="md:ml-auto md:max-w-xl text-white">
-            <p className="font-display text-2xl md:text-3xl lg:text-4xl leading-snug italic" style={{ textShadow: "0 1px 8px rgba(0,0,0,0.45)" }}>
+          <blockquote className="md:ml-auto md:max-w-xl text-white rounded-2xl bg-black/45 backdrop-blur-sm px-5 py-5 md:px-7 md:py-6">
+            <p className="font-display text-2xl md:text-3xl lg:text-4xl leading-snug italic">
               &ldquo;If you can&rsquo;t feed a hundred people, then feed just one.&rdquo;
             </p>
-            <footer className="not-italic text-sm md:text-base text-white/90 mt-3 md:mt-4 font-sans" style={{ textShadow: "0 1px 6px rgba(0,0,0,0.45)" }}>
+            <footer className="not-italic text-sm md:text-base text-white/85 mt-3 md:mt-4 font-sans">
               — Mother Teresa
             </footer>
           </blockquote>
