@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html lang="en-US">
+<head>
+	<meta charset="UTF-8">
+	<link rel="profile" href="http://gmpg.org/xfn/11">
+	<link rel="pingback" href="https://www.microcharity.com/xmlrpc.php">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>Page not found &#8211; MicroCharity.com</title>
+<style>
+.stb-container-css {margin: 10px 10px 10px 10px;}.stb-box {}.stb-caption-box {}.stb-body-box {}
+/* Class Dependent Parameters */
+.stb-border.stb-alert-container {border: 1px solid #FF4F4A;}.stb-side.stb-alert-container {background: #1D1A1A;filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#1D1A1A', endColorstr='#504848',GradientType=0 );background: -moz-linear-gradient(top,  #1D1A1A 30%, #504848 90%);background: -webkit-gradient(linear, left top, left bottom, color-stop(30%,#1D1A1A), color-stop(90%,#504848));background: -webkit-linear-gradient(top,  #1D1A1A 30%,#504848 90%);background: -o-linear-gradient(top,  #1D1A1A 30%,#504848 90%);background: -ms-linear-gradient(top,  #1D1A1A 30%,#504848 90%);background: linear-gradient(#1D1A1A 30%, #504848 90%);}.stb-side-none.stb-alert-container {background: #fDCBC9;filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#fDCBC9', endColorstr='#FB7D78',GradientType=0 );background: -moz-linear-gradient(top,  #fDCBC9 30%, #FB7D78 90%);background: -webkit-gradient(linear, left top, left bottom, color-stop(30%,#fDCBC9), color-stop(90%,#FB7D78));background: -webkit-linear-gradient(top,  #fDCBC9 30%,#FB7D78 90%);background: -o-linear-gradient(top,  #fDCBC9 30%,#FB7D78 90%);background: -ms-linear-gradient(top,  #fDCBC9 30%,#FB7D78 90%);background: linear-gradient(#fDCBC9 30%, #FB7D78 90%);}.stb-alert_box {background: #fDCBC9;filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#fDCBC9', endColorstr='#FB7D78',GradientType=0 );background: -moz-linear-gradient(top,  #fDCBC9 30%, #FB7D78 90%);background: -webkit-gradient(linear, left top, left bottom, color-stop(30%,#fDCBC9), color-stop(90%,#FB7D78));background: -webkit-linear-gradient(top,  #fDCBC9 30%,#FB7D78 90%);background: -o-linear-gradient(top,  #fDCBC9 30%,#FB7D78 90%);background: -ms-linear-gradient(top,  #fDCBC9 30%,#FB7D78 90%);background: linear-gradient(#fDCBC9 30%, #FB7D78 90%);color: #000000;}.stb-alert-caption_box {background: #1D1A1A;background: -moz-linear-gradient(top,  #1D1A1A 30%, #504848 90%);background: -webkit-gradient(linear, left top, left bottom, color-stop(30%,#1D1A1A), color-stop(90%,#504848));background: -webkit-linear-gradient(top,  #1D1A1A 30%,#504848 90%);background: -o-linear-gradient(top,  #1D1A1A 30%,#504848 90%);background: -ms-linear-gradient(top,  #1D1A1A 30%,#504848 90%);background: linear-gradient(#1D1A1A 30%, #504848 90%);color: #FFFFFF;}.stb-alert-body_box {background: #fDCBC9;filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#fDCBC9', endColorstr='#FB7D78',GradientType=0 );background: -moz-linear-gradient(top,  #fDCBC9 30%, #FB7D78 90%);background: -webkit-gradient(linear, left top, left bottom, color-stop(30%,#fDCBC9), color-stop(90%,#FB7D78));background: -webkit-linear-gradient(top,  #fDCBC9 30%,#FB7D78 90%);background: -o-linear-gradient(top,  #fDCBC9 30%,#FB7D78 90%);background: -ms-linear-gradient(top,  #fDCBC9 30%,#FB7D78 90%);background: linear-gradient(#fDCBC9 30%, #FB7D78 90%);color: #000000;}.stb-border.stb-black-container {border: 1px solid #6E6E6E;}.stb-side.stb-black-container {background: #4B4747;filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#4B4747', endColorstr='#141414',GradientType=0 );background: -moz-linear-gradient(top,  #4B4747 30%, #141414 90%);background: -webkit-gradient(linear, left top, left bottom, color-stop(30%,#4B4747), color-stop(90%,#141414));background: -webkit-linear-gradient(top,  #4B4747 30%,#141414 90%);background: -o-linear-gradient(top,  #4B4747 30%,#141414 90%);background: -ms-linear-gradient(top,  #4B4747 30%,#141414 90%);background: linear-gradient(#4B4747 30%, #141414 90%);}.stb-side-none.stb-black-container {background: #3B3B3B;filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#3B3B3B', endColorstr='#000000',GradientType=0 );background: -moz-linear-gradient(top,  #3B3B3B 30%, #000000 90%);background: -webkit-gradient(linear, left top, left bottom, color-stop(30%,#3B3B3B), color-stop(90%,#000000));background: -webkit-linear-gradient(top,  #3B3B3B 30%,#000000 90%);background: -o-linear-gradient(top,  #3B3B3B 30%,#000000 90%);background: -ms-linear-gradient(top,  #3B3B3B 30%,#000000 90%);background: linear-gradient(#3B3B3B 30%, #000000 90%);}.stb-black_box {background: #3B3B3B;filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#3B3B3B', endColorstr='#000000',GradientType=0 );background: -moz-linear-gradient(top,  #3B3B3B 30%, #000000 90%);background: -webkit-gradient(linear, left top, left bottom, color-stop(30%,#3B3B3B), color-stop(90%,#000000));background: -webkit-linear-gradient(top,  #3B3B3B 30%,#000000 90%);background: -o-linear-gradient(top,  #3B3B3B 30%,#000000 90%);background: -ms-linear-gradient(top,  #3B3B3B 30%,#000000 90%);background: linear-gradient(#3B3B3B 30%, #000000 90%);color: #FFFFFF;}.stb-black-caption_box {background: #4B4747;background: -moz-linear-gradient(top,  #4B4747 30%, #141414 90%);background: -webkit-gradient(linear, left top, left bottom, color-stop(30%,#4B4747), color-stop(90%,#141414));background: -webkit-linear-gradient(top,  #4B4747 30%,#141414 90%);background: -o-linear-gradient(top,  #4B4747 30%,#141414 90%);background: -ms-linear-gradient(top,  #4B4747 30%,#141414 90%);background: linear-gradient(#4B4747 30%, #141414 90%);color: #FFFFFF;}.stb-black-body_box {background: #3B3B3B;filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#3B3B3B', endColorstr='#000000',GradientType=0 );background: -moz-linear-gradient(top,  #3B3B3B 30%, #000000 90%);background: -webkit-gradient(linear, left top, left bottom, color-stop(30%,#3B3B3B), color-stop(90%,#000000));background: -webkit-linear-gradient(top,  #3B3B3B 30%,#000000 90%);background: -o-linear-gradient(top,  #3B3B3B 30%,#000000 90%);background: -ms-linear-gradient(top,  #3B3B3B 30%,#000000 90%);background: linear-gradient(#3B3B3B 30%, #000000 90%);color: #FFFFFF;}.stb-border.stb-ContactUsForm-container {border: 1px solid #FE9A05;}.stb-side.stb-ContactUsForm-container {background: #ffffff;filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffffff', endColorstr='#ffffff',GradientType=0 );background: -moz-linear-gradient(top,  #ffffff 30%, #ffffff 90%);background: -webkit-gradient(linear, left top, left bottom, color-stop(30%,#ffffff), color-stop(90%,#ffffff));background: -webkit-linear-gradient(top,  #ffffff 30%,#ffffff 90%);background: -o-linear-gradient(top,  #ffffff 30%,#ffffff 90%);background: -ms-linear-gradient(top,  #ffffff 30%,#ffffff 90%);background: linear-gradient(#ffffff 30%, #ffffff 90%);}.stb-side-none.stb-ContactUsForm-container {background: #f0d892;filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#f0d892', endColorstr='#e3cd8a',GradientType=0 );background: -moz-linear-gradient(top,  #f0d892 30%, #e3cd8a 90%);background: -webkit-gradient(linear, left top, left bottom, color-stop(30%,#f0d892), color-stop(90%,#e3cd8a));background: -webkit-linear-gradient(top,  #f0d892 30%,#e3cd8a 90%);background: -o-linear-gradient(top,  #f0d892 30%,#e3cd8a 90%);background: -ms-linear-gradient(top,  #f0d892 30%,#e3cd8a 90%);background: linear-gradient(#f0d892 30%, #e3cd8a 90%);}.stb-ContactUsForm_box {background: #f0d892;filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#f0d892', endColorstr='#e3cd8a',GradientType=0 );background: -moz-linear-gradient(top,  #f0d892 30%, #e3cd8a 90%);background: -webkit-gradient(linear, left top, left bottom, color-stop(30%,#f0d892), color-stop(90%,#e3cd8a));background: -webkit-linear-gradient(top,  #f0d892 30%,#e3cd8a 90%);background: -o-linear-gradient(top,  #f0d892 30%,#e3cd8a 90%);background: -ms-linear-gradient(top,  #f0d892 30%,#e3cd8a 90%);background: linear-gradient(#f0d892 30%, #e3cd8a 90%);color: #000000;}.stb-ContactUsForm-caption_box {background: #ffffff;background: -moz-linear-gradient(top,  #ffffff 30%, #ffffff 90%);background: -webkit-gradient(linear, left top, left bottom, color-stop(30%,#ffffff), color-stop(90%,#ffffff));background: -webkit-linear-gradient(top,  #ffffff 30%,#ffffff 90%);background: -o-linear-gradient(top,  #ffffff 30%,#ffffff 90%);background: -ms-linear-gradient(top,  #ffffff 30%,#ffffff 90%);background: linear-gradient(#ffffff 30%, #ffffff 90%);color: #FFFFFF;}.stb-ContactUsForm-body_box {background: #f0d892;filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#f0d892', endColorstr='#e3cd8a',GradientType=0 );background: -moz-linear-gradient(top,  #f0d892 30%, #e3cd8a 90%);background: -webkit-gradient(linear, left top, left bottom, color-stop(30%,#f0d892), color-stop(90%,#e3cd8a));background: -webkit-linear-gradient(top,  #f0d892 30%,#e3cd8a 90%);background: -o-linear-gradient(top,  #f0d892 30%,#e3cd8a 90%);background: -ms-linear-gradient(top,  #f0d892 30%,#e3cd8a 90%);background: linear-gradient(#f0d892 30%, #e3cd8a 90%);color: #000000;}.stb-border.stb-custom-container {border: 1px solid #F844EE;}.stb-side.stb-custom-container {background: #1D1A1A;filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#1D1A1A', endColorstr='#504848',GradientType=0 );background: -moz-linear-gradient(top,  #1D1A1A 30%, #504848 90%);background: -webkit-gradient(linear, left top, left bottom, color-stop(30%,#1D1A1A), color-stop(90%,#504848));background: -webkit-linear-gradient(top,  #1D1A1A 30%,#504848 90%);background: -o-linear-gradient(top,  #1D1A1A 30%,#504848 90%);background: -ms-linear-gradient(top,  #1D1A1A 30%,#504848 90%);background: linear-gradient(#1D1A1A 30%, #504848 90%);}.stb-side-none.stb-custom-container {background: #F7CDF5;filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#F7CDF5', endColorstr='#F77DF1',GradientType=0 );background: -moz-linear-gradient(top,  #F7CDF5 30%, #F77DF1 90%);background: -webkit-gradient(linear, left top, left bottom, color-stop(30%,#F7CDF5), color-stop(90%,#F77DF1));background: -webkit-linear-gradient(top,  #F7CDF5 30%,#F77DF1 90%);background: -o-linear-gradient(top,  #F7CDF5 30%,#F77DF1 90%);background: -ms-linear-gradient(top,  #F7CDF5 30%,#F77DF1 90%);background: linear-gradient(#F7CDF5 30%, #F77DF1 90%);}.stb-custom_box {background: #F7CDF5;filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#F7CDF5', endColorstr='#F77DF1',GradientType=0 );background: -moz-linear-gradient(top,  #F7CDF5 30%, #F77DF1 90%);background: -webkit-gradient(linear, left top, left bottom, color-stop(30%,#F7CDF5), color-stop(90%,#F77DF1));background: -webkit-linear-gradient(top,  #F7CDF5 30%,#F77DF1 90%);background: -o-linear-gradient(top,  #F7CDF5 30%,#F77DF1 90%);background: -ms-linear-gradient(top,  #F7CDF5 30%,#F77DF1 90%);background: linear-gradient(#F7CDF5 30%, #F77DF1 90%);color: #000000;}.stb-custom-caption_box {background: #1D1A1A;background: -moz-linear-gradient(top,  #1D1A1A 30%, #504848 90%);background: -webkit-gradient(linear, left top, left bottom, color-stop(30%,#1D1A1A), color-stop(90%,#504848));background: -webkit-linear-gradient(top,  #1D1A1A 30%,#504848 90%);background: -o-linear-gradient(top,  #1D1A1A 30%,#504848 90%);background: -ms-linear-gradient(top,  #1D1A1A 30%,#504848 90%);background: linear-gradient(#1D1A1A 30%, #504848 90%);color: #FFFFFF;}.stb-custom-body_box {background: #F7CDF5;filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#F7CDF5', endColorstr='#F77DF1',GradientType=0 );background: -moz-linear-gradient(top,  #F7CDF5 30%, #F77DF1 90%);background: -webkit-gradient(linear, left top, left bottom, color-stop(30%,#F7CDF5), color-stop(90%,#F77DF1));background: -webkit-linear-gradient(top,  #F7CDF5 30%,#F77DF1 90%);background: -o-linear-gradient(top,  #F7CDF5 30%,#F77DF1 90%);background: -ms-linear-gradient(top,  #F7CDF5 30%,#F77DF1 90%);background: linear-gradient(#F7CDF5 30%, #F77DF1 90%);color: #000000;}.stb-border.stb-donation_meter-container {border: 1px solid #ffffff;}.stb-side.stb-donation_meter-container {background: #448515;filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#448515', endColorstr='#379c35',GradientType=0 );background: -moz-linear-gradient(top,  #448515 30%, #379c35 90%);background: -webkit-gradient(linear, left top, left bottom, color-stop(30%,#448515), color-stop(90%,#379c35));background: -webkit-linear-gradient(top,  #448515 30%,#379c35 90%);background: -o-linear-gradient(top,  #448515 30%,#379c35 90%);background: -ms-linear-gradient(top,  #448515 30%,#379c35 90%);background: linear-gradient(#448515 30%, #379c35 90%);}.stb-side-none.stb-donation_meter-container {background: #ffffff;filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffffff', endColorstr='#ffffff',GradientType=0 );background: -moz-linear-gradient(top,  #ffffff 30%, #ffffff 90%);background: -webkit-gradient(linear, left top, left bottom, color-stop(30%,#ffffff), color-stop(90%,#ffffff));background: -webkit-linear-gradient(top,  #ffffff 30%,#ffffff 90%);background: -o-linear-gradient(top,  #ffffff 30%,#ffffff 90%);background: -ms-linear-gradient(top,  #ffffff 30%,#ffffff 90%);background: linear-gradient(#ffffff 30%, #ffffff 90%);}.stb-donation_meter_box {background: #ffffff;filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffffff', endColorstr='#ffffff',GradientType=0 );background: -moz-linear-gradient(top,  #ffffff 30%, #ffffff 90%);background: -webkit-gradient(linear, left top, left bottom, color-stop(30%,#ffffff), color-stop(90%,#ffffff));background: -webkit-linear-gradient(top,  #ffffff 30%,#ffffff 90%);background: -o-linear-gradient(top,  #ffffff 30%,#ffffff 90%);background: -ms-linear-gradient(top,  #ffffff 30%,#ffffff 90%);background: linear-gradient(#ffffff 30%, #ffffff 90%);color: #000000;}.stb-donation_meter-caption_box {background: #448515;background: -moz-linear-gradient(top,  #448515 30%, #379c35 90%);background: -webkit-gradient(linear, left top, left bottom, color-stop(30%,#448515), color-stop(90%,#379c35));background: -webkit-linear-gradient(top,  #448515 30%,#379c35 90%);background: -o-linear-gradient(top,  #448515 30%,#379c35 90%);background: -ms-linear-gradient(top,  #448515 30%,#379c35 90%);background: linear-gradient(#448515 30%, #379c35 90%);color: #FFFFFF;}.stb-donation_meter-body_box {background: #ffffff;filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffffff', endColorstr='#ffffff',GradientType=0 );background: -moz-linear-gradient(top,  #ffffff 30%, #ffffff 90%);background: -webkit-gradient(linear, left top, left bottom, color-stop(30%,#ffffff), color-stop(90%,#ffffff));background: -webkit-linear-gradient(top,  #ffffff 30%,#ffffff 90%);background: -o-linear-gradient(top,  #ffffff 30%,#ffffff 90%);background: -ms-linear-gradient(top,  #ffffff 30%,#ffffff 90%);background: linear-gradient(#ffffff 30%, #ffffff 90%);color: #000000;}.stb-border.stb-download-container {border: 1px solid #65ADFE;}.stb-side.stb-download-container {background: #1D1A1A;filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#1D1A1A', endColorstr='#504848',GradientType=0 );background: -moz-linear-gradient(top,  #1D1A1A 30%, #504848 90%);background: -webkit-gradient(linear, left top, left bottom, color-stop(30%,#1D1A1A), color-stop(90%,#504848));background: -webkit-linear-gradient(top,  #1D1A1A 30%,#504848 90%);background: -o-linear-gradient(top,  #1D1A1A 30%,#504848 90%);background: -ms-linear-gradient(top,  #1D1A1A 30%,#504848 90%);background: linear-gradient(#1D1A1A 30%, #504848 90%);}.stb-side-none.stb-download-container {background: #78C0F7;filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#78C0F7', endColorstr='#2E7CB9',GradientType=0 );background: -moz-linear-gradient(top,  #78C0F7 30%, #2E7CB9 90%);background: -webkit-gradient(linear, left top, left bottom, color-stop(30%,#78C0F7), color-stop(90%,#2E7CB9));background: -webkit-linear-gradient(top,  #78C0F7 30%,#2E7CB9 90%);background: -o-linear-gradient(top,  #78C0F7 30%,#2E7CB9 90%);background: -ms-linear-gradient(top,  #78C0F7 30%,#2E7CB9 90%);background: linear-gradient(#78C0F7 30%, #2E7CB9 90%);}.stb-download_box {background: #78C0F7;filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#78C0F7', endColorstr='#2E7CB9',GradientType=0 );background: -moz-linear-gradient(top,  #78C0F7 30%, #2E7CB9 90%);background: -webkit-gradient(linear, left top, left bottom, color-stop(30%,#78C0F7), color-stop(90%,#2E7CB9));background: -webkit-linear-gradient(top,  #78C0F7 30%,#2E7CB9 90%);background: -o-linear-gradient(top,  #78C0F7 30%,#2E7CB9 90%);background: -ms-linear-gradient(top,  #78C0F7 30%,#2E7CB9 90%);background: linear-gradient(#78C0F7 30%, #2E7CB9 90%);color: #000000;}.stb-download-caption_box {background: #1D1A1A;background: -moz-linear-gradient(top,  #1D1A1A 30%, #504848 90%);background: -webkit-gradient(linear, left top, left bottom, color-stop(30%,#1D1A1A), color-stop(90%,#504848));background: -webkit-linear-gradient(top,  #1D1A1A 30%,#504848 90%);background: -o-linear-gradient(top,  #1D1A1A 30%,#504848 90%);background: -ms-linear-gradient(top,  #1D1A1A 30%,#504848 90%);background: linear-gradient(#1D1A1A 30%, #504848 90%);color: #FFFFFF;}.stb-download-body_box {background: #78C0F7;filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#78C0F7', endColorstr='#2E7CB9',GradientType=0 );background: -moz-linear-gradient(top,  #78C0F7 30%, #2E7CB9 90%);background: -webkit-gradient(linear, left top, left bottom, color-stop(30%,#78C0F7), color-stop(90%,#2E7CB9));background: -webkit-linear-gradient(top,  #78C0F7 30%,#2E7CB9 90%);background: -o-linear-gradient(top,  #78C0F7 30%,#2E7CB9 90%);background: -ms-linear-gradient(top,  #78C0F7 30%,#2E7CB9 90%);background: linear-gradient(#78C0F7 30%, #2E7CB9 90%);color: #000000;}.stb-border.stb-grey-container {border: 1px solid #BBBBBB;}.stb-side.stb-grey-container {background: #B5B5B5;filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#B5B5B5', endColorstr='#6E6E6E',GradientType=0 );background: -moz-linear-gradient(top,  #B5B5B5 30%, #6E6E6E 90%);background: -webkit-gradient(linear, left top, left bottom, color-stop(30%,#B5B5B5), color-stop(90%,#6E6E6E));background: -webkit-linear-gradient(top,  #B5B5B5 30%,#6E6E6E 90%);background: -o-linear-gradient(top,  #B5B5B5 30%,#6E6E6E 90%);background: -ms-linear-gradient(top,  #B5B5B5 30%,#6E6E6E 90%);background: linear-gradient(#B5B5B5 30%, #6E6E6E 90%);}.stb-side-none.stb-grey-container {background: #E3E3E3;filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#E3E3E3', endColorstr='#ABABAB',GradientType=0 );background: -moz-linear-gradient(top,  #E3E3E3 30%, #ABABAB 90%);background: -webkit-gradient(linear, left top, left bottom, color-stop(30%,#E3E3E3), color-stop(90%,#ABABAB));background: -webkit-linear-gradient(top,  #E3E3E3 30%,#ABABAB 90%);background: -o-linear-gradient(top,  #E3E3E3 30%,#ABABAB 90%);background: -ms-linear-gradient(top,  #E3E3E3 30%,#ABABAB 90%);background: linear-gradient(#E3E3E3 30%, #ABABAB 90%);}.stb-grey_box {background: #E3E3E3;filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#E3E3E3', endColorstr='#ABABAB',GradientType=0 );background: -moz-linear-gradient(top,  #E3E3E3 30%, #ABABAB 90%);background: -webkit-gradient(linear, left top, left bottom, color-stop(30%,#E3E3E3), color-stop(90%,#ABABAB));background: -webkit-linear-gradient(top,  #E3E3E3 30%,#ABABAB 90%);background: -o-linear-gradient(top,  #E3E3E3 30%,#ABABAB 90%);background: -ms-linear-gradient(top,  #E3E3E3 30%,#ABABAB 90%);background: linear-gradient(#E3E3E3 30%, #ABABAB 90%);color: #000000;}.stb-grey-caption_box {background: #B5B5B5;background: -moz-linear-gradient(top,  #B5B5B5 30%, #6E6E6E 90%);background: -webkit-gradient(linear, left top, left bottom, color-stop(30%,#B5B5B5), color-stop(90%,#6E6E6E));background: -webkit-linear-gradient(top,  #B5B5B5 30%,#6E6E6E 90%);background: -o-linear-gradient(top,  #B5B5B5 30%,#6E6E6E 90%);background: -ms-linear-gradient(top,  #B5B5B5 30%,#6E6E6E 90%);background: linear-gradient(#B5B5B5 30%, #6E6E6E 90%);color: #FFFFFF;}.stb-grey-body_box {background: #E3E3E3;filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#E3E3E3', endColorstr='#ABABAB',GradientType=0 );background: -moz-linear-gradient(top,  #E3E3E3 30%, #ABABAB 90%);background: -webkit-gradient(linear, left top, left bottom, color-stop(30%,#E3E3E3), color-stop(90%,#ABABAB));background: -webkit-linear-gradient(top,  #E3E3E3 30%,#ABABAB 90%);background: -o-linear-gradient(top,  #E3E3E3 30%,#ABABAB 90%);background: -ms-linear-gradient(top,  #E3E3E3 30%,#ABABAB 90%);background: linear-gradient(#E3E3E3 30%, #ABABAB 90%);color: #000000;}.stb-border.stb-info-container {border: 1px solid #7AD975;}.stb-side.stb-info-container {background: #448515;filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#448515', endColorstr='#379c35',GradientType=0 );background: -moz-linear-gradient(top,  #448515 30%, #379c35 90%);background: -webkit-gradient(linear, left top, left bottom, color-stop(30%,#448515), color-stop(90%,#379c35));background: -webkit-linear-gradient(top,  #448515 30%,#379c35 90%);background: -o-linear-gradient(top,  #448515 30%,#379c35 90%);background: -ms-linear-gradient(top,  #448515 30%,#379c35 90%);background: linear-gradient(#448515 30%, #379c35 90%);}.stb-side-none.stb-info-container {background: #ffffff;filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffffff', endColorstr='#dddddd',GradientType=0 );background: -moz-linear-gradient(top,  #ffffff 30%, #dddddd 90%);background: -webkit-gradient(linear, left top, left bottom, color-stop(30%,#ffffff), color-stop(90%,#dddddd));background: -webkit-linear-gradient(top,  #ffffff 30%,#dddddd 90%);background: -o-linear-gradient(top,  #ffffff 30%,#dddddd 90%);background: -ms-linear-gradient(top,  #ffffff 30%,#dddddd 90%);background: linear-gradient(#ffffff 30%, #dddddd 90%);}.stb-info_box {background: #ffffff;filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffffff', endColorstr='#dddddd',GradientType=0 );background: -moz-linear-gradient(top,  #ffffff 30%, #dddddd 90%);background: -webkit-gradient(linear, left top, left bottom, color-stop(30%,#ffffff), color-stop(90%,#dddddd));background: -webkit-linear-gradient(top,  #ffffff 30%,#dddddd 90%);background: -o-linear-gradient(top,  #ffffff 30%,#dddddd 90%);background: -ms-linear-gradient(top,  #ffffff 30%,#dddddd 90%);background: linear-gradient(#ffffff 30%, #dddddd 90%);color: #000000;}.stb-info-caption_box {background: #448515;background: -moz-linear-gradient(top,  #448515 30%, #379c35 90%);background: -webkit-gradient(linear, left top, left bottom, color-stop(30%,#448515), color-stop(90%,#379c35));background: -webkit-linear-gradient(top,  #448515 30%,#379c35 90%);background: -o-linear-gradient(top,  #448515 30%,#379c35 90%);background: -ms-linear-gradient(top,  #448515 30%,#379c35 90%);background: linear-gradient(#448515 30%, #379c35 90%);color: #FFFFFF;}.stb-info-body_box {background: #ffffff;filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffffff', endColorstr='#dddddd',GradientType=0 );background: -moz-linear-gradient(top,  #ffffff 30%, #dddddd 90%);background: -webkit-gradient(linear, left top, left bottom, color-stop(30%,#ffffff), color-stop(90%,#dddddd));background: -webkit-linear-gradient(top,  #ffffff 30%,#dddddd 90%);background: -o-linear-gradient(top,  #ffffff 30%,#dddddd 90%);background: -ms-linear-gradient(top,  #ffffff 30%,#dddddd 90%);background: linear-gradient(#ffffff 30%, #dddddd 90%);color: #000000;}.stb-border.stb-update-container {border: 1px solid #cc2222;}.stb-side.stb-update-container {background: #cc2222;filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#cc2222', endColorstr='#cc2222',GradientType=0 );background: -moz-linear-gradient(top,  #cc2222 30%, #cc2222 90%);background: -webkit-gradient(linear, left top, left bottom, color-stop(30%,#cc2222), color-stop(90%,#cc2222));background: -webkit-linear-gradient(top,  #cc2222 30%,#cc2222 90%);background: -o-linear-gradient(top,  #cc2222 30%,#cc2222 90%);background: -ms-linear-gradient(top,  #cc2222 30%,#cc2222 90%);background: linear-gradient(#cc2222 30%, #cc2222 90%);}.stb-side-none.stb-update-container {background: #ffffff;filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffffff', endColorstr='#ffffff',GradientType=0 );background: -moz-linear-gradient(top,  #ffffff 30%, #ffffff 90%);background: -webkit-gradient(linear, left top, left bottom, color-stop(30%,#ffffff), color-stop(90%,#ffffff));background: -webkit-linear-gradient(top,  #ffffff 30%,#ffffff 90%);background: -o-linear-gradient(top,  #ffffff 30%,#ffffff 90%);background: -ms-linear-gradient(top,  #ffffff 30%,#ffffff 90%);background: linear-gradient(#ffffff 30%, #ffffff 90%);}.stb-update_box {background: #ffffff;filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffffff', endColorstr='#ffffff',GradientType=0 );background: -moz-linear-gradient(top,  #ffffff 30%, #ffffff 90%);background: -webkit-gradient(linear, left top, left bottom, color-stop(30%,#ffffff), color-stop(90%,#ffffff));background: -webkit-linear-gradient(top,  #ffffff 30%,#ffffff 90%);background: -o-linear-gradient(top,  #ffffff 30%,#ffffff 90%);background: -ms-linear-gradient(top,  #ffffff 30%,#ffffff 90%);background: linear-gradient(#ffffff 30%, #ffffff 90%);color: #000000;}.stb-update-caption_box {background: #cc2222;background: -moz-linear-gradient(top,  #cc2222 30%, #cc2222 90%);background: -webkit-gradient(linear, left top, left bottom, color-stop(30%,#cc2222), color-stop(90%,#cc2222));background: -webkit-linear-gradient(top,  #cc2222 30%,#cc2222 90%);background: -o-linear-gradient(top,  #cc2222 30%,#cc2222 90%);background: -ms-linear-gradient(top,  #cc2222 30%,#cc2222 90%);background: linear-gradient(#cc2222 30%, #cc2222 90%);color: #FFFFFF;}.stb-update-body_box {background: #ffffff;filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffffff', endColorstr='#ffffff',GradientType=0 );background: -moz-linear-gradient(top,  #ffffff 30%, #ffffff 90%);background: -webkit-gradient(linear, left top, left bottom, color-stop(30%,#ffffff), color-stop(90%,#ffffff));background: -webkit-linear-gradient(top,  #ffffff 30%,#ffffff 90%);background: -o-linear-gradient(top,  #ffffff 30%,#ffffff 90%);background: -ms-linear-gradient(top,  #ffffff 30%,#ffffff 90%);background: linear-gradient(#ffffff 30%, #ffffff 90%);color: #000000;}.stb-border.stb-warning-container {border: 1px solid #FE9A05;}.stb-side.stb-warning-container {background: #1D1A1A;filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#1D1A1A', endColorstr='#504848',GradientType=0 );background: -moz-linear-gradient(top,  #1D1A1A 30%, #504848 90%);background: -webkit-gradient(linear, left top, left bottom, color-stop(30%,#1D1A1A), color-stop(90%,#504848));background: -webkit-linear-gradient(top,  #1D1A1A 30%,#504848 90%);background: -o-linear-gradient(top,  #1D1A1A 30%,#504848 90%);background: -ms-linear-gradient(top,  #1D1A1A 30%,#504848 90%);background: linear-gradient(#1D1A1A 30%, #504848 90%);}.stb-side-none.stb-warning-container {background: #F8FC91;filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#F8FC91', endColorstr='#F0D208',GradientType=0 );background: -moz-linear-gradient(top,  #F8FC91 30%, #F0D208 90%);background: -webkit-gradient(linear, left top, left bottom, color-stop(30%,#F8FC91), color-stop(90%,#F0D208));background: -webkit-linear-gradient(top,  #F8FC91 30%,#F0D208 90%);background: -o-linear-gradient(top,  #F8FC91 30%,#F0D208 90%);background: -ms-linear-gradient(top,  #F8FC91 30%,#F0D208 90%);background: linear-gradient(#F8FC91 30%, #F0D208 90%);}.stb-warning_box {background: #F8FC91;filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#F8FC91', endColorstr='#F0D208',GradientType=0 );background: -moz-linear-gradient(top,  #F8FC91 30%, #F0D208 90%);background: -webkit-gradient(linear, left top, left bottom, color-stop(30%,#F8FC91), color-stop(90%,#F0D208));background: -webkit-linear-gradient(top,  #F8FC91 30%,#F0D208 90%);background: -o-linear-gradient(top,  #F8FC91 30%,#F0D208 90%);background: -ms-linear-gradient(top,  #F8FC91 30%,#F0D208 90%);background: linear-gradient(#F8FC91 30%, #F0D208 90%);color: #000000;}.stb-warning-caption_box {background: #1D1A1A;background: -moz-linear-gradient(top,  #1D1A1A 30%, #504848 90%);background: -webkit-gradient(linear, left top, left bottom, color-stop(30%,#1D1A1A), color-stop(90%,#504848));background: -webkit-linear-gradient(top,  #1D1A1A 30%,#504848 90%);background: -o-linear-gradient(top,  #1D1A1A 30%,#504848 90%);background: -ms-linear-gradient(top,  #1D1A1A 30%,#504848 90%);background: linear-gradient(#1D1A1A 30%, #504848 90%);color: #FFFFFF;}.stb-warning-body_box {background: #F8FC91;filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#F8FC91', endColorstr='#F0D208',GradientType=0 );background: -moz-linear-gradient(top,  #F8FC91 30%, #F0D208 90%);background: -webkit-gradient(linear, left top, left bottom, color-stop(30%,#F8FC91), color-stop(90%,#F0D208));background: -webkit-linear-gradient(top,  #F8FC91 30%,#F0D208 90%);background: -o-linear-gradient(top,  #F8FC91 30%,#F0D208 90%);background: -ms-linear-gradient(top,  #F8FC91 30%,#F0D208 90%);background: linear-gradient(#F8FC91 30%, #F0D208 90%);color: #000000;}</style>
+<meta name='robots' content='max-image-preview:large' />
+<link rel='dns-prefetch' href='//checkout.razorpay.com' />
+<link rel='dns-prefetch' href='//maps.googleapis.com' />
+<link rel='dns-prefetch' href='//fonts.googleapis.com' />
+<link href='https://fonts.gstatic.com' crossorigin rel='preconnect' />
+<link rel="alternate" type="application/rss+xml" title="MicroCharity.com &raquo; Feed" href="https://www.microcharity.com/feed/" />
+<link rel="alternate" type="application/rss+xml" title="MicroCharity.com &raquo; Comments Feed" href="https://www.microcharity.com/comments/feed/" />
+<script type="text/javascript">
+window._wpemojiSettings = {"baseUrl":"https:\/\/s.w.org\/images\/core\/emoji\/14.0.0\/72x72\/","ext":".png","svgUrl":"https:\/\/s.w.org\/images\/core\/emoji\/14.0.0\/svg\/","svgExt":".svg","source":{"concatemoji":"https:\/\/www.microcharity.com\/wp-includes\/js\/wp-emoji-release.min.js?ver=6.1.10"}};
+/*! This file is auto-generated */
+!function(e,a,t){var n,r,o,i=a.createElement("canvas"),p=i.getContext&&i.getContext("2d");function s(e,t){var a=String.fromCharCode,e=(p.clearRect(0,0,i.width,i.height),p.fillText(a.apply(this,e),0,0),i.toDataURL());return p.clearRect(0,0,i.width,i.height),p.fillText(a.apply(this,t),0,0),e===i.toDataURL()}function c(e){var t=a.createElement("script");t.src=e,t.defer=t.type="text/javascript",a.getElementsByTagName("head")[0].appendChild(t)}for(o=Array("flag","emoji"),t.supports={everything:!0,everythingExceptFlag:!0},r=0;r<o.length;r++)t.supports[o[r]]=function(e){if(p&&p.fillText)switch(p.textBaseline="top",p.font="600 32px Arial",e){case"flag":return s([127987,65039,8205,9895,65039],[127987,65039,8203,9895,65039])?!1:!s([55356,56826,55356,56819],[55356,56826,8203,55356,56819])&&!s([55356,57332,56128,56423,56128,56418,56128,56421,56128,56430,56128,56423,56128,56447],[55356,57332,8203,56128,56423,8203,56128,56418,8203,56128,56421,8203,56128,56430,8203,56128,56423,8203,56128,56447]);case"emoji":return!s([129777,127995,8205,129778,127999],[129777,127995,8203,129778,127999])}return!1}(o[r]),t.supports.everything=t.supports.everything&&t.supports[o[r]],"flag"!==o[r]&&(t.supports.everythingExceptFlag=t.supports.everythingExceptFlag&&t.supports[o[r]]);t.supports.everythingExceptFlag=t.supports.everythingExceptFlag&&!t.supports.flag,t.DOMReady=!1,t.readyCallback=function(){t.DOMReady=!0},t.supports.everything||(n=function(){t.readyCallback()},a.addEventListener?(a.addEventListener("DOMContentLoaded",n,!1),e.addEventListener("load",n,!1)):(e.attachEvent("onload",n),a.attachEvent("onreadystatechange",function(){"complete"===a.readyState&&t.readyCallback()})),(e=t.source||{}).concatemoji?c(e.concatemoji):e.wpemoji&&e.twemoji&&(c(e.twemoji),c(e.wpemoji)))}(window,document,window._wpemojiSettings);
+</script>
+<style type="text/css">
+img.wp-smiley,
+img.emoji {
+	display: inline !important;
+	border: none !important;
+	box-shadow: none !important;
+	height: 1em !important;
+	width: 1em !important;
+	margin: 0 0.07em !important;
+	vertical-align: -0.1em !important;
+	background: none !important;
+	padding: 0 !important;
+}
+</style>
+	<link rel='stylesheet' id='dashicons-css' href='https://www.microcharity.com/wp-includes/css/dashicons.min.css?ver=6.1.10' type='text/css' media='all' />
+<link rel='stylesheet' id='fw-option-type-icon-v2-pack-linecons-css' href='https://www.microcharity.com/wp-content/plugins/unyson/framework/static/libs/linecons/css/linecons.css?ver=2.7.24' type='text/css' media='all' />
+<link rel='stylesheet' id='fw-option-type-icon-v2-pack-font-awesome-css' href='https://www.microcharity.com/wp-content/plugins/unyson/framework/static/libs/font-awesome/css/font-awesome.min.css?ver=2.7.24' type='text/css' media='all' />
+<link rel='stylesheet' id='fw-option-type-icon-v2-pack-entypo-css' href='https://www.microcharity.com/wp-content/plugins/unyson/framework/static/libs/entypo/css/entypo.css?ver=2.7.24' type='text/css' media='all' />
+<link rel='stylesheet' id='fw-option-type-icon-v2-pack-linearicons-css' href='https://www.microcharity.com/wp-content/plugins/unyson/framework/static/libs/lnr/css/lnr.css?ver=2.7.24' type='text/css' media='all' />
+<link rel='stylesheet' id='fw-option-type-icon-v2-pack-typicons-css' href='https://www.microcharity.com/wp-content/plugins/unyson/framework/static/libs/typcn/css/typcn.css?ver=2.7.24' type='text/css' media='all' />
+<link rel='stylesheet' id='fw-option-type-icon-v2-pack-unycon-css' href='https://www.microcharity.com/wp-content/plugins/unyson/framework/static/libs/unycon/unycon.css?ver=2.7.24' type='text/css' media='all' />
+<link rel='stylesheet' id='wp-block-library-css' href='https://www.microcharity.com/wp-includes/css/dist/block-library/style.min.css?ver=6.1.10' type='text/css' media='all' />
+<link rel='stylesheet' id='classic-theme-styles-css' href='https://www.microcharity.com/wp-includes/css/classic-themes.min.css?ver=1' type='text/css' media='all' />
+<style id='global-styles-inline-css' type='text/css'>
+body{--wp--preset--color--black: #000000;--wp--preset--color--cyan-bluish-gray: #abb8c3;--wp--preset--color--white: #ffffff;--wp--preset--color--pale-pink: #f78da7;--wp--preset--color--vivid-red: #cf2e2e;--wp--preset--color--luminous-vivid-orange: #ff6900;--wp--preset--color--luminous-vivid-amber: #fcb900;--wp--preset--color--light-green-cyan: #7bdcb5;--wp--preset--color--vivid-green-cyan: #00d084;--wp--preset--color--pale-cyan-blue: #8ed1fc;--wp--preset--color--vivid-cyan-blue: #0693e3;--wp--preset--color--vivid-purple: #9b51e0;--wp--preset--gradient--vivid-cyan-blue-to-vivid-purple: linear-gradient(135deg,rgba(6,147,227,1) 0%,rgb(155,81,224) 100%);--wp--preset--gradient--light-green-cyan-to-vivid-green-cyan: linear-gradient(135deg,rgb(122,220,180) 0%,rgb(0,208,130) 100%);--wp--preset--gradient--luminous-vivid-amber-to-luminous-vivid-orange: linear-gradient(135deg,rgba(252,185,0,1) 0%,rgba(255,105,0,1) 100%);--wp--preset--gradient--luminous-vivid-orange-to-vivid-red: linear-gradient(135deg,rgba(255,105,0,1) 0%,rgb(207,46,46) 100%);--wp--preset--gradient--very-light-gray-to-cyan-bluish-gray: linear-gradient(135deg,rgb(238,238,238) 0%,rgb(169,184,195) 100%);--wp--preset--gradient--cool-to-warm-spectrum: linear-gradient(135deg,rgb(74,234,220) 0%,rgb(151,120,209) 20%,rgb(207,42,186) 40%,rgb(238,44,130) 60%,rgb(251,105,98) 80%,rgb(254,248,76) 100%);--wp--preset--gradient--blush-light-purple: linear-gradient(135deg,rgb(255,206,236) 0%,rgb(152,150,240) 100%);--wp--preset--gradient--blush-bordeaux: linear-gradient(135deg,rgb(254,205,165) 0%,rgb(254,45,45) 50%,rgb(107,0,62) 100%);--wp--preset--gradient--luminous-dusk: linear-gradient(135deg,rgb(255,203,112) 0%,rgb(199,81,192) 50%,rgb(65,88,208) 100%);--wp--preset--gradient--pale-ocean: linear-gradient(135deg,rgb(255,245,203) 0%,rgb(182,227,212) 50%,rgb(51,167,181) 100%);--wp--preset--gradient--electric-grass: linear-gradient(135deg,rgb(202,248,128) 0%,rgb(113,206,126) 100%);--wp--preset--gradient--midnight: linear-gradient(135deg,rgb(2,3,129) 0%,rgb(40,116,252) 100%);--wp--preset--duotone--dark-grayscale: url('#wp-duotone-dark-grayscale');--wp--preset--duotone--grayscale: url('#wp-duotone-grayscale');--wp--preset--duotone--purple-yellow: url('#wp-duotone-purple-yellow');--wp--preset--duotone--blue-red: url('#wp-duotone-blue-red');--wp--preset--duotone--midnight: url('#wp-duotone-midnight');--wp--preset--duotone--magenta-yellow: url('#wp-duotone-magenta-yellow');--wp--preset--duotone--purple-green: url('#wp-duotone-purple-green');--wp--preset--duotone--blue-orange: url('#wp-duotone-blue-orange');--wp--preset--font-size--small: 13px;--wp--preset--font-size--medium: 20px;--wp--preset--font-size--large: 36px;--wp--preset--font-size--x-large: 42px;--wp--preset--spacing--20: 0.44rem;--wp--preset--spacing--30: 0.67rem;--wp--preset--spacing--40: 1rem;--wp--preset--spacing--50: 1.5rem;--wp--preset--spacing--60: 2.25rem;--wp--preset--spacing--70: 3.38rem;--wp--preset--spacing--80: 5.06rem;}:where(.is-layout-flex){gap: 0.5em;}body .is-layout-flow > .alignleft{float: left;margin-inline-start: 0;margin-inline-end: 2em;}body .is-layout-flow > .alignright{float: right;margin-inline-start: 2em;margin-inline-end: 0;}body .is-layout-flow > .aligncenter{margin-left: auto !important;margin-right: auto !important;}body .is-layout-constrained > .alignleft{float: left;margin-inline-start: 0;margin-inline-end: 2em;}body .is-layout-constrained > .alignright{float: right;margin-inline-start: 2em;margin-inline-end: 0;}body .is-layout-constrained > .aligncenter{margin-left: auto !important;margin-right: auto !important;}body .is-layout-constrained > :where(:not(.alignleft):not(.alignright):not(.alignfull)){max-width: var(--wp--style--global--content-size);margin-left: auto !important;margin-right: auto !important;}body .is-layout-constrained > .alignwide{max-width: var(--wp--style--global--wide-size);}body .is-layout-flex{display: flex;}body .is-layout-flex{flex-wrap: wrap;align-items: center;}body .is-layout-flex > *{margin: 0;}:where(.wp-block-columns.is-layout-flex){gap: 2em;}.has-black-color{color: var(--wp--preset--color--black) !important;}.has-cyan-bluish-gray-color{color: var(--wp--preset--color--cyan-bluish-gray) !important;}.has-white-color{color: var(--wp--preset--color--white) !important;}.has-pale-pink-color{color: var(--wp--preset--color--pale-pink) !important;}.has-vivid-red-color{color: var(--wp--preset--color--vivid-red) !important;}.has-luminous-vivid-orange-color{color: var(--wp--preset--color--luminous-vivid-orange) !important;}.has-luminous-vivid-amber-color{color: var(--wp--preset--color--luminous-vivid-amber) !important;}.has-light-green-cyan-color{color: var(--wp--preset--color--light-green-cyan) !important;}.has-vivid-green-cyan-color{color: var(--wp--preset--color--vivid-green-cyan) !important;}.has-pale-cyan-blue-color{color: var(--wp--preset--color--pale-cyan-blue) !important;}.has-vivid-cyan-blue-color{color: var(--wp--preset--color--vivid-cyan-blue) !important;}.has-vivid-purple-color{color: var(--wp--preset--color--vivid-purple) !important;}.has-black-background-color{background-color: var(--wp--preset--color--black) !important;}.has-cyan-bluish-gray-background-color{background-color: var(--wp--preset--color--cyan-bluish-gray) !important;}.has-white-background-color{background-color: var(--wp--preset--color--white) !important;}.has-pale-pink-background-color{background-color: var(--wp--preset--color--pale-pink) !important;}.has-vivid-red-background-color{background-color: var(--wp--preset--color--vivid-red) !important;}.has-luminous-vivid-orange-background-color{background-color: var(--wp--preset--color--luminous-vivid-orange) !important;}.has-luminous-vivid-amber-background-color{background-color: var(--wp--preset--color--luminous-vivid-amber) !important;}.has-light-green-cyan-background-color{background-color: var(--wp--preset--color--light-green-cyan) !important;}.has-vivid-green-cyan-background-color{background-color: var(--wp--preset--color--vivid-green-cyan) !important;}.has-pale-cyan-blue-background-color{background-color: var(--wp--preset--color--pale-cyan-blue) !important;}.has-vivid-cyan-blue-background-color{background-color: var(--wp--preset--color--vivid-cyan-blue) !important;}.has-vivid-purple-background-color{background-color: var(--wp--preset--color--vivid-purple) !important;}.has-black-border-color{border-color: var(--wp--preset--color--black) !important;}.has-cyan-bluish-gray-border-color{border-color: var(--wp--preset--color--cyan-bluish-gray) !important;}.has-white-border-color{border-color: var(--wp--preset--color--white) !important;}.has-pale-pink-border-color{border-color: var(--wp--preset--color--pale-pink) !important;}.has-vivid-red-border-color{border-color: var(--wp--preset--color--vivid-red) !important;}.has-luminous-vivid-orange-border-color{border-color: var(--wp--preset--color--luminous-vivid-orange) !important;}.has-luminous-vivid-amber-border-color{border-color: var(--wp--preset--color--luminous-vivid-amber) !important;}.has-light-green-cyan-border-color{border-color: var(--wp--preset--color--light-green-cyan) !important;}.has-vivid-green-cyan-border-color{border-color: var(--wp--preset--color--vivid-green-cyan) !important;}.has-pale-cyan-blue-border-color{border-color: var(--wp--preset--color--pale-cyan-blue) !important;}.has-vivid-cyan-blue-border-color{border-color: var(--wp--preset--color--vivid-cyan-blue) !important;}.has-vivid-purple-border-color{border-color: var(--wp--preset--color--vivid-purple) !important;}.has-vivid-cyan-blue-to-vivid-purple-gradient-background{background: var(--wp--preset--gradient--vivid-cyan-blue-to-vivid-purple) !important;}.has-light-green-cyan-to-vivid-green-cyan-gradient-background{background: var(--wp--preset--gradient--light-green-cyan-to-vivid-green-cyan) !important;}.has-luminous-vivid-amber-to-luminous-vivid-orange-gradient-background{background: var(--wp--preset--gradient--luminous-vivid-amber-to-luminous-vivid-orange) !important;}.has-luminous-vivid-orange-to-vivid-red-gradient-background{background: var(--wp--preset--gradient--luminous-vivid-orange-to-vivid-red) !important;}.has-very-light-gray-to-cyan-bluish-gray-gradient-background{background: var(--wp--preset--gradient--very-light-gray-to-cyan-bluish-gray) !important;}.has-cool-to-warm-spectrum-gradient-background{background: var(--wp--preset--gradient--cool-to-warm-spectrum) !important;}.has-blush-light-purple-gradient-background{background: var(--wp--preset--gradient--blush-light-purple) !important;}.has-blush-bordeaux-gradient-background{background: var(--wp--preset--gradient--blush-bordeaux) !important;}.has-luminous-dusk-gradient-background{background: var(--wp--preset--gradient--luminous-dusk) !important;}.has-pale-ocean-gradient-background{background: var(--wp--preset--gradient--pale-ocean) !important;}.has-electric-grass-gradient-background{background: var(--wp--preset--gradient--electric-grass) !important;}.has-midnight-gradient-background{background: var(--wp--preset--gradient--midnight) !important;}.has-small-font-size{font-size: var(--wp--preset--font-size--small) !important;}.has-medium-font-size{font-size: var(--wp--preset--font-size--medium) !important;}.has-large-font-size{font-size: var(--wp--preset--font-size--large) !important;}.has-x-large-font-size{font-size: var(--wp--preset--font-size--x-large) !important;}
+.wp-block-navigation a:where(:not(.wp-element-button)){color: inherit;}
+:where(.wp-block-columns.is-layout-flex){gap: 2em;}
+.wp-block-pullquote{font-size: 1.5em;line-height: 1.6;}
+</style>
+<link rel='stylesheet' id='contact-form-7-css' href='https://www.microcharity.com/wp-content/plugins/contact-form-7/includes/css/styles.css?ver=5.7.7' type='text/css' media='all' />
+<link rel='stylesheet' id='rs-plugin-settings-css' href='https://www.microcharity.com/wp-content/plugins/revslider/public/assets/css/settings.css?ver=5.4.8' type='text/css' media='all' />
+<style id='rs-plugin-settings-inline-css' type='text/css'>
+#rs-demo-id {}
+</style>
+<link rel='stylesheet' id='give-styles-css' href='https://www.microcharity.com/wp-content/plugins/give/assets/dist/css/give.css?ver=2.10.4' type='text/css' media='all' />
+<link rel='stylesheet' id='fw-ext-breadcrumbs-add-css-css' href='https://www.microcharity.com/wp-content/plugins/unyson/framework/extensions/breadcrumbs/static/css/style.css?ver=6.1.10' type='text/css' media='all' />
+<link rel='stylesheet' id='font-awesome-css' href='https://www.microcharity.com/wp-content/plugins/js_composer/assets/lib/bower/font-awesome/css/font-awesome.min.css?ver=5.5.2' type='text/css' media='all' />
+<link rel='stylesheet' id='newsletter-css' href='https://www.microcharity.com/wp-content/plugins/newsletter/style.css?ver=7.5.3' type='text/css' media='all' />
+<link rel='stylesheet' id='mm-compiled-options-mobmenu-css' href='https://www.microcharity.com/wp-content/uploads/dynamic-mobmenu.css?ver=2.8.2.7-148' type='text/css' media='all' />
+<link rel='stylesheet' id='mm-google-webfont-dosis-css' href='//fonts.googleapis.com/css?family=Dosis%3Ainherit%2C800%2C500%2C400&#038;subset=latin%2Clatin-ext&#038;ver=6.1.10' type='text/css' media='all' />
+<link rel='stylesheet' id='bootstrap-css' href='https://www.microcharity.com/wp-content/themes/alone/assets/bootstrap/css/bootstrap.css?ver=5.3' type='text/css' media='all' />
+<link rel='stylesheet' id='ionicons-css' href='https://www.microcharity.com/wp-content/themes/alone/assets/fonts/ionicons/css/ionicons.min.css?ver=5.3' type='text/css' media='all' />
+<link rel='stylesheet' id='lightGallery-css' href='https://www.microcharity.com/wp-content/themes/alone/assets/lightGallery/css/lightgallery.min.css?ver=5.3' type='text/css' media='all' />
+<link rel='stylesheet' id='owl.carousel-css' href='https://www.microcharity.com/wp-content/themes/alone/assets/owl.carousel/assets/owl.carousel.min.css?ver=5.3' type='text/css' media='all' />
+<link rel='stylesheet' id='sweetalert-css' href='https://www.microcharity.com/wp-content/themes/alone/assets/sweetalert/dist/sweetalert.css?ver=5.3' type='text/css' media='all' />
+<link rel='stylesheet' id='animate-css' href='https://www.microcharity.com/wp-content/themes/alone/assets/css/animate.css?ver=5.3' type='text/css' media='all' />
+<link rel='stylesheet' id='fw-theme-style-css' href='https://www.microcharity.com/wp-content/themes/alone/style.css?ver=5.3' type='text/css' media='all' />
+<link rel='stylesheet' id='alone-local-font-css' href='https://www.microcharity.com/wp-content/themes/alone/assets/fonts/local-font.css?ver=5.3' type='text/css' media='all' />
+<link rel='stylesheet' id='alone-theme-style-css' href='https://www.microcharity.com/wp-content/themes/alone/assets/css/alone.css?ver=5.3' type='text/css' media='all' />
+<link rel='stylesheet' id='cssmobmenu-icons-css' href='https://www.microcharity.com/wp-content/plugins/mobile-menu/includes/css/mobmenu-icons.css?ver=6.1.10' type='text/css' media='all' />
+<link rel='stylesheet' id='cssmobmenu-css' href='https://www.microcharity.com/wp-content/plugins/mobile-menu/includes/css/mobmenu.css?ver=2.8.2.7' type='text/css' media='all' />
+<link rel='stylesheet' id='olympus-google-fonts-css' href='https://fonts.googleapis.com/css?family=Kelly+Slab%3A400%2C400i&#038;display=swap&#038;subset=all&#038;ver=3.2.1' type='text/css' media='all' />
+<link rel='stylesheet' id='stbCoreCSS-css' href='https://www.microcharity.com/wp-content/plugins/wp-special-textboxes/css/stb-core.css?ver=5.9.109' type='text/css' media='all' />
+<link rel='stylesheet' id='fw-googleFonts-css' href='//fonts.googleapis.com/css?family=Kelly+Slab%3Aregular&#038;subset=latin-ext&#038;ver=6.1.10' type='text/css' media='all' />
+<script type='text/javascript' src='https://www.microcharity.com/wp-content/plugins/shortcode-for-current-date/dist/script.js?ver=6.1.10' id='shortcode-for-current-date-script-js'></script>
+<script type='text/javascript' src='https://www.microcharity.com/wp-includes/js/jquery/jquery.min.js?ver=3.6.1' id='jquery-core-js'></script>
+<script type='text/javascript' src='https://www.microcharity.com/wp-includes/js/jquery/jquery-migrate.min.js?ver=3.3.2' id='jquery-migrate-js'></script>
+<script type='text/javascript' src='https://www.microcharity.com/wp-content/plugins/revslider/public/assets/js/jquery.themepunch.tools.min.js?ver=5.4.8' id='tp-tools-js'></script>
+<script type='text/javascript' src='https://www.microcharity.com/wp-content/plugins/revslider/public/assets/js/jquery.themepunch.revolution.min.js?ver=5.4.8' id='revmin-js'></script>
+<script type='text/javascript' src='https://www.microcharity.com/wp-content/plugins/revslider/public/assets/js/extensions/revolution.extension.actions.min.js?ver=5.4.8' id='revmin-actions-js'></script>
+<script type='text/javascript' src='https://www.microcharity.com/wp-content/plugins/revslider/public/assets/js/extensions/revolution.extension.carousel.min.js?ver=5.4.8' id='revmin-carousel-js'></script>
+<script type='text/javascript' src='https://www.microcharity.com/wp-content/plugins/revslider/public/assets/js/extensions/revolution.extension.kenburn.min.js?ver=5.4.8' id='revmin-kenburn-js'></script>
+<script type='text/javascript' src='https://www.microcharity.com/wp-content/plugins/revslider/public/assets/js/extensions/revolution.extension.layeranimation.min.js?ver=5.4.8' id='revmin-layeranimation-js'></script>
+<script type='text/javascript' src='https://www.microcharity.com/wp-content/plugins/revslider/public/assets/js/extensions/revolution.extension.migration.min.js?ver=5.4.8' id='revmin-migration-js'></script>
+<script type='text/javascript' src='https://www.microcharity.com/wp-content/plugins/revslider/public/assets/js/extensions/revolution.extension.navigation.min.js?ver=5.4.8' id='revmin-navigation-js'></script>
+<script type='text/javascript' src='https://www.microcharity.com/wp-content/plugins/revslider/public/assets/js/extensions/revolution.extension.parallax.min.js?ver=5.4.8' id='revmin-parallax-js'></script>
+<script type='text/javascript' src='https://www.microcharity.com/wp-content/plugins/revslider/public/assets/js/extensions/revolution.extension.slideanims.min.js?ver=5.4.8' id='revmin-slideanims-js'></script>
+<script type='text/javascript' src='https://www.microcharity.com/wp-content/plugins/revslider/public/assets/js/extensions/revolution.extension.video.min.js?ver=5.4.8' id='revmin-video-js'></script>
+<script type='text/javascript' src='https://www.microcharity.com/wp-content/plugins/give/assets/dist/js/babel-polyfill.js?ver=2.10.4' id='babel-polyfill-js'></script>
+<script type='text/javascript' id='give-js-extra'>
+/* <![CDATA[ */
+var give_global_vars = {"ajaxurl":"https:\/\/www.microcharity.com\/wp-admin\/admin-ajax.php","checkout_nonce":"4c1129a876","currency":"INR","currency_sign":"\u20b9","currency_pos":"before","thousands_separator":",","decimal_separator":".","no_gateway":"Please select a payment method.","bad_minimum":"The minimum custom donation amount for this form is","bad_maximum":"The maximum custom donation amount for this form is","general_loading":"Loading...","purchase_loading":"Please Wait...","textForOverlayScreen":"<h3>Processing...<\/h3><p>This will only take a second!<\/p>","number_decimals":"0","is_test_mode":"","give_version":"2.10.4","magnific_options":{"main_class":"give-modal","close_on_bg_click":false},"form_translation":{"payment-mode":"Please select payment mode.","give_first":"Please enter your first name.","give_email":"Please enter a valid email address.","give_user_login":"Invalid email address or username.","give_user_pass":"Enter a password.","give_user_pass_confirm":"Enter the password confirmation.","give_agree_to_terms":"You must agree to the terms and conditions."},"confirm_email_sent_message":"Please check your email and click on the link to access your complete donation history.","ajax_vars":{"ajaxurl":"https:\/\/www.microcharity.com\/wp-admin\/admin-ajax.php","ajaxNonce":"ec04d3433e","loading":"Loading","select_option":"Please select an option","default_gateway":"razorpay","permalinks":"1","number_decimals":0},"cookie_hash":"a02485d450d670c2db0a319c1f3ebc57","session_nonce_cookie_name":"wp-give_session_reset_nonce_a02485d450d670c2db0a319c1f3ebc57","session_cookie_name":"wp-give_session_a02485d450d670c2db0a319c1f3ebc57","delete_session_nonce_cookie":"0"};
+var giveApiSettings = {"root":"https:\/\/www.microcharity.com\/wp-json\/give-api\/v2\/","rest_base":"give-api\/v2"};
+/* ]]> */
+</script>
+<script type='text/javascript' src='https://www.microcharity.com/wp-content/plugins/give/assets/dist/js/give.js?ver=2.10.4' id='give-js'></script>
+<script type='text/javascript' src='https://checkout.razorpay.com/v1/checkout.js?ver=6.1.10' id='razorpay-js-js'></script>
+<script type='text/javascript' src='https://maps.googleapis.com/maps/api/js?key=AIzaSyDOkqN917F-V3B3BdilLSiO8AgmBy4sZaU&#038;ver=6.1.10' id='google-map-api-js'></script>
+<script type='text/javascript' src='https://www.microcharity.com/wp-content/themes/alone/assets/jquery-countdown/jquery.plugin.min.js?ver=5.3' id='jquery-plugin-js'></script>
+<script type='text/javascript' src='https://www.microcharity.com/wp-content/themes/alone/assets/jquery-countdown/jquery.countdown.min.js?ver=5.3' id='jquery-countdown-js'></script>
+<script type='text/javascript' src='https://www.microcharity.com/wp-content/plugins/mobile-menu/includes/js/mobmenu.js?ver=2.8.2.7' id='mobmenujs-js'></script>
+<link rel="https://api.w.org/" href="https://www.microcharity.com/wp-json/" /><link rel="EditURI" type="application/rsd+xml" title="RSD" href="https://www.microcharity.com/xmlrpc.php?rsd" />
+<link rel="wlwmanifest" type="application/wlwmanifest+xml" href="https://www.microcharity.com/wp-includes/wlwmanifest.xml" />
+<meta name="generator" content="WordPress 6.1.10" />
+<meta name="generator" content="Give v2.10.4" />
+		<!-- Chrome, Firefox OS and Opera -->
+		<meta name="theme-color" content="#dd3333">
+		<!-- Windows Phone -->
+		<meta name="msapplication-navbutton-color" content="#dd3333">
+		<!-- iOS Safari -->
+		<meta name="apple-mobile-web-app-status-bar-style" content="#dd3333">
+		<meta name="generator" content="Powered by WPBakery Page Builder - drag and drop page builder for WordPress."/>
+<!--[if lte IE 9]><link rel="stylesheet" type="text/css" href="https://www.microcharity.com/wp-content/plugins/js_composer/assets/css/vc_lte_ie9.min.css" media="screen"><![endif]--><meta name="generator" content="Powered by Slider Revolution 5.4.8 - responsive, Mobile-Friendly Slider Plugin for WordPress with comfortable drag and drop interface." />
+<link rel="icon" href="https://www.microcharity.com/wp-content/uploads/2018/09/OnlyHandLogo-2-100x100.png" sizes="32x32" />
+<link rel="icon" href="https://www.microcharity.com/wp-content/uploads/2018/09/OnlyHandLogo-2.png" sizes="192x192" />
+<link rel="apple-touch-icon" href="https://www.microcharity.com/wp-content/uploads/2018/09/OnlyHandLogo-2.png" />
+<meta name="msapplication-TileImage" content="https://www.microcharity.com/wp-content/uploads/2018/09/OnlyHandLogo-2.png" />
+<script type="text/javascript">function setREVStartSize(e){									
+						try{ e.c=jQuery(e.c);var i=jQuery(window).width(),t=9999,r=0,n=0,l=0,f=0,s=0,h=0;
+							if(e.responsiveLevels&&(jQuery.each(e.responsiveLevels,function(e,f){f>i&&(t=r=f,l=e),i>f&&f>r&&(r=f,n=e)}),t>r&&(l=n)),f=e.gridheight[l]||e.gridheight[0]||e.gridheight,s=e.gridwidth[l]||e.gridwidth[0]||e.gridwidth,h=i/s,h=h>1?1:h,f=Math.round(h*f),"fullscreen"==e.sliderLayout){var u=(e.c.width(),jQuery(window).height());if(void 0!=e.fullScreenOffsetContainer){var c=e.fullScreenOffsetContainer.split(",");if (c) jQuery.each(c,function(e,i){u=jQuery(i).length>0?u-jQuery(i).outerHeight(!0):u}),e.fullScreenOffset.split("%").length>1&&void 0!=e.fullScreenOffset&&e.fullScreenOffset.length>0?u-=jQuery(window).height()*parseInt(e.fullScreenOffset,0)/100:void 0!=e.fullScreenOffset&&e.fullScreenOffset.length>0&&(u-=parseInt(e.fullScreenOffset,0))}f=u}else void 0!=e.minHeight&&f<e.minHeight&&(f=e.minHeight);e.c.closest(".rev_slider_wrapper").css({height:f})					
+						}catch(d){console.log("Failure at Presize of Slider:"+d)}						
+					};</script>
+	<!-- Fonts Plugin CSS - https://fontsplugin.com/ -->
+	<style>
+		:root {
+--font-base: Kelly Slab;
+--font-headings: Kelly Slab;
+--font-input: Kelly Slab;
+}
+body, #content, .entry-content, .post-content, .page-content, .post-excerpt, .entry-summary, .entry-excerpt, .widget-area, .widget, .sidebar, #sidebar, footer, .footer, #footer, .site-footer {
+font-family: "Kelly Slab";
+ }
+#site-title, .site-title, #site-title a, .site-title a, .entry-title, .entry-title a, h1, h2, h3, h4, h5, h6, .widget-title {
+font-family: "Kelly Slab";
+ }
+button, .button, input, select, textarea, .wp-block-button, .wp-block-button__link {
+font-family: "Kelly Slab";
+ }
+#site-title, .site-title, #site-title a, .site-title a, #site-logo, #site-logo a, #logo, #logo a, .logo, .logo a, .wp-block-site-title, .wp-block-site-title a {
+font-family: "Kelly Slab";
+ }
+#site-description, .site-description, #site-tagline, .site-tagline, .wp-block-site-tagline {
+font-family: "Kelly Slab";
+ }
+.menu, .page_item a, .menu-item a, .wp-block-navigation, .wp-block-navigation-item__content {
+font-family: "Kelly Slab";
+ }
+.entry-content, .entry-content p, .post-content, .page-content, .post-excerpt, .entry-summary, .entry-excerpt, .excerpt, .excerpt p, .type-post p, .type-page p, .wp-block-post-content, .wp-block-post-excerpt {
+font-family: "Kelly Slab";
+ }
+.wp-block-post-title, .wp-block-post-title a, .entry-title, .entry-title a, .post-title, .post-title a, .page-title, .entry-content h1, #content h1, .type-post h1, .type-page h1 {
+font-family: "Kelly Slab";
+ }
+.entry-content h2, .post-content h2, .page-content h2, #content h2, .type-post h2, .type-page h2 {
+font-family: "Kelly Slab";
+ }
+.entry-content h3, .post-content h3, .page-content h3, #content h3, .type-post h3, .type-page h3 {
+font-family: "Kelly Slab";
+ }
+.entry-content h4, .post-content h4, .page-content h4, #content h4, .type-post h4, .type-page h4 {
+font-family: "Kelly Slab";
+ }
+.entry-content h5, .post-content h5, .page-content h5, #content h5, .type-post h5, .type-page h5 {
+font-family: "Kelly Slab";
+ }
+.entry-content h6, .post-content h6, .page-content h6, #content h6, .type-post h6, .type-page h6 {
+font-family: "Kelly Slab";
+ }
+.widget-title, .widget-area h1, .widget-area h2, .widget-area h3, .widget-area h4, .widget-area h5, .widget-area h6, #secondary h1, #secondary h2, #secondary h3, #secondary h4, #secondary h5, #secondary h6 {
+font-family: "Kelly Slab";
+ }
+.widget-area, .widget, .sidebar, #sidebar, #secondary {
+font-family: "Kelly Slab";
+ }
+footer h1, footer h2, footer h3, footer h4, footer h5, footer h6, .footer h1, .footer h2, .footer h3, .footer h4, .footer h5, .footer h6, #footer h1, #footer h2, #footer h3, #footer h4, #footer h5, #footer h6 {
+font-family: "Kelly Slab";
+ }
+footer, #footer, .footer, .site-footer {
+font-family: "Kelly Slab";
+ }
+	</style>
+	<!-- Fonts Plugin CSS -->
+	<noscript><style type="text/css"> .wpb_animate_when_almost_visible { opacity: 1; }</style></noscript></head>
+<body class="error404 bt-full wpb-js-composer js-comp-ver-5.5.2 vc_responsive mob-menu-slideout-over" itemscope="itemscope" itemtype="http://schema.org/WebPage">
+<div id="page" class="site">
+	<header class="bt-header-mobi header-mobi bt-logo-no-retina fw-menu-position-right fw-no-absolute-header" itemscope="itemscope" itemtype="http://schema.org/WPHeader">
+	<!-- Header main menu -->
+	<div class="bt-header-mobi-main">
+		<div class="container">
+			<div class="bt-container-logo bt-vertical-align-middle">
+							<div class="fw-wrap-logo">
+				
+												<a href="https://www.microcharity.com/" class="fw-site-logo">
+								<img src="//www.microcharity.com/wp-content/uploads/2018/09/MicroCharityLogo-340x84.jpg" alt="MicroCharity.com" class="main-logo"/>
+															</a>
+						
+							</div>
+						</div><!--
+			--><div class="bt-container-menu bt-vertical-align-middle">
+				<div class="bt-nav-wrap" itemscope="itemscope" itemtype="http://schema.org/SiteNavigationElement" role="navigation">
+									</div>
+			</div>
+		</div>
+	</div>
+</header>
+	<header class="bt-header header-1   fw-menu-position-right bt-logo-no-retina" itemscope="itemscope" itemtype="http://schema.org/WPHeader">
+	<!-- Header top bar -->
+	
+	<!-- Header main menu -->
+	<div class="bt-header-main">
+		<div class="bt-header-container fw-no-absolute-header fw-sticky-header">
+			<div class="container">
+				<div class="bt-container-logo bt-vertical-align-middle">
+								<div class="fw-wrap-logo">
+				
+												<a href="https://www.microcharity.com/" class="fw-site-logo">
+								<img src="//www.microcharity.com/wp-content/uploads/2018/09/MicroCharityLogo-340x84.jpg" alt="MicroCharity.com" class="main-logo"/>
+															</a>
+						
+							</div>
+							</div><!--
+				--><div class="bt-container-menu bt-vertical-align-middle">
+					<div class="bt-nav-wrap" itemscope="itemscope" itemtype="http://schema.org/SiteNavigationElement" role="navigation">
+						<nav id="bt-menu-primary" class="bt-site-navigation primary-navigation"><ul id="menu-main-menu" class="bt-nav-menu"><li id="menu-item-2860" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-home menu-item-2860" style=""><a href="https://www.microcharity.com/" ><span>Home</span></a></li>
+<li id="menu-item-3341" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-3341" style=""><a href="https://www.microcharity.com/who-we-are/" ><span>Who We Are</span></a></li>
+<li id="menu-item-3342" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-3342" style=""><a href="https://www.microcharity.com/how-we-work/" ><span>How We Work</span></a></li>
+<li id="menu-item-3343" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-3343" style=""><a href="https://www.microcharity.com/refer-a-cause/" ><span>Refer a Cause</span></a></li>
+<li id="menu-item-3637" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-has-children menu-item-3637" style=""><a href="#" ><span>About Us</span></a>
+<ul class="sub-menu" style="">
+	<li id="menu-item-3638" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-3638" style=""><a href="https://www.microcharity.com/who-we-are/legal-financial-informations/" ><span>Financials</span></a></li>
+	<li id="menu-item-3636" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-3636" style=""><a href="https://www.microcharity.com/terms-conditions/" ><span>Terms &#038; Conditions</span></a></li>
+	<li id="menu-item-3639" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-3639" style=""><a href="https://www.microcharity.com/privacy-policy/" ><span>Privacy Policy</span></a></li>
+	<li id="menu-item-3640" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-3640" style=""><a href="/contact-us/" ><span>Contact Us</span></a></li>
+</ul>
+</li>
+<li id="menu-item-2426" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-2426 menu-item-custom-type-notification_center menu-item-hidden-title-yes bt-search" style=""><a href="#!" ><span>Search</span></a><div class="notification-center-icon"><div class="notification-center-item"><a href="#notification-search" class="" data-notification="notification-search"><span class='icon-type-v2 '><i class='fa fa-search'></i></span></a></div></div></li>
+</ul></nav>					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</header>
+	<div id="main" class="site-main">
+<div class="no-header-image"></div>
+<section class="bt-default-page bt-404-page bt-main-row ">
+	<div class="container">
+		<div class="row">
+
+			<div class="content-area col-md-12">
+				<div class="wrap-entry-404 text-center">
+					<h1 class="entry-title fw-title-404">404</h1>
+					<h3 class="entry-title fw-title-404-sub">Ohh! Page not found</h3>
+					<div class="page-content">
+						<p>It looks like nothing was found at this location. Maybe try a search?</p>
+						<p>Or go back to <a href="https://www.microcharity.com">Homepage.</a></p>
+						<form role="search" method="get" class="search-form" action="https://www.microcharity.com/">
+				<label>
+					<span class="screen-reader-text">Search for:</span>
+					<input type="search" class="search-field" placeholder="Search &hellip;" value="" name="s" />
+				</label>
+				<input type="submit" class="search-submit" value="Search" />
+			</form>					</div><!-- .page-content -->
+				</div>
+			</div><!-- /.content-area-->
+
+					<div class="col-md-4 col-sm-12 bt-sidebar" role="complementary" itemscope="itemscope" itemtype="http://schema.org/WPSideBar">
+			<div class="bt-col-inner">
+							</div><!-- /.inner -->
+		</div><!-- /.sidebar -->
+	 
+		</div><!-- /.row-->
+	</div><!-- /.container-->
+</section>
+	</div><!-- /.site-main -->
+
+	<!-- Footer -->
+	<footer id="colophon" class="site-footer bt-footer ">
+				<div class="bt-footer-widgets footer-cols-4">
+		<div class="bt-inner">
+		<div class="container">
+			<div class="bt-row">
+				<!--
+					--><div class="footer-sidebar-item bt-col-4 fw-sidebar-content-align-left ">
+						<aside id="custom_html-18" class="widget_text widget widget_custom_html"><div class="textwidget custom-html-widget"><h2 class="widget-title"><span>Contact Us</span></h2><div class="textwidget custom-html-widget"><div class="footer-contact-info-ui"> 
+	<div class="c-item"> 
+		<div class="icon-wrap"><i class="fa fa-phone" aria-hidden="true"></i></div>
+		<div class="entry-content">+91 80 26780415</div>
+	</div>
+	<div class="c-item"> 
+		<div class="icon-wrap"><i class="fa fa-envelope-o" aria-hidden="true"></i></div>
+		<div class="entry-content">info@microcharity.com</div>
+	</div>
+	<div class="c-item"> 
+		<div class="icon-wrap"><i class="fa fa-map-marker" aria-hidden="true"></i></div>
+		<div class="entry-content">112 West Village, Kodipalya, Kengeri, Bangalore - 560060</div>
+	</div>
+</div>
+<ul class="ft-social-fun">
+<li><a href="https://twitter.com/microcharityin"><i class="fa fa-twitter" aria-hidden="true"></i></a></li> 
+<li><a href="https://www.instagram.com/microcharity/"><i class="fa fa-instagram" aria-hidden="true"></i></a></li> 
+
+</ul></div></div></aside>					</div><!--
+					--><!--
+					--><div class="footer-sidebar-item bt-col-4 fw-sidebar-content-align-left ">
+						<aside id="custom_html-19" class="widget_text widget widget_custom_html"><div class="textwidget custom-html-widget"><h2 class="widget-title"><span>Site Map</span></h2><div class="textwidget custom-html-widget"><ul class="fun-list">
+	<li><a href="/who-we-are/">Who We Are</a></li>
+	<li><a href="/how-we-work/">How We Work</a></li>
+		<li><a href="/refer-a-cause/">Refer a Cause</a></li>
+	<li><a href="/category/success-stories/">Success Stories</a></li>
+	<li><a href="/who-we-are/legal-financial-informations/">Financials</a></li>
+		<li><a href="/terms-conditions/">Terms & Conditions</a></li>
+			<li><a href="/privacy-policy/">Privacy Policy</a></li>
+	<li><a href="/microcharity-refund-cancellation-policy/">Refund Policy</a></li>
+	<li><a href="/contact-us/">Contact Us</a></li>
+</ul></div></div></aside>					</div><!--
+					--><!--
+					--><div class="footer-sidebar-item bt-col-4 fw-sidebar-content-align-right ">
+						<aside id="facebook_page_plugin_widget-4" class="widget widget_facebook_page_plugin_widget"><h2 class="widget-title"><span>Follow Us on Facebook</span></h2><div class="cameronjonesweb_facebook_page_plugin" data-version="1.8.3" data-implementation="widget" id="71J3boJwb53V69A" data-method="sdk"><div id="fb-root"></div><script async defer crossorigin="anonymous" src="https://connect.facebook.net/en_US/sdk.js#xfbml=1&version=v11.0"></script><div class="fb-page" data-href="https://facebook.com/MicroCharityTrust/"  data-width="340" data-max-width="340" data-height="130" data-hide-cover="false" data-show-facepile="true" data-hide-cta="false" data-small-header="true" data-adapt-container-width="true"><div class="fb-xfbml-parse-ignore"><blockquote cite="https://www.facebook.com/MicroCharityTrust/"><a href="https://www.facebook.com/MicroCharityTrust/">https://www.facebook.com/MicroCharityTrust/</a></blockquote></div></div></div></aside>					</div><!--
+					--><!--
+					--><div class="footer-sidebar-item bt-col-4 fw-sidebar-content-align-right ">
+											</div><!--
+					-->			</div>
+		</div>
+	</div>
+</div>
+
+		<div class="bt-footer-bar bt-copyright-center">
+			<div class="container">
+				<div class="bt-copyright">Copyright &copy;2021 <a rel="nofollow" style="color:#ec533d" href="http://www.MicroCharity.com">MicroCharity Trust</a>. All Rights Reserved </div>
+			</div>
+		</div>
+		</footer>
+</div><!-- /#page -->
+<div class="notification-wrap dark" style="">
+  <a href="#" class="close-notification">
+    <span class="ion-ios-close-empty"></span>
+  </a>
+  <div class="notification-inner">
+    <div class="notification-heading-tabs">
+      <a href='#notification-search' class='nav-tab-item'>Search</a>    </div>
+    <div class="notification-content-tabs">
+      <div class="notification-content-tabs-inner">
+        <div id="notification-slider-panel" class="owl-carousel" data-bears-owl-carousel="{&quot;items&quot;:1,&quot;loop&quot;:false,&quot;center&quot;:false,&quot;margin&quot;:30,&quot;URLhashListener&quot;:true,&quot;URLhashSelector&quot;:&quot;.notification-heading-tabs .nav-tab-item&quot;,&quot;autoplayHoverPause&quot;:true,&quot;nav&quot;:false,&quot;dots&quot;:false}">
+          <div class="item" data-hash="notification-search"><div class="item-inner tab-container-search"><form class="custom-search-form" role="search" method="get" action="#">
+  <label>
+    <input class="search-field" data-search-ajax-result="" placeholder="Type to search..." value="" name="s" type="search">
+    <button type="submit" class="search-submit"><span class="ion-ios-search"></span></button>
+  </label>
+</form>
+<div id="notification-search-ajax-result">
+
+</div>
+</div></div>        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="mobmenu-overlay"></div><div class="mob-menu-header-holder mobmenu"  data-menu-display="mob-menu-slideout-over" data-open-icon="down-open" data-close-icon="up-open"><div class="mob-menu-logo-holder"><a href="https://www.microcharity.com" class="headertext"></a></div><div class="mobmenur-container"><a href="#" class="mobmenu-right-bt mobmenu-trigger-action" data-panel-target="mobmenu-right-panel" aria-label="Right Menu Button"><i class="mob-icon-menu-1 mob-menu-icon"></i><i class="mob-icon-cancel-1 mob-cancel-button"></i></a></div></div>				<div class="mobmenu-right-alignment mobmenu-panel mobmenu-right-panel  ">
+				<a href="#" class="mobmenu-right-bt" aria-label="Right Menu Button"><i class="mob-icon-cancel-1 mob-cancel-button"></i></a>
+					<div class="mobmenu-content">
+			<div class="menu-mobile-menu-container"><ul id="mobmenuright" role="menubar" aria-label="Main navigation for mobile devices"><li id="menu-item-3448" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-home menu-item-has-icon menu-item-3448" style=""><a href="https://www.microcharity.com/" ><i class="fa fa-university"></i><span>Home</span></a></li>
+<li id="menu-item-3454" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-3454" style=""><a href="/donations/" ><span>Current Causes</span></a></li>
+<li id="menu-item-3455" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-3455" style=""><a href="/category/success-stories/" ><span>Success Stories</span></a></li>
+<li id="menu-item-3450" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-3450" style=""><a href="https://www.microcharity.com/who-we-are/" ><span>Who We Are</span></a></li>
+<li id="menu-item-3452" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-3452" style=""><a href="https://www.microcharity.com/how-we-work/" ><span>How We Work</span></a></li>
+<li id="menu-item-3451" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-3451" style=""><a href="https://www.microcharity.com/refer-a-cause/" ><span>Refer a Cause</span></a></li>
+<li id="menu-item-3449" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-3449" style=""><a href="https://www.microcharity.com/who-we-are/legal-financial-informations/" ><span>Legal &#038; Financial Informations</span></a></li>
+</ul></div>
+			</div><div class="mob-menu-right-bg-holder"></div></div>
+
+		<script type='text/javascript' src='https://www.microcharity.com/wp-content/plugins/contact-form-7/includes/swv/js/index.js?ver=5.7.7' id='swv-js'></script>
+<script type='text/javascript' id='contact-form-7-js-extra'>
+/* <![CDATA[ */
+var wpcf7 = {"api":{"root":"https:\/\/www.microcharity.com\/wp-json\/","namespace":"contact-form-7\/v1"}};
+/* ]]> */
+</script>
+<script type='text/javascript' src='https://www.microcharity.com/wp-content/plugins/contact-form-7/includes/js/index.js?ver=5.7.7' id='contact-form-7-js'></script>
+<script type='text/javascript' id='give-razorpay-popup-js-js-extra'>
+/* <![CDATA[ */
+var give_razorpay_vars = {"merchant_key_id":"rzp_live_ylcNRoTQY6azsJ","popup":{"color":"#ea6133","image":"https:\/\/www.microcharity.com\/wp-content\/uploads\/2019\/03\/MC-Logo-80x80.jpg"},"setup_order_url":"https:\/\/www.microcharity.com?give_action=give_process_razorpay","clear_order_url":"https:\/\/www.microcharity.com?give_action=give_clear_order"};
+/* ]]> */
+</script>
+<script type='text/javascript' src='https://www.microcharity.com/wp-content/plugins/give-razorpay/public/js/give-razorpay-popup.js?ver=6.1.10' id='give-razorpay-popup-js-js'></script>
+<script type='text/javascript' src='https://www.google.com/recaptcha/api.js?render=6Lcb4bwZAAAAAKj00m5h5LES_YsxgnWoxSfypngm&#038;ver=3.0' id='google-recaptcha-js'></script>
+<script type='text/javascript' src='https://www.microcharity.com/wp-includes/js/dist/vendor/regenerator-runtime.min.js?ver=0.13.9' id='regenerator-runtime-js'></script>
+<script type='text/javascript' src='https://www.microcharity.com/wp-includes/js/dist/vendor/wp-polyfill.min.js?ver=3.15.0' id='wp-polyfill-js'></script>
+<script type='text/javascript' id='wpcf7-recaptcha-js-extra'>
+/* <![CDATA[ */
+var wpcf7_recaptcha = {"sitekey":"6Lcb4bwZAAAAAKj00m5h5LES_YsxgnWoxSfypngm","actions":{"homepage":"homepage","contactform":"contactform"}};
+/* ]]> */
+</script>
+<script type='text/javascript' src='https://www.microcharity.com/wp-content/plugins/contact-form-7/modules/recaptcha/index.js?ver=5.7.7' id='wpcf7-recaptcha-js'></script>
+<script type='text/javascript' src='https://www.microcharity.com/wp-includes/js/jquery/ui/core.min.js?ver=1.13.2' id='jquery-ui-core-js'></script>
+<script type='text/javascript' src='https://www.microcharity.com/wp-includes/js/jquery/ui/mouse.min.js?ver=1.13.2' id='jquery-ui-mouse-js'></script>
+<script type='text/javascript' src='https://www.microcharity.com/wp-includes/js/jquery/ui/resizable.min.js?ver=1.13.2' id='jquery-ui-resizable-js'></script>
+<script type='text/javascript' src='https://www.microcharity.com/wp-content/themes/alone/assets/bootstrap/js/bootstrap.js?ver=5.3' id='bootstrap-js'></script>
+<script type='text/javascript' src='https://www.microcharity.com/wp-content/themes/alone/assets/js/lazysizes.min.js?ver=5.3' id='lazysizes-js'></script>
+<script type='text/javascript' src='https://www.microcharity.com/wp-content/themes/alone/assets/js/jquery.stellar.min.js?ver=5.3' id='stellar-js'></script>
+<script type='text/javascript' src='https://www.microcharity.com/wp-content/plugins/js_composer/assets/lib/bower/isotope/dist/isotope.pkgd.min.js?ver=5.5.2' id='isotope-js'></script>
+<script type='text/javascript' src='https://www.microcharity.com/wp-content/themes/alone/assets/js/jquery.mousewheel.min.js?ver=5.3' id='mousewheel-js'></script>
+<script type='text/javascript' src='https://www.microcharity.com/wp-content/themes/alone/assets/js/froogaloop2.min.js?ver=5.3' id='froogaloop2-js'></script>
+<script type='text/javascript' src='https://www.microcharity.com/wp-content/themes/alone/assets/lightGallery/js/lightgallery.min.js?ver=5.3' id='lightGallery-js'></script>
+<script type='text/javascript' src='https://www.microcharity.com/wp-content/themes/alone/assets/lightGallery/js/lg-zoom.min.js?ver=5.3' id='lg-zoom-js'></script>
+<script type='text/javascript' src='https://www.microcharity.com/wp-content/themes/alone/assets/lightGallery/js/lg-autoplay.min.js?ver=5.3' id='lg-autoplay-js'></script>
+<script type='text/javascript' src='https://www.microcharity.com/wp-content/themes/alone/assets/lightGallery/js/lg-thumbnail.min.js?ver=5.3' id='lg-thumbnail-js'></script>
+<script type='text/javascript' src='https://www.microcharity.com/wp-content/themes/alone/assets/lightGallery/js/lg-video.min.js?ver=5.3' id='lg-video-js'></script>
+<script type='text/javascript' src='https://www.microcharity.com/wp-content/themes/alone/assets/owl.carousel/owl.carousel.min.js?ver=5.3' id='owl.carousel-js'></script>
+<script type='text/javascript' src='https://www.microcharity.com/wp-content/themes/alone/assets/js/tilt.jquery.min.js?ver=5.3' id='tilt-js'></script>
+<script type='text/javascript' src='https://www.microcharity.com/wp-content/themes/alone/assets/sweetalert/dist/sweetalert.min.js?ver=5.3' id='sweetalert-js'></script>
+<script type='text/javascript' src='https://www.microcharity.com/wp-content/themes/alone/assets/js/progressbar.min.js?ver=5.3' id='progressbarjs-js'></script>
+<script type='text/javascript' src='https://www.microcharity.com/wp-content/plugins/js_composer/assets/lib/waypoints/waypoints.min.js?ver=5.5.2' id='waypoints-js'></script>
+<script type='text/javascript' src='https://www.microcharity.com/wp-content/themes/alone/assets/js/jquery.counterup.min.js?ver=5.3' id='counterup-js'></script>
+<script type='text/javascript' id='alone-theme-script-js-extra'>
+/* <![CDATA[ */
+var BtPhpVars = {"ajax_url":"https:\/\/www.microcharity.com\/wp-admin\/admin-ajax.php","template_directory":"https:\/\/www.microcharity.com\/wp-content\/themes\/alone","previous":"Previous","next":"Next","smartphone_animations":"no","fail_form_error":"Sorry you are an error in ajax, please contact the administrator of the website"};
+/* ]]> */
+</script>
+<script type='text/javascript' src='https://www.microcharity.com/wp-content/themes/alone/assets/js/theme-script.js?ver=5.3' id='alone-theme-script-js'></script>
+<script type='text/javascript' src='https://www.microcharity.com/wp-includes/js/jquery/ui/effect.min.js?ver=1.13.2' id='jquery-effects-core-js'></script>
+<script type='text/javascript' src='https://www.microcharity.com/wp-includes/js/jquery/ui/effect-blind.min.js?ver=1.13.2' id='jquery-effects-blind-js'></script>
+<script type='text/javascript' id='wstbLayout-js-extra'>
+/* <![CDATA[ */
+var stbUserOptions = [];
+stbUserOptions = {"mode":"css","cssOptions":{"roundedCorners":true,"mbottom":10,"imgHide":"https:\/\/www.microcharity.com\/wp-content\/plugins\/wp-special-textboxes\/images\/minus.png","imgShow":"https:\/\/www.microcharity.com\/wp-content\/plugins\/wp-special-textboxes\/images\/plus.png","strHide":"Hide","strShow":"Show"}};;
+/* ]]> */
+</script>
+<script type='text/javascript' src='https://www.microcharity.com/wp-content/plugins/wp-special-textboxes/js/wstb.min.js?ver=5.9.109' id='wstbLayout-js'></script>
+<script type='text/javascript' src='https://www.microcharity.com/wp-content/plugins/facebook-page-feed-graph-api/js/responsive.min.js?ver=1.8.3' id='facebook-page-plugin-responsive-script-js'></script>
+<a id="scroll-to-top-button" href="#" title="Back to top"><span></span></a><div class="svg_bleeding_stock_wrap">
+	<!-- SVG Filters -->
+	<svg xmlns="http://www.w3.org/2000/svg" version="1.1">
+	  <defs>
+	    <!--   This is where the magic happens   -->
+	    <filter id="svg_bleeding_stock">
+
+	      <!--    Apply 10px blur    -->
+	      <feGaussianBlur in="SourceGraphic" stdDeviation="12" result="blured" />
+	      <!--   Increase the contrast of the alpha channel
+	              Read this https://goo.gl/P152Jd     -->
+	      <feColorMatrix in="blured" mode="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 19 -9" result="weirdNumbers" />
+	      <!--    Adding the two effects,
+	              Fix some bugs with "atop" -->
+	      <feComposite in="SourceGraphic" in2="weirdNumbers" operator="atop"/>
+	    </filter>
+	  </defs>
+	</svg>
+</div>
+</body>
+</html>

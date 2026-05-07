@@ -1,0 +1,88 @@
+---
+import Base from "../layouts/Base.astro";
+import PageHero from "../components/PageHero.astro";
+import { site } from "../data/site";
+---
+<Base title="Contact Us">
+  <PageHero
+    eyebrow="Contact"
+    title="We're a small team. We answer every email."
+    subtitle="Whether you have a question about a cause, want to volunteer, or need help with a donation receipt — write to us."
+  />
+
+  <div class="container-page py-12 md:py-16 grid lg:grid-cols-12 gap-12">
+    <div class="lg:col-span-5">
+      <h2 class="font-display text-2xl text-ink mb-6">Reach us directly</h2>
+      <dl class="space-y-5 text-sm">
+        <div>
+          <dt class="font-semibold text-ink mb-1">Email</dt>
+          <dd><a href={`mailto:${site.email}`} class="text-accent-600 hover:text-accent-700 underline-offset-4 hover:underline">{site.email}</a></dd>
+        </div>
+        <div>
+          <dt class="font-semibold text-ink mb-1">Phone</dt>
+          <dd class="text-body">{site.phone}</dd>
+        </div>
+        <div>
+          <dt class="font-semibold text-ink mb-1">Address</dt>
+          <dd class="text-body leading-relaxed">{site.address}</dd>
+        </div>
+      </dl>
+
+    </div>
+
+    <div class="lg:col-span-7">
+      <form id="contact-form" class="space-y-5">
+        <div class="grid sm:grid-cols-2 gap-4">
+          <div>
+            <label class="block text-sm font-semibold text-ink mb-2">Your name</label>
+            <input type="text" name="name" required class="w-full rounded-lg border border-[var(--color-line)] focus:border-accent-600 focus:ring-2 focus:ring-accent-100 outline-none px-3 py-2.5 text-sm" />
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-ink mb-2">Your email</label>
+            <input type="email" name="email" required class="w-full rounded-lg border border-[var(--color-line)] focus:border-accent-600 focus:ring-2 focus:ring-accent-100 outline-none px-3 py-2.5 text-sm" />
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-sm font-semibold text-ink mb-2">Subject</label>
+          <input type="text" name="subject" required class="w-full rounded-lg border border-[var(--color-line)] focus:border-accent-600 focus:ring-2 focus:ring-accent-100 outline-none px-3 py-2.5 text-sm" />
+        </div>
+
+        <div>
+          <label class="block text-sm font-semibold text-ink mb-2">Message</label>
+          <textarea name="message" required rows="6" class="w-full rounded-lg border border-[var(--color-line)] focus:border-accent-600 focus:ring-2 focus:ring-accent-100 outline-none px-3 py-2.5 text-sm resize-y"></textarea>
+        </div>
+
+        <button type="submit" class="inline-flex items-center gap-2 rounded-full bg-accent-600 hover:bg-accent-700 text-white font-semibold px-6 py-3 transition">
+          Send message
+        </button>
+
+        <p id="contact-status" class="text-sm text-muted hidden"></p>
+      </form>
+    </div>
+  </div>
+</Base>
+
+<script>
+  const form = document.getElementById('contact-form') as HTMLFormElement | null;
+  const status = document.getElementById('contact-status');
+  form?.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    if (!status) return;
+    status.classList.remove('hidden');
+    status.textContent = 'Sending…';
+    const data = Object.fromEntries(new FormData(form).entries());
+    const endpoint = (import.meta as any).env?.PUBLIC_FORM_ENDPOINT;
+    try {
+      if (endpoint) {
+        await fetch(endpoint, { method: 'POST', body: JSON.stringify({ form: 'contact', ...data }) });
+      } else {
+        console.log('Contact (no endpoint set):', data);
+      }
+      form.reset();
+      status.textContent = 'Thanks — your message has been sent. We will reply soon.';
+    } catch (err) {
+      status.textContent = 'Something went wrong. Please email info@microcharity.com instead.';
+    }
+  });
+</script>

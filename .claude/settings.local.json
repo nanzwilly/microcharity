@@ -1,0 +1,17 @@
+{
+  "permissions": {
+    "allow": [
+      "WebFetch(domain:www.microcharity.com)",
+      "Bash(curl -s https://www.microcharity.com/ -o /tmp/mc.html)",
+      "Read(//tmp/**)",
+      "Bash(npm --version)",
+      "Bash(npm install *)",
+      "Bash(npm run *)",
+      "Bash(curl -s https://www.microcharity.com/)",
+      "Bash(curl -s -o public/favicon.png \"https://www.microcharity.com/wp-content/uploads/2018/09/OnlyHandLogo-2.png\")",
+      "Bash(curl -s -o public/favicon-32.png \"https://www.microcharity.com/wp-content/uploads/2018/09/OnlyHandLogo-2-100x100.png\")",
+      "Bash(curl -s -o public/logo.jpg \"https://www.microcharity.com/wp-content/uploads/2018/09/MicroCharityLogo-340x84.jpg\")",
+      "Bash(curl -s -o public/logo-large.jpg \"https://www.microcharity.com/wp-content/uploads/2018/09/MicroCharityLogo.jpg\")"
+    ]
+  }
+}

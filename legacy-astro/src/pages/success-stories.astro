@@ -1,0 +1,25 @@
+---
+import Base from "../layouts/Base.astro";
+import PageHero from "../components/PageHero.astro";
+import CauseCard from "../components/CauseCard.astro";
+import { closedBeneficiaries, grandTotalRaised } from "../data/causes";
+
+const fmt = (n: number) => "₹" + n.toLocaleString("en-IN");
+---
+<Base title="Success Stories">
+  <PageHero
+    eyebrow="What your donations have done"
+    title="Stories that found their happy ending."
+    subtitle={`Each closed cause is a real life changed. ${closedBeneficiaries.length} beneficiaries supported with ${fmt(grandTotalRaised)} raised over the years.`}
+  />
+
+  <div class="container-page py-16 md:py-20">
+    {closedBeneficiaries.length > 0 ? (
+      <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        {closedBeneficiaries.map(b => <CauseCard beneficiary={b} />)}
+      </div>
+    ) : (
+      <p class="text-muted">More success stories will be published here soon.</p>
+    )}
+  </div>
+</Base>

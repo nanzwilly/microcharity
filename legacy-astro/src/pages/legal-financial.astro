@@ -1,0 +1,56 @@
+---
+import Base from "../layouts/Base.astro";
+import PageHero from "../components/PageHero.astro";
+import Prose from "../components/Prose.astro";
+import { site } from "../data/site";
+
+const reports = [
+  "2021-2022", "2020-2021", "2019-2020", "2018-2019",
+  "2017-2018", "2016-2017", "2015-2016", "2014-2015",
+  "2013-2014", "2012-2013", "2011-2012", "2010-2011",
+];
+---
+<Base title="Legal & Financial Information">
+  <PageHero
+    eyebrow="Transparency"
+    title="Legal & financial information."
+    subtitle="Every rupee is accounted for. Read our registration details and download our annual audited reports."
+  />
+
+  <div class="container-page py-12 md:py-16">
+    <Prose>
+      <h2>Trust details</h2>
+      <ul>
+        <li><strong>Registered name:</strong> MicroCharity Trust</li>
+        <li><strong>Registration:</strong> {site.registration}, registered under the Indian Trust Act at the Sub-Registrar's office, Kengeri, Bangalore – 560060</li>
+        <li><strong>Established:</strong> {site.established}</li>
+        <li><strong>Banking:</strong> MicroCharity operates with a single bank account at South Indian Bank.</li>
+        <li><strong>Tax exemption:</strong> Donations are eligible for exemption under Section 80G of the Income Tax Act.</li>
+      </ul>
+
+      <h2>Annual audited financial reports</h2>
+      <p>For detailed financial statements and disclosures, please refer to the audited annual reports below.</p>
+    </Prose>
+
+    <div class="mt-6 max-w-[70ch] grid sm:grid-cols-2 gap-3">
+      {reports.map(r => (
+        <a
+          href={`/reports/microcharity-annual-report-${r}.pdf`}
+          class="flex items-center justify-between rounded-lg border border-[var(--color-line)] hover:border-accent-600 px-4 py-3 text-sm transition"
+        >
+          <span class="font-semibold text-ink">Annual Audited Report {r}</span>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-accent-600"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        </a>
+      ))}
+    </div>
+
+    <Prose>
+      <h2>Contact</h2>
+      <p>
+        <strong>Email:</strong> <a href={`mailto:${site.email}`}>{site.email}</a><br/>
+        <strong>Phone:</strong> {site.phone}<br/>
+        <strong>Address:</strong> {site.address}
+      </p>
+    </Prose>
+  </div>
+</Base>

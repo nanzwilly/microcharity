@@ -1,0 +1,57 @@
+---
+import type { Beneficiary } from "../data/causes";
+import { headlineCampaign } from "../data/causes";
+
+interface Props { beneficiary: Beneficiary }
+const { beneficiary } = Astro.props;
+const c = headlineCampaign(beneficiary);
+const pct = c.goal > 0 ? Math.min(100, Math.round((c.raised / c.goal) * 100)) : 0;
+const fmt = (n: number) => "₹" + n.toLocaleString("en-IN");
+const otherCount = beneficiary.campaigns.length - 1;
+---
+<article class="group flex flex-col rounded-[var(--radius-card)] border border-[var(--color-line)] bg-white overflow-hidden hover:shadow-lg hover:-translate-y-0.5 transition-all duration-300">
+  <a href={`/donations/${c.slug}/`} class="block aspect-[16/10] bg-[var(--color-soft)] relative border-b border-[var(--color-line)] overflow-hidden">
+    {c.image ? (
+      <img src={c.image} alt={c.title} class="w-full h-full object-cover" loading="lazy" />
+    ) : (
+      <div class="absolute inset-0 flex items-center justify-center text-ink/15 font-display text-6xl font-bold">
+        {beneficiary.beneficiary.split(" ").map(s => s[0]).slice(0,2).join("")}
+      </div>
+    )}
+    {c.status === "active" && (
+      <span class="absolute top-3 left-3 inline-flex items-center gap-1.5 rounded-full bg-white px-2.5 py-1 text-xs font-semibold text-accent-600 border border-[var(--color-line)]">
+        <span class="w-1.5 h-1.5 rounded-full bg-accent-600 animate-pulse"></span>
+        Active
+      </span>
+    )}
+  </a>
+
+  <div class="p-5 flex-1 flex flex-col">
+    <h3 class="font-display text-lg leading-snug text-ink mb-2 group-hover:text-accent-600 transition">
+      <a href={`/donations/${c.slug}/`}>{c.title}</a>
+    </h3>
+    {c.summary && (
+      <p class="text-sm text-muted leading-relaxed line-clamp-2 mb-4">{c.summary}</p>
+    )}
+
+    <div class="mt-auto">
+      <div class="flex items-baseline justify-between text-xs mb-1.5">
+        <span class="font-semibold text-ink">{fmt(c.raised)} <span class="font-normal text-muted">raised</span></span>
+        <span class="text-muted">of {fmt(c.goal)}</span>
+      </div>
+      <div class="h-1.5 rounded-full bg-[var(--color-line)] overflow-hidden">
+        <div class="h-full bg-accent-600 rounded-full" style={`width: ${pct}%`}></div>
+      </div>
+      <div class="mt-4 flex items-center justify-between gap-3">
+        <span class="text-xs font-semibold text-ink">{pct}% funded</span>
+        {otherCount > 0 && (
+          <span class="text-xs text-muted">+ {otherCount} past campaign{otherCount > 1 ? 's' : ''}</span>
+        )}
+        <a href={`/donations/${c.slug}/`} class="inline-flex items-center gap-1 text-sm font-semibold text-accent-600 hover:text-accent-700 ml-auto">
+          {c.status === "active" ? "Donate" : "Details"}
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+        </a>
+      </div>
+    </div>
+  </div>
+</article>

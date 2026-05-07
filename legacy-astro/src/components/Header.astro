@@ -1,0 +1,43 @@
+---
+import { site } from "../data/site";
+const path = Astro.url.pathname;
+---
+<header class="sticky top-0 z-50 bg-white border-b border-[var(--color-line)]">
+  <div class="container-page flex items-center justify-between h-20 md:h-24">
+    <a href="/" class="flex items-center" aria-label={`${site.name} home`}>
+      <img src="/logo.jpg" alt={`${site.name} — ${site.tagline}`} class="h-12 md:h-14 w-auto" />
+    </a>
+
+    <nav class="hidden lg:flex items-center justify-end gap-7 text-sm font-medium ml-auto">
+      {site.nav.map(item => {
+        const active = path === item.href || (item.href !== "/" && path.startsWith(item.href));
+        return (
+          <a
+            href={item.href}
+            class={`transition hover:text-accent-600 ${active ? "text-accent-600" : "text-ink"}`}
+          >
+            {item.label}
+          </a>
+        );
+      })}
+    </nav>
+
+    <button id="mobile-toggle" class="lg:hidden p-2 -mr-2" aria-label="Open menu">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="6" x2="20" y2="6"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="18" x2="20" y2="18"/></svg>
+    </button>
+  </div>
+
+  <div id="mobile-menu" class="lg:hidden hidden border-t border-[var(--color-line)] bg-white">
+    <nav class="container-page py-4 flex flex-col gap-1 text-sm font-medium">
+      {site.nav.map(item => (
+        <a href={item.href} class="py-2 text-ink hover:text-accent-600">{item.label}</a>
+      ))}
+    </nav>
+  </div>
+</header>
+
+<script>
+  const btn = document.getElementById('mobile-toggle');
+  const menu = document.getElementById('mobile-menu');
+  btn?.addEventListener('click', () => menu?.classList.toggle('hidden'));
+</script>

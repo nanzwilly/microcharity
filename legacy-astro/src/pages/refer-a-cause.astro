@@ -1,0 +1,112 @@
+---
+import Base from "../layouts/Base.astro";
+import PageHero from "../components/PageHero.astro";
+---
+<Base title="Refer a Cause">
+  <PageHero
+    eyebrow="Help us find the next cause"
+    title="Know someone who needs help?"
+    subtitle="Refer any case you think MicroCharity should take up. Our volunteers will independently verify it before opening it for donations. We usually respond within 24 hours."
+  />
+
+  <div class="container-page py-12 md:py-16 grid lg:grid-cols-12 gap-12">
+    <div class="lg:col-span-5">
+      <h2 class="font-display text-2xl text-ink mb-4">What we look for</h2>
+      <ul class="space-y-3 text-sm text-body">
+        {["Medical emergencies", "Education support", "Child welfare", "Women empowerment", "Environmental causes"].map(c => (
+          <li class="flex items-start gap-3">
+            <span class="mt-1.5 w-1.5 h-1.5 rounded-full bg-accent-600 flex-shrink-0"></span>
+            <span>{c}</span>
+          </li>
+        ))}
+      </ul>
+      <div class="mt-8 p-5 rounded-xl bg-[var(--color-soft)] border border-[var(--color-line)] text-sm text-body leading-relaxed">
+        <strong class="text-ink">Note:</strong> MicroCharity reserves the right to accept or refuse any cause referred. Please share accurate contact information so our volunteers can reach the person in need.
+      </div>
+    </div>
+
+    <div class="lg:col-span-7">
+      <form id="refer-form" class="space-y-5">
+        <div class="grid sm:grid-cols-2 gap-4">
+          <div>
+            <label class="block text-sm font-semibold text-ink mb-2">Your name</label>
+            <input type="text" name="referrer_name" required class="w-full rounded-lg border border-[var(--color-line)] focus:border-accent-600 focus:ring-2 focus:ring-accent-100 outline-none px-3 py-2.5 text-sm" />
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-ink mb-2">Your email</label>
+            <input type="email" name="referrer_email" required class="w-full rounded-lg border border-[var(--color-line)] focus:border-accent-600 focus:ring-2 focus:ring-accent-100 outline-none px-3 py-2.5 text-sm" />
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-sm font-semibold text-ink mb-2">Your phone</label>
+          <input type="tel" name="referrer_phone" class="w-full rounded-lg border border-[var(--color-line)] focus:border-accent-600 focus:ring-2 focus:ring-accent-100 outline-none px-3 py-2.5 text-sm" />
+        </div>
+
+        <div>
+          <label class="block text-sm font-semibold text-ink mb-2">Cause category</label>
+          <select name="category" required class="w-full rounded-lg border border-[var(--color-line)] focus:border-accent-600 focus:ring-2 focus:ring-accent-100 outline-none px-3 py-2.5 text-sm bg-white">
+            <option value="">Select a category</option>
+            <option>Medical</option>
+            <option>Education</option>
+            <option>Child welfare</option>
+            <option>Women empowerment</option>
+            <option>Environment</option>
+            <option>Other</option>
+          </select>
+        </div>
+
+        <div class="grid sm:grid-cols-2 gap-4">
+          <div>
+            <label class="block text-sm font-semibold text-ink mb-2">Beneficiary's name</label>
+            <input type="text" name="beneficiary_name" required class="w-full rounded-lg border border-[var(--color-line)] focus:border-accent-600 focus:ring-2 focus:ring-accent-100 outline-none px-3 py-2.5 text-sm" />
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-ink mb-2">Beneficiary's contact</label>
+            <input type="text" name="beneficiary_contact" placeholder="Phone or address" class="w-full rounded-lg border border-[var(--color-line)] focus:border-accent-600 focus:ring-2 focus:ring-accent-100 outline-none px-3 py-2.5 text-sm" />
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-sm font-semibold text-ink mb-2">Describe the cause (≈ 250 words)</label>
+          <textarea name="description" required rows="6" placeholder="Who is the person, what do they need, and why is the help urgent?" class="w-full rounded-lg border border-[var(--color-line)] focus:border-accent-600 focus:ring-2 focus:ring-accent-100 outline-none px-3 py-2.5 text-sm resize-y"></textarea>
+        </div>
+
+        <div>
+          <label class="block text-sm font-semibold text-ink mb-2">Approximate amount needed (₹)</label>
+          <input type="number" name="amount_needed" min="0" step="500" class="w-full rounded-lg border border-[var(--color-line)] focus:border-accent-600 focus:ring-2 focus:ring-accent-100 outline-none px-3 py-2.5 text-sm" />
+        </div>
+
+        <button type="submit" class="inline-flex items-center gap-2 rounded-full bg-accent-600 hover:bg-accent-700 text-white font-semibold px-6 py-3 transition">
+          Submit referral
+        </button>
+
+        <p id="refer-status" class="text-sm text-muted hidden"></p>
+      </form>
+    </div>
+  </div>
+</Base>
+
+<script>
+  const form = document.getElementById('refer-form') as HTMLFormElement | null;
+  const status = document.getElementById('refer-status');
+  form?.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    if (!status) return;
+    status.classList.remove('hidden');
+    status.textContent = 'Submitting…';
+    const data = Object.fromEntries(new FormData(form).entries());
+    const endpoint = (import.meta as any).env?.PUBLIC_FORM_ENDPOINT;
+    try {
+      if (endpoint) {
+        await fetch(endpoint, { method: 'POST', body: JSON.stringify({ form: 'refer', ...data }) });
+      } else {
+        console.log('Referral (no endpoint set):', data);
+      }
+      form.reset();
+      status.textContent = 'Thank you — your referral has been submitted. We typically respond within 24 hours.';
+    } catch (err) {
+      status.textContent = 'Something went wrong. Please email info@microcharity.com instead.';
+    }
+  });
+</script>

@@ -1,0 +1,59 @@
+@import "tailwindcss";
+
+@theme {
+  /* Red — primary accent, matches "Charity" in the wordmark */
+  --color-accent-50:  #fdecec;
+  --color-accent-100: #fbd5d4;
+  --color-accent-200: #f6a7a5;
+  --color-accent-300: #ee7572;
+  --color-accent-400: #e14a47;
+  --color-accent-500: #d63a39;
+  --color-accent-600: #cc2222;
+  --color-accent-700: #a81a19;
+  --color-accent-800: #871615;
+  --color-accent-900: #6e1413;
+
+  /* Neutrals */
+  --color-ink:    #1d1a1a;   /* headings, primary text */
+  --color-body:   #3b3838;   /* body text */
+  --color-muted:  #6b6363;   /* secondary text */
+  --color-line:   #e7e3df;   /* borders */
+  --color-soft:   #f7f6f4;   /* very subtle alt-bg only when needed */
+
+  --font-sans:    "Manrope", ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Fraunces", ui-serif, Georgia, serif;
+
+  --radius-card: 14px;
+}
+
+html {
+  font-family: var(--font-sans);
+  color: var(--color-body);
+  background: #ffffff;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+body {
+  font-feature-settings: "ss01", "cv11";
+}
+
+h1, h2, h3, h4 {
+  font-family: var(--font-display);
+  color: var(--color-ink);
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  font-variation-settings: "SOFT" 30, "WONK" 0;
+}
+
+a { color: inherit; }
+
+.container-page {
+  max-width: 1200px;
+  margin-inline: auto;
+  padding-inline: 1.25rem;
+}
+
+@media (min-width: 768px) {
+  .container-page { padding-inline: 2rem; }
+}

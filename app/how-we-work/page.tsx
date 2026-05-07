@@ -1,0 +1,44 @@
+import Link from "next/link";
+import PageHero from "@/components/PageHero";
+
+export const metadata = { title: "How We Work" };
+
+const steps = [
+  { n: "01", title: "A case is reported", body: "A MicroCharity volunteer reports a case where a person or family is in need — usually education, medical expenses, or poverty, though not limited to these." },
+  { n: "02", title: "Investigation", body: "Our team independently investigates the case and approves it only if it's genuine. We meet the family, verify documents, and talk to neighbours, doctors, or schools as relevant." },
+  { n: "03", title: "Target & deadline", body: "We fix a specific funding target and a deadline by which the funds must be handed over to the right place — a hospital, college, or trust." },
+  { n: "04", title: "Fundraising", body: "The cause goes live on the website with the target and deadline. Multiple donors contribute small amounts. Each donation is acknowledged immediately with a receipt." },
+  { n: "05", title: "Mission accomplished", body: "Funds are handed over directly to the hospital, college, or trust — never as cash to the family — to ensure proper utilisation. A student is back at school. A surgery saves a life." },
+  { n: "06", title: "Follow-up", body: "A volunteer keeps in touch with the person or family long after the cause is closed, and updates the team on how things are going." },
+  { n: "07", title: "Pay forward", body: "The reward is priceless — peace, gratitude, love, and a deep sense of relief. Often it becomes the family's turn to help someone else. There is no pay back, only pay forward." },
+];
+
+export default function HowWeWorkPage() {
+  return (
+    <>
+      <PageHero
+        eyebrow="Our process"
+        title="Seven steps from a need to a closed cause."
+        subtitle="Every cause we take up follows the same transparent path. Here's exactly how a referred case becomes a successful fundraiser."
+      />
+
+      <div className="container-page py-16 md:py-20">
+        <ol className="max-w-3xl mx-auto space-y-12">
+          {steps.map(s => (
+            <li key={s.n} className="grid grid-cols-[auto_1fr] gap-6 md:gap-10 items-start">
+              <div className="font-display text-3xl md:text-4xl font-semibold text-accent-600 leading-none w-14">{s.n}</div>
+              <div>
+                <h3 className="font-display text-xl md:text-2xl text-ink mb-2">{s.title}</h3>
+                <p className="text-body leading-relaxed">{s.body}</p>
+              </div>
+            </li>
+          ))}
+        </ol>
+
+        <div className="max-w-3xl mx-auto mt-16 pt-10 border-t border-[var(--color-line)]">
+          <p className="text-sm text-muted">Know someone who fits? <Link href="/refer-a-cause" className="text-accent-600 font-semibold hover:text-accent-700 underline-offset-4 hover:underline">Refer a cause →</Link></p>
+        </div>
+      </div>
+    </>
+  );
+}

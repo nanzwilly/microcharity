@@ -1,0 +1,42 @@
+---
+import Base from "../layouts/Base.astro";
+import PageHero from "../components/PageHero.astro";
+import CauseCard from "../components/CauseCard.astro";
+import { activeBeneficiaries, closedBeneficiaries } from "../data/causes";
+---
+<Base title="Current Causes">
+  <PageHero
+    eyebrow="Open causes"
+    title="People who need help right now."
+    subtitle="Each cause below has been independently verified by our volunteers. Pick one that moves you — every contribution, however small, counts."
+  />
+
+  <div class="container-page py-16 md:py-20">
+    {activeBeneficiaries.length > 0 ? (
+      <>
+        <div class="flex items-end justify-between mb-8">
+          <h2 class="font-display text-2xl md:text-3xl text-ink">Active ({activeBeneficiaries.length})</h2>
+        </div>
+        <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          {activeBeneficiaries.map(b => <CauseCard beneficiary={b} />)}
+        </div>
+      </>
+    ) : (
+      <p class="text-muted">No active causes at the moment. Please check back soon.</p>
+    )}
+
+    {closedBeneficiaries.length > 0 && (
+      <div class="mt-20 pt-16 border-t border-[var(--color-line)]">
+        <div class="flex items-end justify-between mb-8">
+          <div>
+            <h2 class="font-display text-2xl md:text-3xl text-ink">Past causes ({closedBeneficiaries.length})</h2>
+            <p class="text-sm text-muted mt-1">Successfully funded with our donors' help. Thank you.</p>
+          </div>
+        </div>
+        <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          {closedBeneficiaries.map(b => <CauseCard beneficiary={b} />)}
+        </div>
+      </div>
+    )}
+  </div>
+</Base>

@@ -1,0 +1,909 @@
+MicroCharity.com
+Crowdfunding Portal Rebuild
+Document Title
+Software Requirements Specification (SRS)
+Version
+1.0
+Date
+May 2026
+Prepared By
+MicroCharity Technology Team
+Status
+Draft — For Review
+Contact
+admin@microcharity.com
+Website
+www.microcharity.com
+[Heading1] Table of Contents
+[Heading1] 1. Introduction
+[Heading2] 1.1 Purpose
+This Software Requirements Specification (SRS) document defines the functional and non-functional requirements for rebuilding the MicroCharity crowdfunding portal (www.microcharity.com). The new system will replace the current WordPress-based implementation with a custom-built, scalable web application tailored specifically to MicroCharity's mission of raising and disbursing funds for educational and medical needs of underprivileged individuals.
+This document is intended as the authoritative reference for all development, design, testing, and project management activities related to the portal rebuild.
+[Heading2] 1.2 Scope
+The MicroCharity Portal Rebuild encompasses the following high-level scope:
+[ListParagraph] A public-facing website with dynamic home page, cause listing, individual cause donation pages, and static informational content.
+[ListParagraph] An administrator and content manager backend dashboard for managing donation pages, tracking donations, managing donors, and generating reports.
+[ListParagraph] Integration with Razorpay for online payment processing.
+[ListParagraph] Integration with Gmail for Business for transactional and campaign email delivery.
+[ListParagraph] Donor management, donation receipts (PDF), and role-based user access control.
+[Heading2] 1.3 Definitions & Acronyms
+Term / Acronym
+Definition
+Donation Page / Cause
+A fundraising campaign page created by an admin or content manager for a specific educational or medical cause.
+Donor
+An individual who has made at least one financial contribution (online or offline) through the portal.
+Offline Donation
+A bank transfer made by a donor outside of the online payment gateway, manually verified by admin.
+Online Donation
+A payment processed via Razorpay payment gateway.
+Razorpay
+The chosen payment gateway for processing online donations within India.
+PAN
+Permanent Account Number — Indian tax identification number required for donation receipts above INR 10,000.
+SRS
+Software Requirements Specification — this document.
+WYSIWYG
+What You See Is What You Get — a rich-text HTML editor interface.
+MCP
+Minimum Compliant Product — minimum feature set for initial launch.
+Admin
+Super-administrator user with full system access.
+Content Manager
+Role-restricted user who can create/publish donation pages and manage receipts.
+[Heading2] 1.4 Overview of Current System
+The current MicroCharity portal runs on WordPress using a charity-focused theme. While functional, it presents limitations in customization, performance, and maintainability. The new system aims to address these constraints while preserving all existing content and improving the user experience for donors, administrators, and content managers.
+NOTE
+All existing static pages, images, and content from www.microcharity.com must be migrated to the new system with no content loss.
+[Heading1] 2. Overall System Description
+[Heading2] 2.1 Product Perspective
+The new MicroCharity portal is a purpose-built web application that replaces the existing WordPress installation. It will operate as a standalone system with the following key integrations:
+[ListParagraph] Razorpay — Payment gateway for processing online donations
+[ListParagraph] Gmail for Business (SMTP / Gmail API) — Transactional emails, donation receipts, and campaign emails
+[ListParagraph] Cloud file storage — For featured images, PDF receipts, and document attachments
+[Heading2] 2.2 User Classes
+User Class
+Access Level
+Description
+Public Visitor
+Read-only
+Any unauthenticated user browsing the portal, viewing causes, and making donations.
+Donor
+Limited
+Registered donor who can view their donation history via email links or donor portal (optional).
+Content Manager
+Restricted Admin
+Can create, edit, and publish donation pages; view and send receipts; approve offline donations.
+Administrator
+Full Access
+Full system access including user management, settings, reports, templates, and email campaigns.
+[Heading2] 2.3 Technology Stack Recommendations
+The following technology stack is recommended for the rebuild, though final choices rest with the development team:
+[ListParagraph] Frontend: React.js or Next.js (with server-side rendering for SEO)
+[ListParagraph] Backend: Node.js with Express or a Python-based framework (Django / FastAPI)
+[ListParagraph] Database: PostgreSQL (relational structure suits donor and donation tracking)
+[ListParagraph] CMS/Admin Framework: Custom admin dashboard or AdminJS/React Admin
+[ListParagraph] Rich Text Editor: TipTap, Quill.js, or CKEditor 5 (WYSIWYG HTML)
+[ListParagraph] Payment: Razorpay Node.js / Python SDK
+[ListParagraph] Email: Gmail API with OAuth 2.0 or SMTP relay
+[ListParagraph] PDF Generation: Puppeteer, WeasyPrint, or PDFKit for donation receipts
+[ListParagraph] Hosting: AWS / GCP / DigitalOcean with SSL certificate
+[ListParagraph] File Storage: AWS S3 or Cloudinary for images and PDF storage
+[Heading2] 2.4 Constraints & Assumptions
+[ListParagraph] All monetary values will be in Indian Rupees (INR).
+[ListParagraph] The Razorpay payment gateway will be configured for Indian domestic payments.
+[ListParagraph] PAN collection is mandatory for donations above INR 10,000 per Indian income tax regulations.
+[ListParagraph] Email delivery will use Gmail for Business account associated with MicroCharity.
+[ListParagraph] The system must be mobile-responsive and optimized for low-bandwidth connections.
+[ListParagraph] All existing URLs from the current WordPress site should be redirected appropriately (301 redirects).
+[ListParagraph] SSL/HTTPS is mandatory for all pages.
+[Heading1] 3. Public-Facing Portal Requirements
+[Heading2] 3.1 Home Page
+[Heading3] 3.1.1 Summary Statistics Banner
+The home page shall display a live statistics banner with the following dynamically updated counters. Data should refresh in real-time or at a defined polling interval (e.g., every 5 minutes):
+Req ID
+Requirement Description
+Priority
+Notes
+HP-001
+Display total number of unique donors across all campaigns
+High
+Real-time count from database
+HP-002
+Display total number of causes (published donation pages)
+High
+Active + completed causes
+HP-003
+Display total amount raised (all campaigns combined)
+High
+Sum of approved donations, INR
+HP-004
+Display total amount disbursed to beneficiaries
+High
+Entered manually by admin
+HP-005
+Statistics must animate/count-up on page load for visual impact
+Medium
+CSS/JS animation
+HP-006
+Statistics section must update without full page reload
+High
+AJAX or WebSocket polling
+[Heading3] 3.1.2 Featured Causes Slider
+The home page shall feature an image slider/carousel showcasing recent and active donation campaigns:
+Req ID
+Requirement Description
+Priority
+Notes
+HP-010
+Display a slider with recent/active causes, configurable count (default: 5)
+High
+Admin can pin causes to slider
+HP-011
+Each slide must show: Featured Image, Cause Title, Brief Description (truncated), Fund Raised progress bar
+High
+<w:tblPrEx><w:tblCellMar><w:top w:w="0" w:type="dxa"/><w:bottom w:w="0" w:type="dxa"/></w:tblCellMar></w:tblPrEx><w:tc><w:tcPr><w:tcW w:w="1000" w:type="dxa"/><w:tcBorders><w:top w:val="single" w:sz="1" w:space="0" w:color="CCCCCC"/><w:left w:val="single" w:sz="1" w:space="0" w:color="CCCCCC"/><w:bottom w:val="single" w:sz="1" w:space="0" w:color="CCCCCC"/><w:right w:val="single" w:sz="1" w:space="0" w:color="CCCCCC"/></w:tcBorders><w:shd w:val="clear" w:color="auto" w:fill="FFFFFF"/><w:tcMar><w:top w:w="80" w:type="dxa"/><w:left w:w="120" w:type="dxa"/><w:bottom w:w="80" w:type="dxa"/><w:right w:w="120" w:type="dxa"/></w:tcMar></w:tcPr><w:p w14:paraId="5AF2D1A2" w14:textId="77777777" w:rsidR="00370331" w:rsidRDefault="00000000"><w:r><w:rPr><w:color w:val="333333"/><w:sz w:val="20"/><w:szCs w:val="20"/></w:rPr><w:t>HP-012
+Each slide must display a prominent 'Donate Now' call-to-action button
+High
+Links to individual donation page
+HP-013
+Slider must auto-advance with configurable interval; manual prev/next controls required
+Medium
+<w:tblPrEx><w:tblCellMar><w:top w:w="0" w:type="dxa"/><w:bottom w:w="0" w:type="dxa"/></w:tblCellMar></w:tblPrEx><w:tc><w:tcPr><w:tcW w:w="1000" w:type="dxa"/><w:tcBorders><w:top w:val="single" w:sz="1" w:space="0" w:color="CCCCCC"/><w:left w:val="single" w:sz="1" w:space="0" w:color="CCCCCC"/><w:bottom w:val="single" w:sz="1" w:space="0" w:color="CCCCCC"/><w:right w:val="single" w:sz="1" w:space="0" w:color="CCCCCC"/></w:tcBorders><w:shd w:val="clear" w:color="auto" w:fill="FFFFFF"/><w:tcMar><w:top w:w="80" w:type="dxa"/><w:left w:w="120" w:type="dxa"/><w:bottom w:w="80" w:type="dxa"/><w:right w:w="120" w:type="dxa"/></w:tcMar></w:tcPr><w:p w14:paraId="75C57A37" w14:textId="77777777" w:rsidR="00370331" w:rsidRDefault="00000000"><w:r><w:rPr><w:color w:val="333333"/><w:sz w:val="20"/><w:szCs w:val="20"/></w:rPr><w:t>HP-014
+Slider must be fully responsive on mobile, tablet, and desktop viewports
+High
+<w:tblPrEx><w:tblCellMar><w:top w:w="0" w:type="dxa"/><w:bottom w:w="0" w:type="dxa"/></w:tblCellMar></w:tblPrEx><w:tc><w:tcPr><w:tcW w:w="1000" w:type="dxa"/><w:tcBorders><w:top w:val="single" w:sz="1" w:space="0" w:color="CCCCCC"/><w:left w:val="single" w:sz="1" w:space="0" w:color="CCCCCC"/><w:bottom w:val="single" w:sz="1" w:space="0" w:color="CCCCCC"/><w:right w:val="single" w:sz="1" w:space="0" w:color="CCCCCC"/></w:tcBorders><w:shd w:val="clear" w:color="auto" w:fill="F5F5F5"/><w:tcMar><w:top w:w="80" w:type="dxa"/><w:left w:w="120" w:type="dxa"/><w:bottom w:w="80" w:type="dxa"/><w:right w:w="120" w:type="dxa"/></w:tcMar></w:tcPr><w:p w14:paraId="12806CD6" w14:textId="77777777" w:rsidR="00370331" w:rsidRDefault="00000000"><w:r><w:rPr><w:color w:val="333333"/><w:sz w:val="20"/><w:szCs w:val="20"/></w:rPr><w:t>HP-015
+Slider must support touch/swipe gestures on mobile devices
+Medium
+[Heading3] 3.1.3 Past / Completed Causes Section
+The home page shall include a section listing successfully completed or closed causes:
+Req ID
+Requirement Description
+Priority
+Notes
+HP-020
+Display grid/list of completed causes below the slider section
+High
+Paginated, default 6 per row
+HP-021
+Each cause card shows: Image, Title, Total Raised, Campaign Period, 'Completed' badge
+High
+<w:tblPrEx><w:tblCellMar><w:top w:w="0" w:type="dxa"/><w:bottom w:w="0" w:type="dxa"/></w:tblCellMar></w:tblPrEx><w:tc><w:tcPr><w:tcW w:w="1000" w:type="dxa"/><w:tcBorders><w:top w:val="single" w:sz="1" w:space="0" w:color="CCCCCC"/><w:left w:val="single" w:sz="1" w:space="0" w:color="CCCCCC"/><w:bottom w:val="single" w:sz="1" w:space="0" w:color="CCCCCC"/><w:right w:val="single" w:sz="1" w:space="0" w:color="CCCCCC"/></w:tcBorders><w:shd w:val="clear" w:color="auto" w:fill="FFFFFF"/><w:tcMar><w:top w:w="80" w:type="dxa"/><w:left w:w="120" w:type="dxa"/><w:bottom w:w="80" w:type="dxa"/><w:right w:w="120" w:type="dxa"/></w:tcMar></w:tcPr><w:p w14:paraId="6AEE93DA" w14:textId="77777777" w:rsidR="00370331" w:rsidRDefault="00000000"><w:r><w:rPr><w:color w:val="333333"/><w:sz w:val="20"/><w:szCs w:val="20"/></w:rPr><w:t>HP-022
+Clicking a past cause card opens the donation page in read-only mode
+Medium
+No active donation button
+HP-023
+Section should have a 'View All Causes' link to a dedicated causes listing page
+Medium
+[Heading3] 3.1.4 Other Home Page Sections
+Req ID
+Requirement Description
+Priority
+Notes
+HP-030
+Become a Volunteer section with brief description, volunteer benefits, and a CTA button linking to a volunteer sign-up form or page
+High
+Content manageable by admin
+HP-031
+Refer a Cause section with description of how the public can nominate a beneficiary and a CTA button or embedded form
+High
+Content manageable by admin
+HP-032
+About Us / Mission section summarizing MicroCharity's mission and values
+Medium
+Static or CMS-managed
+HP-033
+Testimonials / Impact Stories section (optional, admin-managed)
+Low
+Phase 2 if needed
+HP-034
+Newsletter signup / Email subscription widget
+Low
+Phase 2
+[Heading2] 3.2 Individual Donation Page (Public View)
+Req ID
+Requirement Description
+Priority
+Notes
+DP-001
+Display cause title, featured images (gallery support), and full HTML content
+High
+<w:tblPrEx><w:tblCellMar><w:top w:w="0" w:type="dxa"/><w:bottom w:w="0" w:type="dxa"/></w:tblCellMar></w:tblPrEx><w:tc><w:tcPr><w:tcW w:w="1000" w:type="dxa"/><w:tcBorders><w:top w:val="single" w:sz="1" w:space="0" w:color="CCCCCC"/><w:left w:val="single" w:sz="1" w:space="0" w:color="CCCCCC"/><w:bottom w:val="single" w:sz="1" w:space="0" w:color="CCCCCC"/><w:right w:val="single" w:sz="1" w:space="0" w:color="CCCCCC"/></w:tcBorders><w:shd w:val="clear" w:color="auto" w:fill="F5F5F5"/><w:tcMar><w:top w:w="80" w:type="dxa"/><w:left w:w="120" w:type="dxa"/><w:bottom w:w="80" w:type="dxa"/><w:right w:w="120" w:type="dxa"/></w:tcMar></w:tcPr><w:p w14:paraId="646F8998" w14:textId="77777777" w:rsidR="00370331" w:rsidRDefault="00000000"><w:r><w:rPr><w:color w:val="333333"/><w:sz w:val="20"/><w:szCs w:val="20"/></w:rPr><w:t>DP-002
+Display fundraising progress bar: Goal Amount, Amount Raised, Percentage complete
+High
+Live/real-time updates
+DP-003
+Display donor count for this specific cause
+High
+<w:tblPrEx><w:tblCellMar><w:top w:w="0" w:type="dxa"/><w:bottom w:w="0" w:type="dxa"/></w:tblCellMar></w:tblPrEx><w:tc><w:tcPr><w:tcW w:w="1000" w:type="dxa"/><w:tcBorders><w:top w:val="single" w:sz="1" w:space="0" w:color="CCCCCC"/><w:left w:val="single" w:sz="1" w:space="0" w:color="CCCCCC"/><w:bottom w:val="single" w:sz="1" w:space="0" w:color="CCCCCC"/><w:right w:val="single" w:sz="1" w:space="0" w:color="CCCCCC"/></w:tcBorders><w:shd w:val="clear" w:color="auto" w:fill="F5F5F5"/><w:tcMar><w:top w:w="80" w:type="dxa"/><w:left w:w="120" w:type="dxa"/><w:bottom w:w="80" w:type="dxa"/><w:right w:w="120" w:type="dxa"/></w:tcMar></w:tcPr><w:p w14:paraId="4EAA5C05" w14:textId="77777777" w:rsidR="00370331" w:rsidRDefault="00000000"><w:r><w:rPr><w:color w:val="333333"/><w:sz w:val="20"/><w:szCs w:val="20"/></w:rPr><w:t>DP-004
+Show list of recent donors (Name, Amount, Date) — Name may be masked per donor preference
+Medium
+<w:tblPrEx><w:tblCellMar><w:top w:w="0" w:type="dxa"/><w:bottom w:w="0" w:type="dxa"/></w:tblCellMar></w:tblPrEx><w:tc><w:tcPr><w:tcW w:w="1000" w:type="dxa"/><w:tcBorders><w:top w:val="single" w:sz="1" w:space="0" w:color="CCCCCC"/><w:left w:val="single" w:sz="1" w:space="0" w:color="CCCCCC"/><w:bottom w:val="single" w:sz="1" w:space="0" w:color="CCCCCC"/><w:right w:val="single" w:sz="1" w:space="0" w:color="CCCCCC"/></w:tcBorders><w:shd w:val="clear" w:color="auto" w:fill="FFFFFF"/><w:tcMar><w:top w:w="80" w:type="dxa"/><w:left w:w="120" w:type="dxa"/><w:bottom w:w="80" w:type="dxa"/><w:right w:w="120" w:type="dxa"/></w:tcMar></w:tcPr><w:p w14:paraId="53EFA633" w14:textId="77777777" w:rsidR="00370331" w:rsidRDefault="00000000"><w:r><w:rPr><w:color w:val="333333"/><w:sz w:val="20"/><w:szCs w:val="20"/></w:rPr><w:t>DP-005
+If online donation is enabled, display Razorpay-powered donate form with Amount input
+High
+Prefilled amounts (e.g. 500, 1000, 2500, custom)
+DP-006
+If offline donation is enabled, display offline donation form: Name, Email, Phone, Amount, PAN (if >10K), Address
+High
+<w:tblPrEx><w:tblCellMar><w:top w:w="0" w:type="dxa"/><w:bottom w:w="0" w:type="dxa"/></w:tblCellMar></w:tblPrEx><w:tc><w:tcPr><w:tcW w:w="1000" w:type="dxa"/><w:tcBorders><w:top w:val="single" w:sz="1" w:space="0" w:color="CCCCCC"/><w:left w:val="single" w:sz="1" w:space="0" w:color="CCCCCC"/><w:bottom w:val="single" w:sz="1" w:space="0" w:color="CCCCCC"/><w:right w:val="single" w:sz="1" w:space="0" w:color="CCCCCC"/></w:tcBorders><w:shd w:val="clear" w:color="auto" w:fill="FFFFFF"/><w:tcMar><w:top w:w="80" w:type="dxa"/><w:left w:w="120" w:type="dxa"/><w:bottom w:w="80" w:type="dxa"/><w:right w:w="120" w:type="dxa"/></w:tcMar></w:tcPr><w:p w14:paraId="6E7A6D26" w14:textId="77777777" w:rsidR="00370331" w:rsidRDefault="00000000"><w:r><w:rPr><w:color w:val="333333"/><w:sz w:val="20"/><w:szCs w:val="20"/></w:rPr><w:t>DP-007
+Offline donation form submission sends confirmation email to donor with bank transfer instructions
+High
+Auto-email with bank details
+DP-008
+Offline donation form submission sends notification to admin email
+High
+<w:tblPrEx><w:tblCellMar><w:top w:w="0" w:type="dxa"/><w:bottom w:w="0" w:type="dxa"/></w:tblCellMar></w:tblPrEx><w:tc><w:tcPr><w:tcW w:w="1000" w:type="dxa"/><w:tcBorders><w:top w:val="single" w:sz="1" w:space="0" w:color="CCCCCC"/><w:left w:val="single" w:sz="1" w:space="0" w:color="CCCCCC"/><w:bottom w:val="single" w:sz="1" w:space="0" w:color="CCCCCC"/><w:right w:val="single" w:sz="1" w:space="0" w:color="CCCCCC"/></w:tcBorders><w:shd w:val="clear" w:color="auto" w:fill="FFFFFF"/><w:tcMar><w:top w:w="80" w:type="dxa"/><w:left w:w="120" w:type="dxa"/><w:bottom w:w="80" w:type="dxa"/><w:right w:w="120" w:type="dxa"/></w:tcMar></w:tcPr><w:p w14:paraId="0669CA88" w14:textId="77777777" w:rsidR="00370331" w:rsidRDefault="00000000"><w:r><w:rPr><w:color w:val="333333"/><w:sz w:val="20"/><w:szCs w:val="20"/></w:rPr><w:t>DP-009
+Social sharing buttons: Facebook, Twitter/X, WhatsApp, LinkedIn, Copy Link
+High
+With pre-composed share message
+DP-010
+Page must have proper Open Graph / meta tags for rich social link previews
+High
+SEO requirement
+[Heading2] 3.3 All Causes Listing Page
+Req ID
+Requirement Description
+Priority
+Notes
+CL-001
+Dedicated page listing all active and past causes with filtering by: Active/Completed, Category (if applicable), Date
+High
+<w:tblPrEx><w:tblCellMar><w:top w:w="0" w:type="dxa"/><w:bottom w:w="0" w:type="dxa"/></w:tblCellMar></w:tblPrEx><w:tc><w:tcPr><w:tcW w:w="1000" w:type="dxa"/><w:tcBorders><w:top w:val="single" w:sz="1" w:space="0" w:color="CCCCCC"/><w:left w:val="single" w:sz="1" w:space="0" w:color="CCCCCC"/><w:bottom w:val="single" w:sz="1" w:space="0" w:color="CCCCCC"/><w:right w:val="single" w:sz="1" w:space="0" w:color="CCCCCC"/></w:tcBorders><w:shd w:val="clear" w:color="auto" w:fill="F5F5F5"/><w:tcMar><w:top w:w="80" w:type="dxa"/><w:left w:w="120" w:type="dxa"/><w:bottom w:w="80" w:type="dxa"/><w:right w:w="120" w:type="dxa"/></w:tcMar></w:tcPr><w:p w14:paraId="1CE938AB" w14:textId="77777777" w:rsidR="00370331" w:rsidRDefault="00000000"><w:r><w:rPr><w:color w:val="333333"/><w:sz w:val="20"/><w:szCs w:val="20"/></w:rPr><w:t>CL-002
+Each cause card shows: Image, Title, Brief Summary, Progress Bar, Donate Now button (if active)
+High
+<w:tblPrEx><w:tblCellMar><w:top w:w="0" w:type="dxa"/><w:bottom w:w="0" w:type="dxa"/></w:tblCellMar></w:tblPrEx><w:tc><w:tcPr><w:tcW w:w="1000" w:type="dxa"/><w:tcBorders><w:top w:val="single" w:sz="1" w:space="0" w:color="CCCCCC"/><w:left w:val="single" w:sz="1" w:space="0" w:color="CCCCCC"/><w:bottom w:val="single" w:sz="1" w:space="0" w:color="CCCCCC"/><w:right w:val="single" w:sz="1" w:space="0" w:color="CCCCCC"/></w:tcBorders><w:shd w:val="clear" w:color="auto" w:fill="FFFFFF"/><w:tcMar><w:top w:w="80" w:type="dxa"/><w:left w:w="120" w:type="dxa"/><w:bottom w:w="80" w:type="dxa"/><w:right w:w="120" w:type="dxa"/></w:tcMar></w:tcPr><w:p w14:paraId="71CEC9F9" w14:textId="77777777" w:rsidR="00370331" w:rsidRDefault="00000000"><w:r><w:rPr><w:color w:val="333333"/><w:sz w:val="20"/><w:szCs w:val="20"/></w:rPr><w:t>CL-003
+Pagination or infinite scroll with configurable items per page
+Medium
+<w:tblPrEx><w:tblCellMar><w:top w:w="0" w:type="dxa"/><w:bottom w:w="0" w:type="dxa"/></w:tblCellMar></w:tblPrEx><w:tc><w:tcPr><w:tcW w:w="1000" w:type="dxa"/><w:tcBorders><w:top w:val="single" w:sz="1" w:space="0" w:color="CCCCCC"/><w:left w:val="single" w:sz="1" w:space="0" w:color="CCCCCC"/><w:bottom w:val="single" w:sz="1" w:space="0" w:color="CCCCCC"/><w:right w:val="single" w:sz="1" w:space="0" w:color="CCCCCC"/></w:tcBorders><w:shd w:val="clear" w:color="auto" w:fill="F5F5F5"/><w:tcMar><w:top w:w="80" w:type="dxa"/><w:left w:w="120" w:type="dxa"/><w:bottom w:w="80" w:type="dxa"/><w:right w:w="120" w:type="dxa"/></w:tcMar></w:tcPr><w:p w14:paraId="28C297D8" w14:textId="77777777" w:rsidR="00370331" w:rsidRDefault="00000000"><w:r><w:rPr><w:color w:val="333333"/><w:sz w:val="20"/><w:szCs w:val="20"/></w:rPr><w:t>CL-004
+Search functionality to find causes by keyword
+Medium
+[Heading2] 3.4 Static Content Pages
+Req ID
+Requirement Description
+Priority
+Notes
+SC-001
+All existing static pages from www.microcharity.com must be migrated: About Us, Contact, How It Works, Terms & Conditions, Privacy Policy, FAQ, etc.
+High
+Content migration required
+SC-002
+Admin must be able to create, edit, and delete static pages with WYSIWYG editor
+High
+CMS capability
+SC-003
+Navigation menu must be configurable by admin (add/remove/reorder menu items)
+High
+<w:tblPrEx><w:tblCellMar><w:top w:w="0" w:type="dxa"/><w:bottom w:w="0" w:type="dxa"/></w:tblCellMar></w:tblPrEx><w:tc><w:tcPr><w:tcW w:w="1000" w:type="dxa"/><w:tcBorders><w:top w:val="single" w:sz="1" w:space="0" w:color="CCCCCC"/><w:left w:val="single" w:sz="1" w:space="0" w:color="CCCCCC"/><w:bottom w:val="single" w:sz="1" w:space="0" w:color="CCCCCC"/><w:right w:val="single" w:sz="1" w:space="0" w:color="CCCCCC"/></w:tcBorders><w:shd w:val="clear" w:color="auto" w:fill="F5F5F5"/><w:tcMar><w:top w:w="80" w:type="dxa"/><w:left w:w="120" w:type="dxa"/><w:bottom w:w="80" w:type="dxa"/><w:right w:w="120" w:type="dxa"/></w:tcMar></w:tcPr><w:p w14:paraId="773894F5" w14:textId="77777777" w:rsidR="00370331" w:rsidRDefault="00000000"><w:r><w:rPr><w:color w:val="333333"/><w:sz w:val="20"/><w:szCs w:val="20"/></w:rPr><w:t>SC-004
+Contact page with functional contact form sending emails to admin
+High
+<w:tblPrEx><w:tblCellMar><w:top w:w="0" w:type="dxa"/><w:bottom w:w="0" w:type="dxa"/></w:tblCellMar></w:tblPrEx><w:tc><w:tcPr><w:tcW w:w="1000" w:type="dxa"/><w:tcBorders><w:top w:val="single" w:sz="1" w:space="0" w:color="CCCCCC"/><w:left w:val="single" w:sz="1" w:space="0" w:color="CCCCCC"/><w:bottom w:val="single" w:sz="1" w:space="0" w:color="CCCCCC"/><w:right w:val="single" w:sz="1" w:space="0" w:color="CCCCCC"/></w:tcBorders><w:shd w:val="clear" w:color="auto" w:fill="FFFFFF"/><w:tcMar><w:top w:w="80" w:type="dxa"/><w:left w:w="120" w:type="dxa"/><w:bottom w:w="80" w:type="dxa"/><w:right w:w="120" w:type="dxa"/></w:tcMar></w:tcPr><w:p w14:paraId="694DE4A8" w14:textId="77777777" w:rsidR="00370331" w:rsidRDefault="00000000"><w:r><w:rPr><w:color w:val="333333"/><w:sz w:val="20"/><w:szCs w:val="20"/></w:rPr><w:t>SC-005
+All pages must be SEO-optimized with configurable meta title and description per page
+High
+[Heading1] 4. Administrator Dashboard Requirements
+[Heading2] 4.1 Dashboard Overview
+The admin dashboard shall provide a centralized interface accessible at /admin with role-based authentication. It must include an overview panel visible immediately upon login:
+Req ID
+Requirement Description
+Priority
+Notes
+AD-001
+Dashboard home shows KPI cards: Total Donations (count + value), Pending Offline Donations, Active Causes, Total Donors
+High
+<w:tblPrEx><w:tblCellMar><w:top w:w="0" w:type="dxa"/><w:bottom w:w="0" w:type="dxa"/></w:tblCellMar></w:tblPrEx><w:tc><w:tcPr><w:tcW w:w="1000" w:type="dxa"/><w:tcBorders><w:top w:val="single" w:sz="1" w:space="0" w:color="CCCCCC"/><w:left w:val="single" w:sz="1" w:space="0" w:color="CCCCCC"/><w:bottom w:val="single" w:sz="1" w:space="0" w:color="CCCCCC"/><w:right w:val="single" w:sz="1" w:space="0" w:color="CCCCCC"/></w:tcBorders><w:shd w:val="clear" w:color="auto" w:fill="F5F5F5"/><w:tcMar><w:top w:w="80" w:type="dxa"/><w:left w:w="120" w:type="dxa"/><w:bottom w:w="80" w:type="dxa"/><w:right w:w="120" w:type="dxa"/></w:tcMar></w:tcPr><w:p w14:paraId="388DF0DF" w14:textId="77777777" w:rsidR="00370331" w:rsidRDefault="00000000"><w:r><w:rPr><w:color w:val="333333"/><w:sz w:val="20"/><w:szCs w:val="20"/></w:rPr><w:t>AD-002
+Recent donations table on dashboard (last 10) with quick-view of status
+High
+<w:tblPrEx><w:tblCellMar><w:top w:w="0" w:type="dxa"/><w:bottom w:w="0" w:type="dxa"/></w:tblCellMar></w:tblPrEx><w:tc><w:tcPr><w:tcW w:w="1000" w:type="dxa"/><w:tcBorders><w:top w:val="single" w:sz="1" w:space="0" w:color="CCCCCC"/><w:left w:val="single" w:sz="1" w:space="0" w:color="CCCCCC"/><w:bottom w:val="single" w:sz="1" w:space="0" w:color="CCCCCC"/><w:right w:val="single" w:sz="1" w:space="0" w:color="CCCCCC"/></w:tcBorders><w:shd w:val="clear" w:color="auto" w:fill="FFFFFF"/><w:tcMar><w:top w:w="80" w:type="dxa"/><w:left w:w="120" w:type="dxa"/><w:bottom w:w="80" w:type="dxa"/><w:right w:w="120" w:type="dxa"/></w:tcMar></w:tcPr><w:p w14:paraId="658EA7BE" w14:textId="77777777" w:rsidR="00370331" w:rsidRDefault="00000000"><w:r><w:rPr><w:color w:val="333333"/><w:sz w:val="20"/><w:szCs w:val="20"/></w:rPr><w:t>AD-003
+Quick action buttons: New Donation Page, View Pending Donations, Send Campaign Email
+Medium
+<w:tblPrEx><w:tblCellMar><w:top w:w="0" w:type="dxa"/><w:bottom w:w="0" w:type="dxa"/></w:tblCellMar></w:tblPrEx><w:tc><w:tcPr><w:tcW w:w="1000" w:type="dxa"/><w:tcBorders><w:top w:val="single" w:sz="1" w:space="0" w:color="CCCCCC"/><w:left w:val="single" w:sz="1" w:space="0" w:color="CCCCCC"/><w:bottom w:val="single" w:sz="1" w:space="0" w:color="CCCCCC"/><w:right w:val="single" w:sz="1" w:space="0" w:color="CCCCCC"/></w:tcBorders><w:shd w:val="clear" w:color="auto" w:fill="F5F5F5"/><w:tcMar><w:top w:w="80" w:type="dxa"/><w:left w:w="120" w:type="dxa"/><w:bottom w:w="80" w:type="dxa"/><w:right w:w="120" w:type="dxa"/></w:tcMar></w:tcPr><w:p w14:paraId="303EC962" w14:textId="77777777" w:rsidR="00370331" w:rsidRDefault="00000000"><w:r><w:rPr><w:color w:val="333333"/><w:sz w:val="20"/><w:szCs w:val="20"/></w:rPr><w:t>AD-004
+Graphical chart showing donation trends (monthly/weekly) for the past 12 months
+Medium
+<w:tblPrEx><w:tblCellMar><w:top w:w="0" w:type="dxa"/><w:bottom w:w="0" w:type="dxa"/></w:tblCellMar></w:tblPrEx><w:tc><w:tcPr><w:tcW w:w="1000" w:type="dxa"/><w:tcBorders><w:top w:val="single" w:sz="1" w:space="0" w:color="CCCCCC"/><w:left w:val="single" w:sz="1" w:space="0" w:color="CCCCCC"/><w:bottom w:val="single" w:sz="1" w:space="0" w:color="CCCCCC"/><w:right w:val="single" w:sz="1" w:space="0" w:color="CCCCCC"/></w:tcBorders><w:shd w:val="clear" w:color="auto" w:fill="FFFFFF"/><w:tcMar><w:top w:w="80" w:type="dxa"/><w:left w:w="120" w:type="dxa"/><w:bottom w:w="80" w:type="dxa"/><w:right w:w="120" w:type="dxa"/></w:tcMar></w:tcPr><w:p w14:paraId="27483141" w14:textId="77777777" w:rsidR="00370331" w:rsidRDefault="00000000"><w:r><w:rPr><w:color w:val="333333"/><w:sz w:val="20"/><w:szCs w:val="20"/></w:rPr><w:t>AD-005
+Admin dashboard must be responsive (usable on tablet/mobile)
+Medium
+[Heading2] 4.2 Donation Pages (Cause Management)
+[Heading3] 4.2.1 Donation Page List View
+Req ID
+Requirement Description
+Priority
+Notes
+CM-001
+List view showing all donation pages with columns: Title, Status (Draft/Published/Closed), Total Raised, Goal Amount, Created Date, Actions
+High
+<w:tblPrEx><w:tblCellMar><w:top w:w="0" w:type="dxa"/><w:bottom w:w="0" w:type="dxa"/></w:tblCellMar></w:tblPrEx><w:tc><w:tcPr><w:tcW w:w="1000" w:type="dxa"/><w:tcBorders><w:top w:val="single" w:sz="1" w:space="0" w:color="CCCCCC"/><w:left w:val="single" w:sz="1" w:space="0" w:color="CCCCCC"/><w:bottom w:val="single" w:sz="1" w:space="0" w:color="CCCCCC"/><w:right w:val="single" w:sz="1" w:space="0" w:color="CCCCCC"/></w:tcBorders><w:shd w:val="clear" w:color="auto" w:fill="F5F5F5"/><w:tcMar><w:top w:w="80" w:type="dxa"/><w:left w:w="120" w:type="dxa"/><w:bottom w:w="80" w:type="dxa"/><w:right w:w="120" w:type="dxa"/></w:tcMar></w:tcPr><w:p w14:paraId="2DDC3A20" w14:textId="77777777" w:rsidR="00370331" w:rsidRDefault="00000000"><w:r><w:rPr><w:color w:val="333333"/><w:sz w:val="20"/><w:szCs w:val="20"/></w:rPr><w:t>CM-002
+Filter/search donation pages by status, date range, keyword
+High
+<w:tblPrEx><w:tblCellMar><w:top w:w="0" w:type="dxa"/><w:bottom w:w="0" w:type="dxa"/></w:tblCellMar></w:tblPrEx><w:tc><w:tcPr><w:tcW w:w="1000" w:type="dxa"/><w:tcBorders><w:top w:val="single" w:sz="1" w:space="0" w:color="CCCCCC"/><w:left w:val="single" w:sz="1" w:space="0" w:color="CCCCCC"/><w:bottom w:val="single" w:sz="1" w:space="0" w:color="CCCCCC"/><w:right w:val="single" w:sz="1" w:space="0" w:color="CCCCCC"/></w:tcBorders><w:shd w:val="clear" w:color="auto" w:fill="FFFFFF"/><w:tcMar><w:top w:w="80" w:type="dxa"/><w:left w:w="120" w:type="dxa"/><w:bottom w:w="80" w:type="dxa"/><w:right w:w="120" w:type="dxa"/></w:tcMar></w:tcPr><w:p w14:paraId="30F20095" w14:textId="77777777" w:rsidR="00370331" w:rsidRDefault="00000000"><w:r><w:rPr><w:color w:val="333333"/><w:sz w:val="20"/><w:szCs w:val="20"/></w:rPr><w:t>CM-003
+Bulk actions: Delete selected, Publish selected, Close selected
+Medium
+[Heading3] 4.2.2 Create / Edit Donation Page
+The create/edit donation page form shall include the following fields and capabilities:
+Req ID
+Requirement Description
+Priority
+Notes
+CM-010
+Title field (text input, required)
+High
+Also used as page URL slug
+CM-011
+URL Slug (auto-generated from title, editable)
+High
+<w:tblPrEx><w:tblCellMar><w:top w:w="0" w:type="dxa"/><w:bottom w:w="0" w:type="dxa"/></w:tblCellMar></w:tblPrEx><w:tc><w:tcPr><w:tcW w:w="1000" w:type="dxa"/><w:tcBorders><w:top w:val="single" w:sz="1" w:space="0" w:color="CCCCCC"/><w:left w:val="single" w:sz="1" w:space="0" w:color="CCCCCC"/><w:bottom w:val="single" w:sz="1" w:space="0" w:color="CCCCCC"/><w:right w:val="single" w:sz="1" w:space="0" w:color="CCCCCC"/></w:tcBorders><w:shd w:val="clear" w:color="auto" w:fill="FFFFFF"/><w:tcMar><w:top w:w="80" w:type="dxa"/><w:left w:w="120" w:type="dxa"/><w:bottom w:w="80" w:type="dxa"/><w:right w:w="120" w:type="dxa"/></w:tcMar></w:tcPr><w:p w14:paraId="4E7EC1E1" w14:textId="77777777" w:rsidR="00370331" w:rsidRDefault="00000000"><w:r><w:rPr><w:color w:val="333333"/><w:sz w:val="20"/><w:szCs w:val="20"/></w:rPr><w:t>CM-012
+Page Content: Full WYSIWYG HTML editor (support bold, italic, headings, lists, images, tables, embedded video links)
+High
+TipTap / CKEditor 5 recommended
+CM-013
+Featured Images: Multi-image uploader with drag-to-reorder and primary image selection
+High
+Used in slider and cause cards
+CM-014
+Category field (dropdown, manageable from settings)
+Medium
+E.g., Education, Medical
+CM-015
+Status: Draft / Published / Closed toggle
+High
+<w:tblPrEx><w:tblCellMar><w:top w:w="0" w:type="dxa"/><w:bottom w:w="0" w:type="dxa"/></w:tblCellMar></w:tblPrEx><w:tc><w:tcPr><w:tcW w:w="1000" w:type="dxa"/><w:tcBorders><w:top w:val="single" w:sz="1" w:space="0" w:color="CCCCCC"/><w:left w:val="single" w:sz="1" w:space="0" w:color="CCCCCC"/><w:bottom w:val="single" w:sz="1" w:space="0" w:color="CCCCCC"/><w:right w:val="single" w:sz="1" w:space="0" w:color="CCCCCC"/></w:tcBorders><w:shd w:val="clear" w:color="auto" w:fill="FFFFFF"/><w:tcMar><w:top w:w="80" w:type="dxa"/><w:left w:w="120" w:type="dxa"/><w:bottom w:w="80" w:type="dxa"/><w:right w:w="120" w:type="dxa"/></w:tcMar></w:tcPr><w:p w14:paraId="263FE328" w14:textId="77777777" w:rsidR="00370331" w:rsidRDefault="00000000"><w:r><w:rPr><w:color w:val="333333"/><w:sz w:val="20"/><w:szCs w:val="20"/></w:rPr><w:t>CM-016
+Fundraising Goal Amount (INR, numeric input)
+High
+Drives progress bar display
+CM-017
+Campaign Start Date and End Date (optional; auto-closes cause on end date)
+Medium
+<w:tblPrEx><w:tblCellMar><w:top w:w="0" w:type="dxa"/><w:bottom w:w="0" w:type="dxa"/></w:tblCellMar></w:tblPrEx><w:tc><w:tcPr><w:tcW w:w="1000" w:type="dxa"/><w:tcBorders><w:top w:val="single" w:sz="1" w:space="0" w:color="CCCCCC"/><w:left w:val="single" w:sz="1" w:space="0" w:color="CCCCCC"/><w:bottom w:val="single" w:sz="1" w:space="0" w:color="CCCCCC"/><w:right w:val="single" w:sz="1" w:space="0" w:color="CCCCCC"/></w:tcBorders><w:shd w:val="clear" w:color="auto" w:fill="FFFFFF"/><w:tcMar><w:top w:w="80" w:type="dxa"/><w:left w:w="120" w:type="dxa"/><w:bottom w:w="80" w:type="dxa"/><w:right w:w="120" w:type="dxa"/></w:tcMar></w:tcPr><w:p w14:paraId="05893B52" w14:textId="77777777" w:rsidR="00370331" w:rsidRDefault="00000000"><w:r><w:rPr><w:color w:val="333333"/><w:sz w:val="20"/><w:szCs w:val="20"/></w:rPr><w:t>CM-018
+Enable Offline Donations: toggle (on/off)
+High
+<w:tblPrEx><w:tblCellMar><w:top w:w="0" w:type="dxa"/><w:bottom w:w="0" w:type="dxa"/></w:tblCellMar></w:tblPrEx><w:tc><w:tcPr><w:tcW w:w="1000" w:type="dxa"/><w:tcBorders><w:top w:val="single" w:sz="1" w:space="0" w:color="CCCCCC"/><w:left w:val="single" w:sz="1" w:space="0" w:color="CCCCCC"/><w:bottom w:val="single" w:sz="1" w:space="0" w:color="CCCCCC"/><w:right w:val="single" w:sz="1" w:space="0" w:color="CCCCCC"/></w:tcBorders><w:shd w:val="clear" w:color="auto" w:fill="F5F5F5"/><w:tcMar><w:top w:w="80" w:type="dxa"/><w:left w:w="120" w:type="dxa"/><w:bottom w:w="80" w:type="dxa"/><w:right w:w="120" w:type="dxa"/></w:tcMar></w:tcPr><w:p w14:paraId="29F1645C" w14:textId="77777777" w:rsidR="00370331" w:rsidRDefault="00000000"><w:r><w:rPr><w:color w:val="333333"/><w:sz w:val="20"/><w:szCs w:val="20"/></w:rPr><w:t>CM-019
+Enable Online Donations (Razorpay): toggle (on/off)
+High
+<w:tblPrEx><w:tblCellMar><w:top w:w="0" w:type="dxa"/><w:bottom w:w="0" w:type="dxa"/></w:tblCellMar></w:tblPrEx><w:tc><w:tcPr><w:tcW w:w="1000" w:type="dxa"/><w:tcBorders><w:top w:val="single" w:sz="1" w:space="0" w:color="CCCCCC"/><w:left w:val="single" w:sz="1" w:space="0" w:color="CCCCCC"/><w:bottom w:val="single" w:sz="1" w:space="0" w:color="CCCCCC"/><w:right w:val="single" w:sz="1" w:space="0" w:color="CCCCCC"/></w:tcBorders><w:shd w:val="clear" w:color="auto" w:fill="FFFFFF"/><w:tcMar><w:top w:w="80" w:type="dxa"/><w:left w:w="120" w:type="dxa"/><w:bottom w:w="80" w:type="dxa"/><w:right w:w="120" w:type="dxa"/></w:tcMar></w:tcPr><w:p w14:paraId="3B68EC8D" w14:textId="77777777" w:rsidR="00370331" w:rsidRDefault="00000000"><w:r><w:rPr><w:color w:val="333333"/><w:sz w:val="20"/><w:szCs w:val="20"/></w:rPr><w:t>CM-020
+Both Online and Offline can be enabled simultaneously
+High
+Independent toggles
+CM-021
+Bank Transfer Instructions text area (shown to offline donors in confirmation email)
+High
+Rich text / HTML
+CM-022
+Social Share section: Pre-composed share message for Facebook, Twitter/X, WhatsApp (customizable per cause)
+High
+<w:tblPrEx><w:tblCellMar><w:top w:w="0" w:type="dxa"/><w:bottom w:w="0" w:type="dxa"/></w:tblCellMar></w:tblPrEx><w:tc><w:tcPr><w:tcW w:w="1000" w:type="dxa"/><w:tcBorders><w:top w:val="single" w:sz="1" w:space="0" w:color="CCCCCC"/><w:left w:val="single" w:sz="1" w:space="0" w:color="CCCCCC"/><w:bottom w:val="single" w:sz="1" w:space="0" w:color="CCCCCC"/><w:right w:val="single" w:sz="1" w:space="0" w:color="CCCCCC"/></w:tcBorders><w:shd w:val="clear" w:color="auto" w:fill="F5F5F5"/><w:tcMar><w:top w:w="80" w:type="dxa"/><w:left w:w="120" w:type="dxa"/><w:bottom w:w="80" w:type="dxa"/><w:right w:w="120" w:type="dxa"/></w:tcMar></w:tcPr><w:p w14:paraId="39A9CB99" w14:textId="77777777" w:rsidR="00370331" w:rsidRDefault="00000000"><w:r><w:rPr><w:color w:val="333333"/><w:sz w:val="20"/><w:szCs w:val="20"/></w:rPr><w:t>CM-023
+Meta Title and Meta Description fields for SEO
+Medium
+<w:tblPrEx><w:tblCellMar><w:top w:w="0" w:type="dxa"/><w:bottom w:w="0" w:type="dxa"/></w:tblCellMar></w:tblPrEx><w:tc><w:tcPr><w:tcW w:w="1000" w:type="dxa"/><w:tcBorders><w:top w:val="single" w:sz="1" w:space="0" w:color="CCCCCC"/><w:left w:val="single" w:sz="1" w:space="0" w:color="CCCCCC"/><w:bottom w:val="single" w:sz="1" w:space="0" w:color="CCCCCC"/><w:right w:val="single" w:sz="1" w:space="0" w:color="CCCCCC"/></w:tcBorders><w:shd w:val="clear" w:color="auto" w:fill="FFFFFF"/><w:tcMar><w:top w:w="80" w:type="dxa"/><w:left w:w="120" w:type="dxa"/><w:bottom w:w="80" w:type="dxa"/><w:right w:w="120" w:type="dxa"/></w:tcMar></w:tcPr><w:p w14:paraId="6EA50DB8" w14:textId="77777777" w:rsidR="00370331" w:rsidRDefault="00000000"><w:r><w:rPr><w:color w:val="333333"/><w:sz w:val="20"/><w:szCs w:val="20"/></w:rPr><w:t>CM-024
+Save as Draft and Publish buttons with confirmation dialog on publish
+High
+<w:tblPrEx><w:tblCellMar><w:top w:w="0" w:type="dxa"/><w:bottom w:w="0" w:type="dxa"/></w:tblCellMar></w:tblPrEx><w:tc><w:tcPr><w:tcW w:w="1000" w:type="dxa"/><w:tcBorders><w:top w:val="single" w:sz="1" w:space="0" w:color="CCCCCC"/><w:left w:val="single" w:sz="1" w:space="0" w:color="CCCCCC"/><w:bottom w:val="single" w:sz="1" w:space="0" w:color="CCCCCC"/><w:right w:val="single" w:sz="1" w:space="0" w:color="CCCCCC"/></w:tcBorders><w:shd w:val="clear" w:color="auto" w:fill="F5F5F5"/><w:tcMar><w:top w:w="80" w:type="dxa"/><w:left w:w="120" w:type="dxa"/><w:bottom w:w="80" w:type="dxa"/><w:right w:w="120" w:type="dxa"/></w:tcMar></w:tcPr><w:p w14:paraId="2B5EC83E" w14:textId="77777777" w:rsidR="00370331" w:rsidRDefault="00000000"><w:r><w:rPr><w:color w:val="333333"/><w:sz w:val="20"/><w:szCs w:val="20"/></w:rPr><w:t>CM-025
+Preview button opens a preview of the page as it would appear publicly
+Medium
+<w:tblPrEx><w:tblCellMar><w:top w:w="0" w:type="dxa"/><w:bottom w:w="0" w:type="dxa"/></w:tblCellMar></w:tblPrEx><w:tc><w:tcPr><w:tcW w:w="1000" w:type="dxa"/><w:tcBorders><w:top w:val="single" w:sz="1" w:space="0" w:color="CCCCCC"/><w:left w:val="single" w:sz="1" w:space="0" w:color="CCCCCC"/><w:bottom w:val="single" w:sz="1" w:space="0" w:color="CCCCCC"/><w:right w:val="single" w:sz="1" w:space="0" w:color="CCCCCC"/></w:tcBorders><w:shd w:val="clear" w:color="auto" w:fill="FFFFFF"/><w:tcMar><w:top w:w="80" w:type="dxa"/><w:left w:w="120" w:type="dxa"/><w:bottom w:w="80" w:type="dxa"/><w:right w:w="120" w:type="dxa"/></w:tcMar></w:tcPr><w:p w14:paraId="7AB2248A" w14:textId="77777777" w:rsidR="00370331" w:rsidRDefault="00000000"><w:r><w:rPr><w:color w:val="333333"/><w:sz w:val="20"/><w:szCs w:val="20"/></w:rPr><w:t>CM-026
+Email Campaign trigger: option to send campaign email to all donors when publishing (see section 4.6)
+High
+Prompted on publish action
+[Heading2] 4.3 Donations Management
+[Heading3] 4.3.1 Donations List
+Req ID
+Requirement Description
+Priority
+Notes
+DM-001
+List all donations with columns: ID, Donor Name, Email, Cause, Amount (INR), Type (Online/Offline), Status, Date, Actions
+High
+<w:tblPrEx><w:tblCellMar><w:top w:w="0" w:type="dxa"/><w:bottom w:w="0" w:type="dxa"/></w:tblCellMar></w:tblPrEx><w:tc><w:tcPr><w:tcW w:w="1000" w:type="dxa"/><w:tcBorders><w:top w:val="single" w:sz="1" w:space="0" w:color="CCCCCC"/><w:left w:val="single" w:sz="1" w:space="0" w:color="CCCCCC"/><w:bottom w:val="single" w:sz="1" w:space="0" w:color="CCCCCC"/><w:right w:val="single" w:sz="1" w:space="0" w:color="CCCCCC"/></w:tcBorders><w:shd w:val="clear" w:color="auto" w:fill="F5F5F5"/><w:tcMar><w:top w:w="80" w:type="dxa"/><w:left w:w="120" w:type="dxa"/><w:bottom w:w="80" w:type="dxa"/><w:right w:w="120" w:type="dxa"/></w:tcMar></w:tcPr><w:p w14:paraId="014865CE" w14:textId="77777777" w:rsidR="00370331" w:rsidRDefault="00000000"><w:r><w:rPr><w:color w:val="333333"/><w:sz w:val="20"/><w:szCs w:val="20"/></w:rPr><w:t>DM-002
+Filter donations by: Cause, Type, Status (Pending/Approved/Rejected), Date Range
+High
+<w:tblPrEx><w:tblCellMar><w:top w:w="0" w:type="dxa"/><w:bottom w:w="0" w:type="dxa"/></w:tblCellMar></w:tblPrEx><w:tc><w:tcPr><w:tcW w:w="1000" w:type="dxa"/><w:tcBorders><w:top w:val="single" w:sz="1" w:space="0" w:color="CCCCCC"/><w:left w:val="single" w:sz="1" w:space="0" w:color="CCCCCC"/><w:bottom w:val="single" w:sz="1" w:space="0" w:color="CCCCCC"/><w:right w:val="single" w:sz="1" w:space="0" w:color="CCCCCC"/></w:tcBorders><w:shd w:val="clear" w:color="auto" w:fill="FFFFFF"/><w:tcMar><w:top w:w="80" w:type="dxa"/><w:left w:w="120" w:type="dxa"/><w:bottom w:w="80" w:type="dxa"/><w:right w:w="120" w:type="dxa"/></w:tcMar></w:tcPr><w:p w14:paraId="0C1455EB" w14:textId="77777777" w:rsidR="00370331" w:rsidRDefault="00000000"><w:r><w:rPr><w:color w:val="333333"/><w:sz w:val="20"/><w:szCs w:val="20"/></w:rPr><w:t>DM-003
+Search by donor name or email
+High
+<w:tblPrEx><w:tblCellMar><w:top w:w="0" w:type="dxa"/><w:bottom w:w="0" w:type="dxa"/></w:tblCellMar></w:tblPrEx><w:tc><w:tcPr><w:tcW w:w="1000" w:type="dxa"/><w:tcBorders><w:top w:val="single" w:sz="1" w:space="0" w:color="CCCCCC"/><w:left w:val="single" w:sz="1" w:space="0" w:color="CCCCCC"/><w:bottom w:val="single" w:sz="1" w:space="0" w:color="CCCCCC"/><w:right w:val="single" w:sz="1" w:space="0" w:color="CCCCCC"/></w:tcBorders><w:shd w:val="clear" w:color="auto" w:fill="F5F5F5"/><w:tcMar><w:top w:w="80" w:type="dxa"/><w:left w:w="120" w:type="dxa"/><w:bottom w:w="80" w:type="dxa"/><w:right w:w="120" w:type="dxa"/></w:tcMar></w:tcPr><w:p w14:paraId="7C4F4B86" w14:textId="77777777" w:rsidR="00370331" w:rsidRDefault="00000000"><w:r><w:rPr><w:color w:val="333333"/><w:sz w:val="20"/><w:szCs w:val="20"/></w:rPr><w:t>DM-004
+Export filtered list to CSV/Excel
+Medium
+<w:tblPrEx><w:tblCellMar><w:top w:w="0" w:type="dxa"/><w:bottom w:w="0" w:type="dxa"/></w:tblCellMar></w:tblPrEx><w:tc><w:tcPr><w:tcW w:w="1000" w:type="dxa"/><w:tcBorders><w:top w:val="single" w:sz="1" w:space="0" w:color="CCCCCC"/><w:left w:val="single" w:sz="1" w:space="0" w:color="CCCCCC"/><w:bottom w:val="single" w:sz="1" w:space="0" w:color="CCCCCC"/><w:right w:val="single" w:sz="1" w:space="0" w:color="CCCCCC"/></w:tcBorders><w:shd w:val="clear" w:color="auto" w:fill="FFFFFF"/><w:tcMar><w:top w:w="80" w:type="dxa"/><w:left w:w="120" w:type="dxa"/><w:bottom w:w="80" w:type="dxa"/><w:right w:w="120" w:type="dxa"/></w:tcMar></w:tcPr><w:p w14:paraId="7A274A17" w14:textId="77777777" w:rsidR="00370331" w:rsidRDefault="00000000"><w:r><w:rPr><w:color w:val="333333"/><w:sz w:val="20"/><w:szCs w:val="20"/></w:rPr><w:t>DM-005
+Online donations from Razorpay are automatically marked as Approved upon successful payment webhook
+High
+Webhook integration required
+DM-006
+Offline donations are listed as Pending until manually approved by Admin or Content Manager
+High
+[Heading3] 4.3.2 Offline Donation Approval
+Req ID
+Requirement Description
+Priority
+Notes
+DM-010
+Admin/Content Manager can view all pending offline donation submissions
+High
+<w:tblPrEx><w:tblCellMar><w:top w:w="0" w:type="dxa"/><w:bottom w:w="0" w:type="dxa"/></w:tblCellMar></w:tblPrEx><w:tc><w:tcPr><w:tcW w:w="1000" w:type="dxa"/><w:tcBorders><w:top w:val="single" w:sz="1" w:space="0" w:color="CCCCCC"/><w:left w:val="single" w:sz="1" w:space="0" w:color="CCCCCC"/><w:bottom w:val="single" w:sz="1" w:space="0" w:color="CCCCCC"/><w:right w:val="single" w:sz="1" w:space="0" w:color="CCCCCC"/></w:tcBorders><w:shd w:val="clear" w:color="auto" w:fill="F5F5F5"/><w:tcMar><w:top w:w="80" w:type="dxa"/><w:left w:w="120" w:type="dxa"/><w:bottom w:w="80" w:type="dxa"/><w:right w:w="120" w:type="dxa"/></w:tcMar></w:tcPr><w:p w14:paraId="5B1827B6" w14:textId="77777777" w:rsidR="00370331" w:rsidRDefault="00000000"><w:r><w:rPr><w:color w:val="333333"/><w:sz w:val="20"/><w:szCs w:val="20"/></w:rPr><w:t>DM-011
+Drill-down view shows: Donor details, Declared amount, PAN (if provided), submission timestamp, notes
+High
+<w:tblPrEx><w:tblCellMar><w:top w:w="0" w:type="dxa"/><w:bottom w:w="0" w:type="dxa"/></w:tblCellMar></w:tblPrEx><w:tc><w:tcPr><w:tcW w:w="1000" w:type="dxa"/><w:tcBorders><w:top w:val="single" w:sz="1" w:space="0" w:color="CCCCCC"/><w:left w:val="single" w:sz="1" w:space="0" w:color="CCCCCC"/><w:bottom w:val="single" w:sz="1" w:space="0" w:color="CCCCCC"/><w:right w:val="single" w:sz="1" w:space="0" w:color="CCCCCC"/></w:tcBorders><w:shd w:val="clear" w:color="auto" w:fill="FFFFFF"/><w:tcMar><w:top w:w="80" w:type="dxa"/><w:left w:w="120" w:type="dxa"/><w:bottom w:w="80" w:type="dxa"/><w:right w:w="120" w:type="dxa"/></w:tcMar></w:tcPr><w:p w14:paraId="39ACDF9D" w14:textId="77777777" w:rsidR="00370331" w:rsidRDefault="00000000"><w:r><w:rPr><w:color w:val="333333"/><w:sz w:val="20"/><w:szCs w:val="20"/></w:rPr><w:t>DM-012
+Admin can Approve or Reject an offline donation with an optional admin note
+High
+<w:tblPrEx><w:tblCellMar><w:top w:w="0" w:type="dxa"/><w:bottom w:w="0" w:type="dxa"/></w:tblCellMar></w:tblPrEx><w:tc><w:tcPr><w:tcW w:w="1000" w:type="dxa"/><w:tcBorders><w:top w:val="single" w:sz="1" w:space="0" w:color="CCCCCC"/><w:left w:val="single" w:sz="1" w:space="0" w:color="CCCCCC"/><w:bottom w:val="single" w:sz="1" w:space="0" w:color="CCCCCC"/><w:right w:val="single" w:sz="1" w:space="0" w:color="CCCCCC"/></w:tcBorders><w:shd w:val="clear" w:color="auto" w:fill="F5F5F5"/><w:tcMar><w:top w:w="80" w:type="dxa"/><w:left w:w="120" w:type="dxa"/><w:bottom w:w="80" w:type="dxa"/><w:right w:w="120" w:type="dxa"/></w:tcMar></w:tcPr><w:p w14:paraId="5FDE5DC7" w14:textId="77777777" w:rsidR="00370331" w:rsidRDefault="00000000"><w:r><w:rPr><w:color w:val="333333"/><w:sz w:val="20"/><w:szCs w:val="20"/></w:rPr><w:t>DM-013
+Approved offline donation automatically creates/updates Donor record and updates cause total raised
+High
+<w:tblPrEx><w:tblCellMar><w:top w:w="0" w:type="dxa"/><w:bottom w:w="0" w:type="dxa"/></w:tblCellMar></w:tblPrEx><w:tc><w:tcPr><w:tcW w:w="1000" w:type="dxa"/><w:tcBorders><w:top w:val="single" w:sz="1" w:space="0" w:color="CCCCCC"/><w:left w:val="single" w:sz="1" w:space="0" w:color="CCCCCC"/><w:bottom w:val="single" w:sz="1" w:space="0" w:color="CCCCCC"/><w:right w:val="single" w:sz="1" w:space="0" w:color="CCCCCC"/></w:tcBorders><w:shd w:val="clear" w:color="auto" w:fill="FFFFFF"/><w:tcMar><w:top w:w="80" w:type="dxa"/><w:left w:w="120" w:type="dxa"/><w:bottom w:w="80" w:type="dxa"/><w:right w:w="120" w:type="dxa"/></w:tcMar></w:tcPr><w:p w14:paraId="4B529EF0" w14:textId="77777777" w:rsidR="00370331" w:rsidRDefault="00000000"><w:r><w:rPr><w:color w:val="333333"/><w:sz w:val="20"/><w:szCs w:val="20"/></w:rPr><w:t>DM-014
+On approval, system sends donation receipt PDF email to donor (can be suppressed, then manually sent later)
+High
+<w:tblPrEx><w:tblCellMar><w:top w:w="0" w:type="dxa"/><w:bottom w:w="0" w:type="dxa"/></w:tblCellMar></w:tblPrEx><w:tc><w:tcPr><w:tcW w:w="1000" w:type="dxa"/><w:tcBorders><w:top w:val="single" w:sz="1" w:space="0" w:color="CCCCCC"/><w:left w:val="single" w:sz="1" w:space="0" w:color="CCCCCC"/><w:bottom w:val="single" w:sz="1" w:space="0" w:color="CCCCCC"/><w:right w:val="single" w:sz="1" w:space="0" w:color="CCCCCC"/></w:tcBorders><w:shd w:val="clear" w:color="auto" w:fill="F5F5F5"/><w:tcMar><w:top w:w="80" w:type="dxa"/><w:left w:w="120" w:type="dxa"/><w:bottom w:w="80" w:type="dxa"/><w:right w:w="120" w:type="dxa"/></w:tcMar></w:tcPr><w:p w14:paraId="6825A1FB" w14:textId="77777777" w:rsidR="00370331" w:rsidRDefault="00000000"><w:r><w:rPr><w:color w:val="333333"/><w:sz w:val="20"/><w:szCs w:val="20"/></w:rPr><w:t>DM-015
+Admin can edit the declared amount before approving (to match actual bank transfer received)
+High
+Editable amount field
+[Heading3] 4.3.3 Manual Donation Entry
+Req ID
+Requirement Description
+Priority
+Notes
+DM-020
+Admin can create a donation manually from the Donations section
+High
+For donations received outside form (e.g., cheque)
+DM-021
+Manual donation form: Select Cause, Donor (existing or new), Amount, Type, Payment Reference, Date, Notes
+High
+<w:tblPrEx><w:tblCellMar><w:top w:w="0" w:type="dxa"/><w:bottom w:w="0" w:type="dxa"/></w:tblCellMar></w:tblPrEx><w:tc><w:tcPr><w:tcW w:w="1000" w:type="dxa"/><w:tcBorders><w:top w:val="single" w:sz="1" w:space="0" w:color="CCCCCC"/><w:left w:val="single" w:sz="1" w:space="0" w:color="CCCCCC"/><w:bottom w:val="single" w:sz="1" w:space="0" w:color="CCCCCC"/><w:right w:val="single" w:sz="1" w:space="0" w:color="CCCCCC"/></w:tcBorders><w:shd w:val="clear" w:color="auto" w:fill="FFFFFF"/><w:tcMar><w:top w:w="80" w:type="dxa"/><w:left w:w="120" w:type="dxa"/><w:bottom w:w="80" w:type="dxa"/><w:right w:w="120" w:type="dxa"/></w:tcMar></w:tcPr><w:p w14:paraId="4411EE2B" w14:textId="77777777" w:rsidR="00370331" w:rsidRDefault="00000000"><w:r><w:rPr><w:color w:val="333333"/><w:sz w:val="20"/><w:szCs w:val="20"/></w:rPr><w:t>DM-022
+Manually entered donations require explicit admin approval to count towards totals
+High
+Approval step required
+[Heading3] 4.3.4 Donation Receipts
+Req ID
+Requirement Description
+Priority
+Notes
+DR-001
+System generates PDF donation receipt for each approved donation using a configurable template (see 4.5)
+High
+<w:tblPrEx><w:tblCellMar><w:top w:w="0" w:type="dxa"/><w:bottom w:w="0" w:type="dxa"/></w:tblCellMar></w:tblPrEx><w:tc><w:tcPr><w:tcW w:w="1000" w:type="dxa"/><w:tcBorders><w:top w:val="single" w:sz="1" w:space="0" w:color="CCCCCC"/><w:left w:val="single" w:sz="1" w:space="0" w:color="CCCCCC"/><w:bottom w:val="single" w:sz="1" w:space="0" w:color="CCCCCC"/><w:right w:val="single" w:sz="1" w:space="0" w:color="CCCCCC"/></w:tcBorders><w:shd w:val="clear" w:color="auto" w:fill="F5F5F5"/><w:tcMar><w:top w:w="80" w:type="dxa"/><w:left w:w="120" w:type="dxa"/><w:bottom w:w="80" w:type="dxa"/><w:right w:w="120" w:type="dxa"/></w:tcMar></w:tcPr><w:p w14:paraId="2DD90ED0" w14:textId="77777777" w:rsidR="00370331" w:rsidRDefault="00000000"><w:r><w:rPr><w:color w:val="333333"/><w:sz w:val="20"/><w:szCs w:val="20"/></w:rPr><w:t>DR-002
+Online donations: receipt PDF is automatically emailed to donor upon Razorpay payment success confirmation
+High
+Triggered by webhook
+DR-003
+Offline donations: receipt PDF is manually triggered by Admin after bank transfer confirmation
+High
+Manual trigger button in UI
+DR-004
+Admin can resend any receipt from the Donations list view (Send/Resend Receipt button per row)
+High
+<w:tblPrEx><w:tblCellMar><w:top w:w="0" w:type="dxa"/><w:bottom w:w="0" w:type="dxa"/></w:tblCellMar></w:tblPrEx><w:tc><w:tcPr><w:tcW w:w="1000" w:type="dxa"/><w:tcBorders><w:top w:val="single" w:sz="1" w:space="0" w:color="CCCCCC"/><w:left w:val="single" w:sz="1" w:space="0" w:color="CCCCCC"/><w:bottom w:val="single" w:sz="1" w:space="0" w:color="CCCCCC"/><w:right w:val="single" w:sz="1" w:space="0" w:color="CCCCCC"/></w:tcBorders><w:shd w:val="clear" w:color="auto" w:fill="FFFFFF"/><w:tcMar><w:top w:w="80" w:type="dxa"/><w:left w:w="120" w:type="dxa"/><w:bottom w:w="80" w:type="dxa"/><w:right w:w="120" w:type="dxa"/></w:tcMar></w:tcPr><w:p w14:paraId="3C4CD773" w14:textId="77777777" w:rsidR="00370331" w:rsidRDefault="00000000"><w:r><w:rPr><w:color w:val="333333"/><w:sz w:val="20"/><w:szCs w:val="20"/></w:rPr><w:lastRenderedPageBreak/><w:t>DR-005
+Receipt PDF includes: Donor Name, Address, PAN (if provided), Cause Name, Amount, Date, Receipt Number (sequential), MicroCharity bank details/stamp, admin signature line
+High
+Template-driven
+DR-006
+All generated PDF receipts are stored and accessible from the donation record
+High
+Cloud storage recommended
+[Heading2] 4.4 Donors Management
+[Heading3] 4.4.1 Donors List
+Req ID
+Requirement Description
+Priority
+Notes
+DN-001
+List all donors with columns: Name, Email, Phone Number, No. of Donations, Total Donated (INR), Donor Since (first donation date), Last Donated Date
+High
+<w:tblPrEx><w:tblCellMar><w:top w:w="0" w:type="dxa"/><w:bottom w:w="0" w:type="dxa"/></w:tblCellMar></w:tblPrEx><w:tc><w:tcPr><w:tcW w:w="1000" w:type="dxa"/><w:tcBorders><w:top w:val="single" w:sz="1" w:space="0" w:color="CCCCCC"/><w:left w:val="single" w:sz="1" w:space="0" w:color="CCCCCC"/><w:bottom w:val="single" w:sz="1" w:space="0" w:color="CCCCCC"/><w:right w:val="single" w:sz="1" w:space="0" w:color="CCCCCC"/></w:tcBorders><w:shd w:val="clear" w:color="auto" w:fill="F5F5F5"/><w:tcMar><w:top w:w="80" w:type="dxa"/><w:left w:w="120" w:type="dxa"/><w:bottom w:w="80" w:type="dxa"/><w:right w:w="120" w:type="dxa"/></w:tcMar></w:tcPr><w:p w14:paraId="742BF621" w14:textId="77777777" w:rsidR="00370331" w:rsidRDefault="00000000"><w:r><w:rPr><w:color w:val="333333"/><w:sz w:val="20"/><w:szCs w:val="20"/></w:rPr><w:t>DN-002
+Search by name, email, phone
+High
+<w:tblPrEx><w:tblCellMar><w:top w:w="0" w:type="dxa"/><w:bottom w:w="0" w:type="dxa"/></w:tblCellMar></w:tblPrEx><w:tc><w:tcPr><w:tcW w:w="1000" w:type="dxa"/><w:tcBorders><w:top w:val="single" w:sz="1" w:space="0" w:color="CCCCCC"/><w:left w:val="single" w:sz="1" w:space="0" w:color="CCCCCC"/><w:bottom w:val="single" w:sz="1" w:space="0" w:color="CCCCCC"/><w:right w:val="single" w:sz="1" w:space="0" w:color="CCCCCC"/></w:tcBorders><w:shd w:val="clear" w:color="auto" w:fill="FFFFFF"/><w:tcMar><w:top w:w="80" w:type="dxa"/><w:left w:w="120" w:type="dxa"/><w:bottom w:w="80" w:type="dxa"/><w:right w:w="120" w:type="dxa"/></w:tcMar></w:tcPr><w:p w14:paraId="78DC2916" w14:textId="77777777" w:rsidR="00370331" w:rsidRDefault="00000000"><w:r><w:rPr><w:color w:val="333333"/><w:sz w:val="20"/><w:szCs w:val="20"/></w:rPr><w:t>DN-003
+Filter by date range, minimum donation amount, cause
+Medium
+<w:tblPrEx><w:tblCellMar><w:top w:w="0" w:type="dxa"/><w:bottom w:w="0" w:type="dxa"/></w:tblCellMar></w:tblPrEx><w:tc><w:tcPr><w:tcW w:w="1000" w:type="dxa"/><w:tcBorders><w:top w:val="single" w:sz="1" w:space="0" w:color="CCCCCC"/><w:left w:val="single" w:sz="1" w:space="0" w:color="CCCCCC"/><w:bottom w:val="single" w:sz="1" w:space="0" w:color="CCCCCC"/><w:right w:val="single" w:sz="1" w:space="0" w:color="CCCCCC"/></w:tcBorders><w:shd w:val="clear" w:color="auto" w:fill="F5F5F5"/><w:tcMar><w:top w:w="80" w:type="dxa"/><w:left w:w="120" w:type="dxa"/><w:bottom w:w="80" w:type="dxa"/><w:right w:w="120" w:type="dxa"/></w:tcMar></w:tcPr><w:p w14:paraId="5FCBE17F" w14:textId="77777777" w:rsidR="00370331" w:rsidRDefault="00000000"><w:r><w:rPr><w:color w:val="333333"/><w:sz w:val="20"/><w:szCs w:val="20"/></w:rPr><w:t>DN-004
+Export donor list to CSV with all columns
+High
+<w:tblPrEx><w:tblCellMar><w:top w:w="0" w:type="dxa"/><w:bottom w:w="0" w:type="dxa"/></w:tblCellMar></w:tblPrEx><w:tc><w:tcPr><w:tcW w:w="1000" w:type="dxa"/><w:tcBorders><w:top w:val="single" w:sz="1" w:space="0" w:color="CCCCCC"/><w:left w:val="single" w:sz="1" w:space="0" w:color="CCCCCC"/><w:bottom w:val="single" w:sz="1" w:space="0" w:color="CCCCCC"/><w:right w:val="single" w:sz="1" w:space="0" w:color="CCCCCC"/></w:tcBorders><w:shd w:val="clear" w:color="auto" w:fill="FFFFFF"/><w:tcMar><w:top w:w="80" w:type="dxa"/><w:left w:w="120" w:type="dxa"/><w:bottom w:w="80" w:type="dxa"/><w:right w:w="120" w:type="dxa"/></w:tcMar></w:tcPr><w:p w14:paraId="2767832B" w14:textId="77777777" w:rsidR="00370331" w:rsidRDefault="00000000"><w:r><w:rPr><w:color w:val="333333"/><w:sz w:val="20"/><w:szCs w:val="20"/></w:rPr><w:t>DN-005
+Donors are automatically created from approved online donations (using Razorpay payment data) and approved offline donations
+High
+De-duplicated by email
+DN-006
+Duplicate detection: if email already exists, add donation to existing donor record rather than creating duplicate
+High
+[Heading3] 4.4.2 Donor Detail View
+Req ID
+Requirement Description
+Priority
+Notes
+DN-010
+Drill down into individual donor shows: Profile info, full donation history table (Cause, Amount, Type, Status, Date, Receipt Status)
+High
+<w:tblPrEx><w:tblCellMar><w:top w:w="0" w:type="dxa"/><w:bottom w:w="0" w:type="dxa"/></w:tblCellMar></w:tblPrEx><w:tc><w:tcPr><w:tcW w:w="1000" w:type="dxa"/><w:tcBorders><w:top w:val="single" w:sz="1" w:space="0" w:color="CCCCCC"/><w:left w:val="single" w:sz="1" w:space="0" w:color="CCCCCC"/><w:bottom w:val="single" w:sz="1" w:space="0" w:color="CCCCCC"/><w:right w:val="single" w:sz="1" w:space="0" w:color="CCCCCC"/></w:tcBorders><w:shd w:val="clear" w:color="auto" w:fill="F5F5F5"/><w:tcMar><w:top w:w="80" w:type="dxa"/><w:left w:w="120" w:type="dxa"/><w:bottom w:w="80" w:type="dxa"/><w:right w:w="120" w:type="dxa"/></w:tcMar></w:tcPr><w:p w14:paraId="38A258B0" w14:textId="77777777" w:rsidR="00370331" w:rsidRDefault="00000000"><w:r><w:rPr><w:color w:val="333333"/><w:sz w:val="20"/><w:szCs w:val="20"/></w:rPr><w:t>DN-011
+Send/Resend individual donation receipt from donor detail view
+High
+<w:tblPrEx><w:tblCellMar><w:top w:w="0" w:type="dxa"/><w:bottom w:w="0" w:type="dxa"/></w:tblCellMar></w:tblPrEx><w:tc><w:tcPr><w:tcW w:w="1000" w:type="dxa"/><w:tcBorders><w:top w:val="single" w:sz="1" w:space="0" w:color="CCCCCC"/><w:left w:val="single" w:sz="1" w:space="0" w:color="CCCCCC"/><w:bottom w:val="single" w:sz="1" w:space="0" w:color="CCCCCC"/><w:right w:val="single" w:sz="1" w:space="0" w:color="CCCCCC"/></w:tcBorders><w:shd w:val="clear" w:color="auto" w:fill="FFFFFF"/><w:tcMar><w:top w:w="80" w:type="dxa"/><w:left w:w="120" w:type="dxa"/><w:bottom w:w="80" w:type="dxa"/><w:right w:w="120" w:type="dxa"/></w:tcMar></w:tcPr><w:p w14:paraId="58777553" w14:textId="77777777" w:rsidR="00370331" w:rsidRDefault="00000000"><w:r><w:rPr><w:color w:val="333333"/><w:sz w:val="20"/><w:szCs w:val="20"/></w:rPr><w:t>DN-012
+Generate and send Cumulative Receipt: select date range, system generates a single consolidated PDF listing all donations in that period, total amount, for tax purposes
+High
+80G / tax receipt use case
+DN-013
+Admin can manually edit donor profile: Name, Email, Phone, Address, PAN
+High
+<w:tblPrEx><w:tblCellMar><w:top w:w="0" w:type="dxa"/><w:bottom w:w="0" w:type="dxa"/></w:tblCellMar></w:tblPrEx><w:tc><w:tcPr><w:tcW w:w="1000" w:type="dxa"/><w:tcBorders><w:top w:val="single" w:sz="1" w:space="0" w:color="CCCCCC"/><w:left w:val="single" w:sz="1" w:space="0" w:color="CCCCCC"/><w:bottom w:val="single" w:sz="1" w:space="0" w:color="CCCCCC"/><w:right w:val="single" w:sz="1" w:space="0" w:color="CCCCCC"/></w:tcBorders><w:shd w:val="clear" w:color="auto" w:fill="FFFFFF"/><w:tcMar><w:top w:w="80" w:type="dxa"/><w:left w:w="120" w:type="dxa"/><w:bottom w:w="80" w:type="dxa"/><w:right w:w="120" w:type="dxa"/></w:tcMar></w:tcPr><w:p w14:paraId="426A9378" w14:textId="77777777" w:rsidR="00370331" w:rsidRDefault="00000000"><w:r><w:rPr><w:color w:val="333333"/><w:sz w:val="20"/><w:szCs w:val="20"/></w:rPr><w:t>DN-014
+Admin can merge two donor records if duplicate detected
+Medium
+[Heading2] 4.5 User Management
+Req ID
+Requirement Description
+Priority
+Notes
+UM-001
+Admin can create, edit, deactivate user accounts for the backend dashboard
+High
+<w:tblPrEx><w:tblCellMar><w:top w:w="0" w:type="dxa"/><w:bottom w:w="0" w:type="dxa"/></w:tblCellMar></w:tblPrEx><w:tc><w:tcPr><w:tcW w:w="1000" w:type="dxa"/><w:tcBorders><w:top w:val="single" w:sz="1" w:space="0" w:color="CCCCCC"/><w:left w:val="single" w:sz="1" w:space="0" w:color="CCCCCC"/><w:bottom w:val="single" w:sz="1" w:space="0" w:color="CCCCCC"/><w:right w:val="single" w:sz="1" w:space="0" w:color="CCCCCC"/></w:tcBorders><w:shd w:val="clear" w:color="auto" w:fill="F5F5F5"/><w:tcMar><w:top w:w="80" w:type="dxa"/><w:left w:w="120" w:type="dxa"/><w:bottom w:w="80" w:type="dxa"/><w:right w:w="120" w:type="dxa"/></w:tcMar></w:tcPr><w:p w14:paraId="083B086B" w14:textId="77777777" w:rsidR="00370331" w:rsidRDefault="00000000"><w:r><w:rPr><w:color w:val="333333"/><w:sz w:val="20"/><w:szCs w:val="20"/></w:rPr><w:t>UM-002
+Roles supported: Administrator, Content Manager
+High
+Extensible for future roles
+UM-003
+Content Manager permissions: Create/Edit/Publish Donation Pages; View and filter Donations; Approve/Reject Offline Donations; Send/Resend donation receipts; View Donors
+High
+<w:tblPrEx><w:tblCellMar><w:top w:w="0" w:type="dxa"/><w:bottom w:w="0" w:type="dxa"/></w:tblCellMar></w:tblPrEx><w:tc><w:tcPr><w:tcW w:w="1000" w:type="dxa"/><w:tcBorders><w:top w:val="single" w:sz="1" w:space="0" w:color="CCCCCC"/><w:left w:val="single" w:sz="1" w:space="0" w:color="CCCCCC"/><w:bottom w:val="single" w:sz="1" w:space="0" w:color="CCCCCC"/><w:right w:val="single" w:sz="1" w:space="0" w:color="CCCCCC"/></w:tcBorders><w:shd w:val="clear" w:color="auto" w:fill="F5F5F5"/><w:tcMar><w:top w:w="80" w:type="dxa"/><w:left w:w="120" w:type="dxa"/><w:bottom w:w="80" w:type="dxa"/><w:right w:w="120" w:type="dxa"/></w:tcMar></w:tcPr><w:p w14:paraId="43FCBE99" w14:textId="77777777" w:rsidR="00370331" w:rsidRDefault="00000000"><w:r><w:rPr><w:color w:val="333333"/><w:sz w:val="20"/><w:szCs w:val="20"/></w:rPr><w:t>UM-004
+Administrator permissions: All Content Manager permissions PLUS User Management, Report access, Email Campaign management, System Settings, Receipt Template management, Delete Donation Pages, Donor profile editing
+High
+<w:tblPrEx><w:tblCellMar><w:top w:w="0" w:type="dxa"/><w:bottom w:w="0" w:type="dxa"/></w:tblCellMar></w:tblPrEx><w:tc><w:tcPr><w:tcW w:w="1000" w:type="dxa"/><w:tcBorders><w:top w:val="single" w:sz="1" w:space="0" w:color="CCCCCC"/><w:left w:val="single" w:sz="1" w:space="0" w:color="CCCCCC"/><w:bottom w:val="single" w:sz="1" w:space="0" w:color="CCCCCC"/><w:right w:val="single" w:sz="1" w:space="0" w:color="CCCCCC"/></w:tcBorders><w:shd w:val="clear" w:color="auto" w:fill="FFFFFF"/><w:tcMar><w:top w:w="80" w:type="dxa"/><w:left w:w="120" w:type="dxa"/><w:bottom w:w="80" w:type="dxa"/><w:right w:w="120" w:type="dxa"/></w:tcMar></w:tcPr><w:p w14:paraId="48ADF8D2" w14:textId="77777777" w:rsidR="00370331" w:rsidRDefault="00000000"><w:r><w:rPr><w:color w:val="333333"/><w:sz w:val="20"/><w:szCs w:val="20"/></w:rPr><w:t>UM-005
+Users can log in via username + password with bcrypt-hashed passwords
+High
+<w:tblPrEx><w:tblCellMar><w:top w:w="0" w:type="dxa"/><w:bottom w:w="0" w:type="dxa"/></w:tblCellMar></w:tblPrEx><w:tc><w:tcPr><w:tcW w:w="1000" w:type="dxa"/><w:tcBorders><w:top w:val="single" w:sz="1" w:space="0" w:color="CCCCCC"/><w:left w:val="single" w:sz="1" w:space="0" w:color="CCCCCC"/><w:bottom w:val="single" w:sz="1" w:space="0" w:color="CCCCCC"/><w:right w:val="single" w:sz="1" w:space="0" w:color="CCCCCC"/></w:tcBorders><w:shd w:val="clear" w:color="auto" w:fill="F5F5F5"/><w:tcMar><w:top w:w="80" w:type="dxa"/><w:left w:w="120" w:type="dxa"/><w:bottom w:w="80" w:type="dxa"/><w:right w:w="120" w:type="dxa"/></w:tcMar></w:tcPr><w:p w14:paraId="1BB925C9" w14:textId="77777777" w:rsidR="00370331" w:rsidRDefault="00000000"><w:r><w:rPr><w:color w:val="333333"/><w:sz w:val="20"/><w:szCs w:val="20"/></w:rPr><w:t>UM-006
+Password reset via email OTP/link
+High
+<w:tblPrEx><w:tblCellMar><w:top w:w="0" w:type="dxa"/><w:bottom w:w="0" w:type="dxa"/></w:tblCellMar></w:tblPrEx><w:tc><w:tcPr><w:tcW w:w="1000" w:type="dxa"/><w:tcBorders><w:top w:val="single" w:sz="1" w:space="0" w:color="CCCCCC"/><w:left w:val="single" w:sz="1" w:space="0" w:color="CCCCCC"/><w:bottom w:val="single" w:sz="1" w:space="0" w:color="CCCCCC"/><w:right w:val="single" w:sz="1" w:space="0" w:color="CCCCCC"/></w:tcBorders><w:shd w:val="clear" w:color="auto" w:fill="FFFFFF"/><w:tcMar><w:top w:w="80" w:type="dxa"/><w:left w:w="120" w:type="dxa"/><w:bottom w:w="80" w:type="dxa"/><w:right w:w="120" w:type="dxa"/></w:tcMar></w:tcPr><w:p w14:paraId="390D9B0F" w14:textId="77777777" w:rsidR="00370331" w:rsidRDefault="00000000"><w:r><w:rPr><w:color w:val="333333"/><w:sz w:val="20"/><w:szCs w:val="20"/></w:rPr><w:t>UM-007
+Session management with configurable timeout (default: 4 hours)
+High
+<w:tblPrEx><w:tblCellMar><w:top w:w="0" w:type="dxa"/><w:bottom w:w="0" w:type="dxa"/></w:tblCellMar></w:tblPrEx><w:tc><w:tcPr><w:tcW w:w="1000" w:type="dxa"/><w:tcBorders><w:top w:val="single" w:sz="1" w:space="0" w:color="CCCCCC"/><w:left w:val="single" w:sz="1" w:space="0" w:color="CCCCCC"/><w:bottom w:val="single" w:sz="1" w:space="0" w:color="CCCCCC"/><w:right w:val="single" w:sz="1" w:space="0" w:color="CCCCCC"/></w:tcBorders><w:shd w:val="clear" w:color="auto" w:fill="F5F5F5"/><w:tcMar><w:top w:w="80" w:type="dxa"/><w:left w:w="120" w:type="dxa"/><w:bottom w:w="80" w:type="dxa"/><w:right w:w="120" w:type="dxa"/></w:tcMar></w:tcPr><w:p w14:paraId="346D4815" w14:textId="77777777" w:rsidR="00370331" w:rsidRDefault="00000000"><w:r><w:rPr><w:color w:val="333333"/><w:sz w:val="20"/><w:szCs w:val="20"/></w:rPr><w:t>UM-008
+Audit log: record which user performed which action (create/edit/approve/reject/send) with timestamps
+Medium
+For accountability
+[Heading2] 4.6 Donation Receipt Templates
+Req ID
+Requirement Description
+Priority
+Notes
+RT-001
+Admin can create and manage multiple receipt templates with unique names
+High
+<w:tblPrEx><w:tblCellMar><w:top w:w="0" w:type="dxa"/><w:bottom w:w="0" w:type="dxa"/></w:tblCellMar></w:tblPrEx><w:tc><w:tcPr><w:tcW w:w="1000" w:type="dxa"/><w:tcBorders><w:top w:val="single" w:sz="1" w:space="0" w:color="CCCCCC"/><w:left w:val="single" w:sz="1" w:space="0" w:color="CCCCCC"/><w:bottom w:val="single" w:sz="1" w:space="0" w:color="CCCCCC"/><w:right w:val="single" w:sz="1" w:space="0" w:color="CCCCCC"/></w:tcBorders><w:shd w:val="clear" w:color="auto" w:fill="F5F5F5"/><w:tcMar><w:top w:w="80" w:type="dxa"/><w:left w:w="120" w:type="dxa"/><w:bottom w:w="80" w:type="dxa"/><w:right w:w="120" w:type="dxa"/></w:tcMar></w:tcPr><w:p w14:paraId="41206693" w14:textId="77777777" w:rsidR="00370331" w:rsidRDefault="00000000"><w:r><w:rPr><w:color w:val="333333"/><w:sz w:val="20"/><w:szCs w:val="20"/></w:rPr><w:t>RT-002
+Template editor supports HTML/CSS composition with placeholder variables: {{donor_name}}, {{donor_address}}, {{donor_pan}}, {{donation_amount}}, {{donation_date}}, {{cause_name}}, {{receipt_number}}, {{org_name}}, {{org_address}}, {{80g_number}}
+High
+<w:tblPrEx><w:tblCellMar><w:top w:w="0" w:type="dxa"/><w:bottom w:w="0" w:type="dxa"/></w:tblCellMar></w:tblPrEx><w:tc><w:tcPr><w:tcW w:w="1000" w:type="dxa"/><w:tcBorders><w:top w:val="single" w:sz="1" w:space="0" w:color="CCCCCC"/><w:left w:val="single" w:sz="1" w:space="0" w:color="CCCCCC"/><w:bottom w:val="single" w:sz="1" w:space="0" w:color="CCCCCC"/><w:right w:val="single" w:sz="1" w:space="0" w:color="CCCCCC"/></w:tcBorders><w:shd w:val="clear" w:color="auto" w:fill="FFFFFF"/><w:tcMar><w:top w:w="80" w:type="dxa"/><w:left w:w="120" w:type="dxa"/><w:bottom w:w="80" w:type="dxa"/><w:right w:w="120" w:type="dxa"/></w:tcMar></w:tcPr><w:p w14:paraId="462FBDF3" w14:textId="77777777" w:rsidR="00370331" w:rsidRDefault="00000000"><w:r><w:rPr><w:color w:val="333333"/><w:sz w:val="20"/><w:szCs w:val="20"/></w:rPr><w:t>RT-003
+Template preview with sample data before saving
+High
+<w:tblPrEx><w:tblCellMar><w:top w:w="0" w:type="dxa"/><w:bottom w:w="0" w:type="dxa"/></w:tblCellMar></w:tblPrEx><w:tc><w:tcPr><w:tcW w:w="1000" w:type="dxa"/><w:tcBorders><w:top w:val="single" w:sz="1" w:space="0" w:color="CCCCCC"/><w:left w:val="single" w:sz="1" w:space="0" w:color="CCCCCC"/><w:bottom w:val="single" w:sz="1" w:space="0" w:color="CCCCCC"/><w:right w:val="single" w:sz="1" w:space="0" w:color="CCCCCC"/></w:tcBorders><w:shd w:val="clear" w:color="auto" w:fill="F5F5F5"/><w:tcMar><w:top w:w="80" w:type="dxa"/><w:left w:w="120" w:type="dxa"/><w:bottom w:w="80" w:type="dxa"/><w:right w:w="120" w:type="dxa"/></w:tcMar></w:tcPr><w:p w14:paraId="7B9FB4A2" w14:textId="77777777" w:rsidR="00370331" w:rsidRDefault="00000000"><w:r><w:rPr><w:color w:val="333333"/><w:sz w:val="20"/><w:szCs w:val="20"/></w:rPr><w:t>RT-004
+Admin can assign a template as the default receipt template system-wide, or assign specific templates per cause
+Medium
+<w:tblPrEx><w:tblCellMar><w:top w:w="0" w:type="dxa"/><w:bottom w:w="0" w:type="dxa"/></w:tblCellMar></w:tblPrEx><w:tc><w:tcPr><w:tcW w:w="1000" w:type="dxa"/><w:tcBorders><w:top w:val="single" w:sz="1" w:space="0" w:color="CCCCCC"/><w:left w:val="single" w:sz="1" w:space="0" w:color="CCCCCC"/><w:bottom w:val="single" w:sz="1" w:space="0" w:color="CCCCCC"/><w:right w:val="single" w:sz="1" w:space="0" w:color="CCCCCC"/></w:tcBorders><w:shd w:val="clear" w:color="auto" w:fill="FFFFFF"/><w:tcMar><w:top w:w="80" w:type="dxa"/><w:left w:w="120" w:type="dxa"/><w:bottom w:w="80" w:type="dxa"/><w:right w:w="120" w:type="dxa"/></w:tcMar></w:tcPr><w:p w14:paraId="0C0FCF66" w14:textId="77777777" w:rsidR="00370331" w:rsidRDefault="00000000"><w:r><w:rPr><w:color w:val="333333"/><w:sz w:val="20"/><w:szCs w:val="20"/></w:rPr><w:t>RT-005
+Receipt number format must be configurable (e.g., MCH-2026-0001, prefix + year + sequence)
+High
+<w:tblPrEx><w:tblCellMar><w:top w:w="0" w:type="dxa"/><w:bottom w:w="0" w:type="dxa"/></w:tblCellMar></w:tblPrEx><w:tc><w:tcPr><w:tcW w:w="1000" w:type="dxa"/><w:tcBorders><w:top w:val="single" w:sz="1" w:space="0" w:color="CCCCCC"/><w:left w:val="single" w:sz="1" w:space="0" w:color="CCCCCC"/><w:bottom w:val="single" w:sz="1" w:space="0" w:color="CCCCCC"/><w:right w:val="single" w:sz="1" w:space="0" w:color="CCCCCC"/></w:tcBorders><w:shd w:val="clear" w:color="auto" w:fill="F5F5F5"/><w:tcMar><w:top w:w="80" w:type="dxa"/><w:left w:w="120" w:type="dxa"/><w:bottom w:w="80" w:type="dxa"/><w:right w:w="120" w:type="dxa"/></w:tcMar></w:tcPr><w:p w14:paraId="44371E82" w14:textId="77777777" w:rsidR="00370331" w:rsidRDefault="00000000"><w:r><w:rPr><w:color w:val="333333"/><w:sz w:val="20"/><w:szCs w:val="20"/></w:rPr><w:t>RT-006
+Ability to upload MicroCharity logo and signature images to embed in templates
+High
+[Heading2] 4.7 Email Campaigns
+Req ID
+Requirement Description
+Priority
+Notes
+EC-001
+When a new Donation Page is published, admin is prompted (with option) to trigger an email campaign to all existing donors
+High
+<w:tblPrEx><w:tblCellMar><w:top w:w="0" w:type="dxa"/><w:bottom w:w="0" w:type="dxa"/></w:tblCellMar></w:tblPrEx><w:tc><w:tcPr><w:tcW w:w="1000" w:type="dxa"/><w:tcBorders><w:top w:val="single" w:sz="1" w:space="0" w:color="CCCCCC"/><w:left w:val="single" w:sz="1" w:space="0" w:color="CCCCCC"/><w:bottom w:val="single" w:sz="1" w:space="0" w:color="CCCCCC"/><w:right w:val="single" w:sz="1" w:space="0" w:color="CCCCCC"/></w:tcBorders><w:shd w:val="clear" w:color="auto" w:fill="F5F5F5"/><w:tcMar><w:top w:w="80" w:type="dxa"/><w:left w:w="120" w:type="dxa"/><w:bottom w:w="80" w:type="dxa"/><w:right w:w="120" w:type="dxa"/></w:tcMar></w:tcPr><w:p w14:paraId="59B5F79F" w14:textId="77777777" w:rsidR="00370331" w:rsidRDefault="00000000"><w:r><w:rPr><w:color w:val="333333"/><w:sz w:val="20"/><w:szCs w:val="20"/></w:rPr><w:t>EC-002
+Campaign email composer: Subject line, Email body (HTML/rich text editor), Preview text, Footer (auto-appended with unsubscribe link)
+High
+<w:tblPrEx><w:tblCellMar><w:top w:w="0" w:type="dxa"/><w:bottom w:w="0" w:type="dxa"/></w:tblCellMar></w:tblPrEx><w:tc><w:tcPr><w:tcW w:w="1000" w:type="dxa"/><w:tcBorders><w:top w:val="single" w:sz="1" w:space="0" w:color="CCCCCC"/><w:left w:val="single" w:sz="1" w:space="0" w:color="CCCCCC"/><w:bottom w:val="single" w:sz="1" w:space="0" w:color="CCCCCC"/><w:right w:val="single" w:sz="1" w:space="0" w:color="CCCCCC"/></w:tcBorders><w:shd w:val="clear" w:color="auto" w:fill="FFFFFF"/><w:tcMar><w:top w:w="80" w:type="dxa"/><w:left w:w="120" w:type="dxa"/><w:bottom w:w="80" w:type="dxa"/><w:right w:w="120" w:type="dxa"/></w:tcMar></w:tcPr><w:p w14:paraId="4EA50922" w14:textId="77777777" w:rsidR="00370331" w:rsidRDefault="00000000"><w:r><w:rPr><w:color w:val="333333"/><w:sz w:val="20"/><w:szCs w:val="20"/></w:rPr><w:t>EC-003
+Campaign can be sent to: All Donors, Donors who donated to a specific past cause, Custom segment (by date range / amount)
+Medium
+<w:tblPrEx><w:tblCellMar><w:top w:w="0" w:type="dxa"/><w:bottom w:w="0" w:type="dxa"/></w:tblCellMar></w:tblPrEx><w:tc><w:tcPr><w:tcW w:w="1000" w:type="dxa"/><w:tcBorders><w:top w:val="single" w:sz="1" w:space="0" w:color="CCCCCC"/><w:left w:val="single" w:sz="1" w:space="0" w:color="CCCCCC"/><w:bottom w:val="single" w:sz="1" w:space="0" w:color="CCCCCC"/><w:right w:val="single" w:sz="1" w:space="0" w:color="CCCCCC"/></w:tcBorders><w:shd w:val="clear" w:color="auto" w:fill="F5F5F5"/><w:tcMar><w:top w:w="80" w:type="dxa"/><w:left w:w="120" w:type="dxa"/><w:bottom w:w="80" w:type="dxa"/><w:right w:w="120" w:type="dxa"/></w:tcMar></w:tcPr><w:p w14:paraId="0533A388" w14:textId="77777777" w:rsidR="00370331" w:rsidRDefault="00000000"><w:r><w:rPr><w:color w:val="333333"/><w:sz w:val="20"/><w:szCs w:val="20"/></w:rPr><w:t>EC-004
+Email delivery via Gmail for Business using Gmail API (OAuth 2.0) or configured SMTP credentials
+High
+Gmail API preferred for reliability
+EC-005
+Respect email unsubscribe preferences; maintain suppression list
+High
+Legal compliance
+EC-006
+Campaign history: list of all campaigns sent with: Subject, Date Sent, Recipient Count, Status
+Medium
+<w:tblPrEx><w:tblCellMar><w:top w:w="0" w:type="dxa"/><w:bottom w:w="0" w:type="dxa"/></w:tblCellMar></w:tblPrEx><w:tc><w:tcPr><w:tcW w:w="1000" w:type="dxa"/><w:tcBorders><w:top w:val="single" w:sz="1" w:space="0" w:color="CCCCCC"/><w:left w:val="single" w:sz="1" w:space="0" w:color="CCCCCC"/><w:bottom w:val="single" w:sz="1" w:space="0" w:color="CCCCCC"/><w:right w:val="single" w:sz="1" w:space="0" w:color="CCCCCC"/></w:tcBorders><w:shd w:val="clear" w:color="auto" w:fill="FFFFFF"/><w:tcMar><w:top w:w="80" w:type="dxa"/><w:left w:w="120" w:type="dxa"/><w:bottom w:w="80" w:type="dxa"/><w:right w:w="120" w:type="dxa"/></w:tcMar></w:tcPr><w:p w14:paraId="1D73FE41" w14:textId="77777777" w:rsidR="00370331" w:rsidRDefault="00000000"><w:r><w:rPr><w:color w:val="333333"/><w:sz w:val="20"/><w:szCs w:val="20"/></w:rPr><w:t>EC-007
+Rate-limited sending to comply with Gmail's daily send limits (default: 2,000 emails/day for Workspace)
+High
+Queue-based delivery
+EC-008
+Email templates for: New Cause Campaign, Donation Receipt, Offline Donation Instructions, Thank You, PAN Receipt — all configurable
+High
+[Heading2] 4.8 Reports
+Req ID
+Requirement Description
+Priority
+Notes
+RP-001
+Donation Summary Report: Total Donations, Total Amount by date range; breakdowns by cause, by type (online/offline)
+High
+<w:tblPrEx><w:tblCellMar><w:top w:w="0" w:type="dxa"/><w:bottom w:w="0" w:type="dxa"/></w:tblCellMar></w:tblPrEx><w:tc><w:tcPr><w:tcW w:w="1000" w:type="dxa"/><w:tcBorders><w:top w:val="single" w:sz="1" w:space="0" w:color="CCCCCC"/><w:left w:val="single" w:sz="1" w:space="0" w:color="CCCCCC"/><w:bottom w:val="single" w:sz="1" w:space="0" w:color="CCCCCC"/><w:right w:val="single" w:sz="1" w:space="0" w:color="CCCCCC"/></w:tcBorders><w:shd w:val="clear" w:color="auto" w:fill="F5F5F5"/><w:tcMar><w:top w:w="80" w:type="dxa"/><w:left w:w="120" w:type="dxa"/><w:bottom w:w="80" w:type="dxa"/><w:right w:w="120" w:type="dxa"/></w:tcMar></w:tcPr><w:p w14:paraId="36BE3684" w14:textId="77777777" w:rsidR="00370331" w:rsidRDefault="00000000"><w:r><w:rPr><w:color w:val="333333"/><w:sz w:val="20"/><w:szCs w:val="20"/></w:rPr><w:t>RP-002
+Cause-wise Report: Per-cause breakdown of goal, raised, donor count, progress %, active period
+High
+<w:tblPrEx><w:tblCellMar><w:top w:w="0" w:type="dxa"/><w:bottom w:w="0" w:type="dxa"/></w:tblCellMar></w:tblPrEx><w:tc><w:tcPr><w:tcW w:w="1000" w:type="dxa"/><w:tcBorders><w:top w:val="single" w:sz="1" w:space="0" w:color="CCCCCC"/><w:left w:val="single" w:sz="1" w:space="0" w:color="CCCCCC"/><w:bottom w:val="single" w:sz="1" w:space="0" w:color="CCCCCC"/><w:right w:val="single" w:sz="1" w:space="0" w:color="CCCCCC"/></w:tcBorders><w:shd w:val="clear" w:color="auto" w:fill="FFFFFF"/><w:tcMar><w:top w:w="80" w:type="dxa"/><w:left w:w="120" w:type="dxa"/><w:bottom w:w="80" w:type="dxa"/><w:right w:w="120" w:type="dxa"/></w:tcMar></w:tcPr><w:p w14:paraId="54B7D6E1" w14:textId="77777777" w:rsidR="00370331" w:rsidRDefault="00000000"><w:r><w:rPr><w:color w:val="333333"/><w:sz w:val="20"/><w:szCs w:val="20"/></w:rPr><w:t>RP-003
+Donor Report: Donor list with total giving, first/last donation dates; filterable by range
+High
+<w:tblPrEx><w:tblCellMar><w:top w:w="0" w:type="dxa"/><w:bottom w:w="0" w:type="dxa"/></w:tblCellMar></w:tblPrEx><w:tc><w:tcPr><w:tcW w:w="1000" w:type="dxa"/><w:tcBorders><w:top w:val="single" w:sz="1" w:space="0" w:color="CCCCCC"/><w:left w:val="single" w:sz="1" w:space="0" w:color="CCCCCC"/><w:bottom w:val="single" w:sz="1" w:space="0" w:color="CCCCCC"/><w:right w:val="single" w:sz="1" w:space="0" w:color="CCCCCC"/></w:tcBorders><w:shd w:val="clear" w:color="auto" w:fill="F5F5F5"/><w:tcMar><w:top w:w="80" w:type="dxa"/><w:left w:w="120" w:type="dxa"/><w:bottom w:w="80" w:type="dxa"/><w:right w:w="120" w:type="dxa"/></w:tcMar></w:tcPr><w:p w14:paraId="68DCF06C" w14:textId="77777777" w:rsidR="00370331" w:rsidRDefault="00000000"><w:r><w:rPr><w:color w:val="333333"/><w:sz w:val="20"/><w:szCs w:val="20"/></w:rPr><w:t>RP-004
+Pending Donations Report: All offline donations pending approval
+High
+<w:tblPrEx><w:tblCellMar><w:top w:w="0" w:type="dxa"/><w:bottom w:w="0" w:type="dxa"/></w:tblCellMar></w:tblPrEx><w:tc><w:tcPr><w:tcW w:w="1000" w:type="dxa"/><w:tcBorders><w:top w:val="single" w:sz="1" w:space="0" w:color="CCCCCC"/><w:left w:val="single" w:sz="1" w:space="0" w:color="CCCCCC"/><w:bottom w:val="single" w:sz="1" w:space="0" w:color="CCCCCC"/><w:right w:val="single" w:sz="1" w:space="0" w:color="CCCCCC"/></w:tcBorders><w:shd w:val="clear" w:color="auto" w:fill="FFFFFF"/><w:tcMar><w:top w:w="80" w:type="dxa"/><w:left w:w="120" w:type="dxa"/><w:bottom w:w="80" w:type="dxa"/><w:right w:w="120" w:type="dxa"/></w:tcMar></w:tcPr><w:p w14:paraId="45B96452" w14:textId="77777777" w:rsidR="00370331" w:rsidRDefault="00000000"><w:r><w:rPr><w:color w:val="333333"/><w:sz w:val="20"/><w:szCs w:val="20"/></w:rPr><w:t>RP-005
+Disbursement Report: Admin-entered disbursement records with dates and amounts per beneficiary/cause
+Medium
+<w:tblPrEx><w:tblCellMar><w:top w:w="0" w:type="dxa"/><w:bottom w:w="0" w:type="dxa"/></w:tblCellMar></w:tblPrEx><w:tc><w:tcPr><w:tcW w:w="1000" w:type="dxa"/><w:tcBorders><w:top w:val="single" w:sz="1" w:space="0" w:color="CCCCCC"/><w:left w:val="single" w:sz="1" w:space="0" w:color="CCCCCC"/><w:bottom w:val="single" w:sz="1" w:space="0" w:color="CCCCCC"/><w:right w:val="single" w:sz="1" w:space="0" w:color="CCCCCC"/></w:tcBorders><w:shd w:val="clear" w:color="auto" w:fill="F5F5F5"/><w:tcMar><w:top w:w="80" w:type="dxa"/><w:left w:w="120" w:type="dxa"/><w:bottom w:w="80" w:type="dxa"/><w:right w:w="120" w:type="dxa"/></w:tcMar></w:tcPr><w:p w14:paraId="5B96A72C" w14:textId="77777777" w:rsidR="00370331" w:rsidRDefault="00000000"><w:r><w:rPr><w:color w:val="333333"/><w:sz w:val="20"/><w:szCs w:val="20"/></w:rPr><w:t>RP-006
+Receipt Audit Report: All receipts generated, sent, resent with timestamps and recipient emails
+Medium
+<w:tblPrEx><w:tblCellMar><w:top w:w="0" w:type="dxa"/><w:bottom w:w="0" w:type="dxa"/></w:tblCellMar></w:tblPrEx><w:tc><w:tcPr><w:tcW w:w="1000" w:type="dxa"/><w:tcBorders><w:top w:val="single" w:sz="1" w:space="0" w:color="CCCCCC"/><w:left w:val="single" w:sz="1" w:space="0" w:color="CCCCCC"/><w:bottom w:val="single" w:sz="1" w:space="0" w:color="CCCCCC"/><w:right w:val="single" w:sz="1" w:space="0" w:color="CCCCCC"/></w:tcBorders><w:shd w:val="clear" w:color="auto" w:fill="FFFFFF"/><w:tcMar><w:top w:w="80" w:type="dxa"/><w:left w:w="120" w:type="dxa"/><w:bottom w:w="80" w:type="dxa"/><w:right w:w="120" w:type="dxa"/></w:tcMar></w:tcPr><w:p w14:paraId="20137AE7" w14:textId="77777777" w:rsidR="00370331" w:rsidRDefault="00000000"><w:r><w:rPr><w:color w:val="333333"/><w:sz w:val="20"/><w:szCs w:val="20"/></w:rPr><w:t>RP-007
+All reports exportable to PDF and CSV/Excel
+High
+<w:tblPrEx><w:tblCellMar><w:top w:w="0" w:type="dxa"/><w:bottom w:w="0" w:type="dxa"/></w:tblCellMar></w:tblPrEx><w:tc><w:tcPr><w:tcW w:w="1000" w:type="dxa"/><w:tcBorders><w:top w:val="single" w:sz="1" w:space="0" w:color="CCCCCC"/><w:left w:val="single" w:sz="1" w:space="0" w:color="CCCCCC"/><w:bottom w:val="single" w:sz="1" w:space="0" w:color="CCCCCC"/><w:right w:val="single" w:sz="1" w:space="0" w:color="CCCCCC"/></w:tcBorders><w:shd w:val="clear" w:color="auto" w:fill="F5F5F5"/><w:tcMar><w:top w:w="80" w:type="dxa"/><w:left w:w="120" w:type="dxa"/><w:bottom w:w="80" w:type="dxa"/><w:right w:w="120" w:type="dxa"/></w:tcMar></w:tcPr><w:p w14:paraId="5E60E679" w14:textId="77777777" w:rsidR="00370331" w:rsidRDefault="00000000"><w:r><w:rPr><w:color w:val="333333"/><w:sz w:val="20"/><w:szCs w:val="20"/></w:rPr><w:t>RP-008
+Date range filter on all reports
+High
+<w:tblPrEx><w:tblCellMar><w:top w:w="0" w:type="dxa"/><w:bottom w:w="0" w:type="dxa"/></w:tblCellMar></w:tblPrEx><w:tc><w:tcPr><w:tcW w:w="1000" w:type="dxa"/><w:tcBorders><w:top w:val="single" w:sz="1" w:space="0" w:color="CCCCCC"/><w:left w:val="single" w:sz="1" w:space="0" w:color="CCCCCC"/><w:bottom w:val="single" w:sz="1" w:space="0" w:color="CCCCCC"/><w:right w:val="single" w:sz="1" w:space="0" w:color="CCCCCC"/></w:tcBorders><w:shd w:val="clear" w:color="auto" w:fill="FFFFFF"/><w:tcMar><w:top w:w="80" w:type="dxa"/><w:left w:w="120" w:type="dxa"/><w:bottom w:w="80" w:type="dxa"/><w:right w:w="120" w:type="dxa"/></w:tcMar></w:tcPr><w:p w14:paraId="61D6BA1B" w14:textId="77777777" w:rsidR="00370331" w:rsidRDefault="00000000"><w:r><w:rPr><w:color w:val="333333"/><w:sz w:val="20"/><w:szCs w:val="20"/></w:rPr><w:t>RP-009
+Financial Year filter (April–March) for Indian FY compliance
+High
+[Heading1] 5. Integration Requirements
+[Heading2] 5.1 Razorpay Payment Gateway
+Req ID
+Requirement Description
+Priority
+Notes
+RZ-001
+Integrate Razorpay Checkout (standard or custom) for online donation processing
+High
+<w:tblPrEx><w:tblCellMar><w:top w:w="0" w:type="dxa"/><w:bottom w:w="0" w:type="dxa"/></w:tblCellMar></w:tblPrEx><w:tc><w:tcPr><w:tcW w:w="1000" w:type="dxa"/><w:tcBorders><w:top w:val="single" w:sz="1" w:space="0" w:color="CCCCCC"/><w:left w:val="single" w:sz="1" w:space="0" w:color="CCCCCC"/><w:bottom w:val="single" w:sz="1" w:space="0" w:color="CCCCCC"/><w:right w:val="single" w:sz="1" w:space="0" w:color="CCCCCC"/></w:tcBorders><w:shd w:val="clear" w:color="auto" w:fill="F5F5F5"/><w:tcMar><w:top w:w="80" w:type="dxa"/><w:left w:w="120" w:type="dxa"/><w:bottom w:w="80" w:type="dxa"/><w:right w:w="120" w:type="dxa"/></w:tcMar></w:tcPr><w:p w14:paraId="5401BF39" w14:textId="77777777" w:rsidR="00370331" w:rsidRDefault="00000000"><w:r><w:rPr><w:color w:val="333333"/><w:sz w:val="20"/><w:szCs w:val="20"/></w:rPr><w:t>RZ-002
+Support payment methods: UPI, Net Banking, Credit/Debit Cards, Wallets
+High
+Razorpay standard support
+RZ-003
+Configure Razorpay webhook to receive payment success/failure events and update donation status accordingly
+High
+Signature verification mandatory
+RZ-004
+On Razorpay payment success webhook: mark donation as Approved, update cause raised total, create/update donor record, trigger receipt email
+High
+<w:tblPrEx><w:tblCellMar><w:top w:w="0" w:type="dxa"/><w:bottom w:w="0" w:type="dxa"/></w:tblCellMar></w:tblPrEx><w:tc><w:tcPr><w:tcW w:w="1000" w:type="dxa"/><w:tcBorders><w:top w:val="single" w:sz="1" w:space="0" w:color="CCCCCC"/><w:left w:val="single" w:sz="1" w:space="0" w:color="CCCCCC"/><w:bottom w:val="single" w:sz="1" w:space="0" w:color="CCCCCC"/><w:right w:val="single" w:sz="1" w:space="0" w:color="CCCCCC"/></w:tcBorders><w:shd w:val="clear" w:color="auto" w:fill="FFFFFF"/><w:tcMar><w:top w:w="80" w:type="dxa"/><w:left w:w="120" w:type="dxa"/><w:bottom w:w="80" w:type="dxa"/><w:right w:w="120" w:type="dxa"/></w:tcMar></w:tcPr><w:p w14:paraId="26A12E92" w14:textId="77777777" w:rsidR="00370331" w:rsidRDefault="00000000"><w:r><w:rPr><w:color w:val="333333"/><w:sz w:val="20"/><w:szCs w:val="20"/></w:rPr><w:t>RZ-005
+On Razorpay payment failure: mark donation as Failed, optionally notify donor with retry link
+Medium
+<w:tblPrEx><w:tblCellMar><w:top w:w="0" w:type="dxa"/><w:bottom w:w="0" w:type="dxa"/></w:tblCellMar></w:tblPrEx><w:tc><w:tcPr><w:tcW w:w="1000" w:type="dxa"/><w:tcBorders><w:top w:val="single" w:sz="1" w:space="0" w:color="CCCCCC"/><w:left w:val="single" w:sz="1" w:space="0" w:color="CCCCCC"/><w:bottom w:val="single" w:sz="1" w:space="0" w:color="CCCCCC"/><w:right w:val="single" w:sz="1" w:space="0" w:color="CCCCCC"/></w:tcBorders><w:shd w:val="clear" w:color="auto" w:fill="F5F5F5"/><w:tcMar><w:top w:w="80" w:type="dxa"/><w:left w:w="120" w:type="dxa"/><w:bottom w:w="80" w:type="dxa"/><w:right w:w="120" w:type="dxa"/></w:tcMar></w:tcPr><w:p w14:paraId="3BFF5D21" w14:textId="77777777" w:rsidR="00370331" w:rsidRDefault="00000000"><w:r><w:rPr><w:color w:val="333333"/><w:sz w:val="20"/><w:szCs w:val="20"/></w:rPr><w:t>RZ-006
+Store Razorpay Payment ID, Order ID, and Signature against each online donation record for reconciliation
+High
+<w:tblPrEx><w:tblCellMar><w:top w:w="0" w:type="dxa"/><w:bottom w:w="0" w:type="dxa"/></w:tblCellMar></w:tblPrEx><w:tc><w:tcPr><w:tcW w:w="1000" w:type="dxa"/><w:tcBorders><w:top w:val="single" w:sz="1" w:space="0" w:color="CCCCCC"/><w:left w:val="single" w:sz="1" w:space="0" w:color="CCCCCC"/><w:bottom w:val="single" w:sz="1" w:space="0" w:color="CCCCCC"/><w:right w:val="single" w:sz="1" w:space="0" w:color="CCCCCC"/></w:tcBorders><w:shd w:val="clear" w:color="auto" w:fill="FFFFFF"/><w:tcMar><w:top w:w="80" w:type="dxa"/><w:left w:w="120" w:type="dxa"/><w:bottom w:w="80" w:type="dxa"/><w:right w:w="120" w:type="dxa"/></w:tcMar></w:tcPr><w:p w14:paraId="1DB5D1C1" w14:textId="77777777" w:rsidR="00370331" w:rsidRDefault="00000000"><w:r><w:rPr><w:color w:val="333333"/><w:sz w:val="20"/><w:szCs w:val="20"/></w:rPr><w:t>RZ-007
+Razorpay API keys (key_id and key_secret) stored as encrypted environment variables
+High
+Never in source code
+RZ-008
+Razorpay Test Mode support for development/staging environments
+High
+[Heading2] 5.2 Gmail / Email Integration
+Req ID
+Requirement Description
+Priority
+Notes
+GM-001
+Configure Gmail for Business account as the email sender for all system-generated emails
+High
+<w:tblPrEx><w:tblCellMar><w:top w:w="0" w:type="dxa"/><w:bottom w:w="0" w:type="dxa"/></w:tblCellMar></w:tblPrEx><w:tc><w:tcPr><w:tcW w:w="1000" w:type="dxa"/><w:tcBorders><w:top w:val="single" w:sz="1" w:space="0" w:color="CCCCCC"/><w:left w:val="single" w:sz="1" w:space="0" w:color="CCCCCC"/><w:bottom w:val="single" w:sz="1" w:space="0" w:color="CCCCCC"/><w:right w:val="single" w:sz="1" w:space="0" w:color="CCCCCC"/></w:tcBorders><w:shd w:val="clear" w:color="auto" w:fill="F5F5F5"/><w:tcMar><w:top w:w="80" w:type="dxa"/><w:left w:w="120" w:type="dxa"/><w:bottom w:w="80" w:type="dxa"/><w:right w:w="120" w:type="dxa"/></w:tcMar></w:tcPr><w:p w14:paraId="4421B3D7" w14:textId="77777777" w:rsidR="00370331" w:rsidRDefault="00000000"><w:r><w:rPr><w:color w:val="333333"/><w:sz w:val="20"/><w:szCs w:val="20"/></w:rPr><w:t>GM-002
+Use Gmail API (OAuth 2.0) or SMTP with app password for authenticated sending
+High
+<w:tblPrEx><w:tblCellMar><w:top w:w="0" w:type="dxa"/><w:bottom w:w="0" w:type="dxa"/></w:tblCellMar></w:tblPrEx><w:tc><w:tcPr><w:tcW w:w="1000" w:type="dxa"/><w:tcBorders><w:top w:val="single" w:sz="1" w:space="0" w:color="CCCCCC"/><w:left w:val="single" w:sz="1" w:space="0" w:color="CCCCCC"/><w:bottom w:val="single" w:sz="1" w:space="0" w:color="CCCCCC"/><w:right w:val="single" w:sz="1" w:space="0" w:color="CCCCCC"/></w:tcBorders><w:shd w:val="clear" w:color="auto" w:fill="FFFFFF"/><w:tcMar><w:top w:w="80" w:type="dxa"/><w:left w:w="120" w:type="dxa"/><w:bottom w:w="80" w:type="dxa"/><w:right w:w="120" w:type="dxa"/></w:tcMar></w:tcPr><w:p w14:paraId="379BA4D1" w14:textId="77777777" w:rsidR="00370331" w:rsidRDefault="00000000"><w:r><w:rPr><w:color w:val="333333"/><w:sz w:val="20"/><w:szCs w:val="20"/></w:rPr><w:t>GM-003
+All transactional emails (receipts, offline donation instructions, OTPs) use a dedicated queue to prevent rate limit issues
+High
+<w:tblPrEx><w:tblCellMar><w:top w:w="0" w:type="dxa"/><w:bottom w:w="0" w:type="dxa"/></w:tblCellMar></w:tblPrEx><w:tc><w:tcPr><w:tcW w:w="1000" w:type="dxa"/><w:tcBorders><w:top w:val="single" w:sz="1" w:space="0" w:color="CCCCCC"/><w:left w:val="single" w:sz="1" w:space="0" w:color="CCCCCC"/><w:bottom w:val="single" w:sz="1" w:space="0" w:color="CCCCCC"/><w:right w:val="single" w:sz="1" w:space="0" w:color="CCCCCC"/></w:tcBorders><w:shd w:val="clear" w:color="auto" w:fill="F5F5F5"/><w:tcMar><w:top w:w="80" w:type="dxa"/><w:left w:w="120" w:type="dxa"/><w:bottom w:w="80" w:type="dxa"/><w:right w:w="120" w:type="dxa"/></w:tcMar></w:tcPr><w:p w14:paraId="4CA01ABF" w14:textId="77777777" w:rsidR="00370331" w:rsidRDefault="00000000"><w:r><w:rPr><w:color w:val="333333"/><w:sz w:val="20"/><w:szCs w:val="20"/></w:rPr><w:t>GM-004
+Email sending failures are logged and flagged in admin dashboard for retry
+High
+<w:tblPrEx><w:tblCellMar><w:top w:w="0" w:type="dxa"/><w:bottom w:w="0" w:type="dxa"/></w:tblCellMar></w:tblPrEx><w:tc><w:tcPr><w:tcW w:w="1000" w:type="dxa"/><w:tcBorders><w:top w:val="single" w:sz="1" w:space="0" w:color="CCCCCC"/><w:left w:val="single" w:sz="1" w:space="0" w:color="CCCCCC"/><w:bottom w:val="single" w:sz="1" w:space="0" w:color="CCCCCC"/><w:right w:val="single" w:sz="1" w:space="0" w:color="CCCCCC"/></w:tcBorders><w:shd w:val="clear" w:color="auto" w:fill="FFFFFF"/><w:tcMar><w:top w:w="80" w:type="dxa"/><w:left w:w="120" w:type="dxa"/><w:bottom w:w="80" w:type="dxa"/><w:right w:w="120" w:type="dxa"/></w:tcMar></w:tcPr><w:p w14:paraId="37E00C08" w14:textId="77777777" w:rsidR="00370331" w:rsidRDefault="00000000"><w:r><w:rPr><w:color w:val="333333"/><w:sz w:val="20"/><w:szCs w:val="20"/></w:rPr><w:t>GM-005
+Admin can configure sender name, reply-to email in system settings
+Medium
+[Heading2] 5.3 Content Migration from Existing WordPress Site
+Req ID
+Requirement Description
+Priority
+Notes
+MG-001
+All static pages from the current WordPress site (www.microcharity.com) must be manually or programmatically migrated to the new CMS with content and formatting preserved
+High
+<w:tblPrEx><w:tblCellMar><w:top w:w="0" w:type="dxa"/><w:bottom w:w="0" w:type="dxa"/></w:tblCellMar></w:tblPrEx><w:tc><w:tcPr><w:tcW w:w="1000" w:type="dxa"/><w:tcBorders><w:top w:val="single" w:sz="1" w:space="0" w:color="CCCCCC"/><w:left w:val="single" w:sz="1" w:space="0" w:color="CCCCCC"/><w:bottom w:val="single" w:sz="1" w:space="0" w:color="CCCCCC"/><w:right w:val="single" w:sz="1" w:space="0" w:color="CCCCCC"/></w:tcBorders><w:shd w:val="clear" w:color="auto" w:fill="F5F5F5"/><w:tcMar><w:top w:w="80" w:type="dxa"/><w:left w:w="120" w:type="dxa"/><w:bottom w:w="80" w:type="dxa"/><w:right w:w="120" w:type="dxa"/></w:tcMar></w:tcPr><w:p w14:paraId="36D992C5" w14:textId="77777777" w:rsidR="00370331" w:rsidRDefault="00000000"><w:r><w:rPr><w:color w:val="333333"/><w:sz w:val="20"/><w:szCs w:val="20"/></w:rPr><w:t>MG-002
+Existing images and media files from WordPress must be migrated to the new media storage
+High
+<w:tblPrEx><w:tblCellMar><w:top w:w="0" w:type="dxa"/><w:bottom w:w="0" w:type="dxa"/></w:tblCellMar></w:tblPrEx><w:tc><w:tcPr><w:tcW w:w="1000" w:type="dxa"/><w:tcBorders><w:top w:val="single" w:sz="1" w:space="0" w:color="CCCCCC"/><w:left w:val="single" w:sz="1" w:space="0" w:color="CCCCCC"/><w:bottom w:val="single" w:sz="1" w:space="0" w:color="CCCCCC"/><w:right w:val="single" w:sz="1" w:space="0" w:color="CCCCCC"/></w:tcBorders><w:shd w:val="clear" w:color="auto" w:fill="FFFFFF"/><w:tcMar><w:top w:w="80" w:type="dxa"/><w:left w:w="120" w:type="dxa"/><w:bottom w:w="80" w:type="dxa"/><w:right w:w="120" w:type="dxa"/></w:tcMar></w:tcPr><w:p w14:paraId="26F3746E" w14:textId="77777777" w:rsidR="00370331" w:rsidRDefault="00000000"><w:r><w:rPr><w:color w:val="333333"/><w:sz w:val="20"/><w:szCs w:val="20"/></w:rPr><w:t>MG-003
+URL structure should be preserved where possible; where changed, 301 redirects must be configured
+High
+SEO preservation
+MG-004
+Navigation menus must be recreated to match current site structure
+High
+[Heading1] 6. Non-Functional Requirements
+[Heading2] 6.1 Performance
+Req ID
+Requirement Description
+Priority
+Notes
+NF-001
+Public home page must load in under 3 seconds on a standard 4G mobile connection
+High
+Lighthouse score ≥ 70
+NF-002
+Donation payment flow must complete (form to Razorpay to success page) in under 5 seconds on average
+High
+<w:tblPrEx><w:tblCellMar><w:top w:w="0" w:type="dxa"/><w:bottom w:w="0" w:type="dxa"/></w:tblCellMar></w:tblPrEx><w:tc><w:tcPr><w:tcW w:w="1000" w:type="dxa"/><w:tcBorders><w:top w:val="single" w:sz="1" w:space="0" w:color="CCCCCC"/><w:left w:val="single" w:sz="1" w:space="0" w:color="CCCCCC"/><w:bottom w:val="single" w:sz="1" w:space="0" w:color="CCCCCC"/><w:right w:val="single" w:sz="1" w:space="0" w:color="CCCCCC"/></w:tcBorders><w:shd w:val="clear" w:color="auto" w:fill="FFFFFF"/><w:tcMar><w:top w:w="80" w:type="dxa"/><w:left w:w="120" w:type="dxa"/><w:bottom w:w="80" w:type="dxa"/><w:right w:w="120" w:type="dxa"/></w:tcMar></w:tcPr><w:p w14:paraId="5FFBBCD6" w14:textId="77777777" w:rsidR="00370331" w:rsidRDefault="00000000"><w:r><w:rPr><w:color w:val="333333"/><w:sz w:val="20"/><w:szCs w:val="20"/></w:rPr><w:t>NF-003
+Admin dashboard pages must load in under 4 seconds
+Medium
+<w:tblPrEx><w:tblCellMar><w:top w:w="0" w:type="dxa"/><w:bottom w:w="0" w:type="dxa"/></w:tblCellMar></w:tblPrEx><w:tc><w:tcPr><w:tcW w:w="1000" w:type="dxa"/><w:tcBorders><w:top w:val="single" w:sz="1" w:space="0" w:color="CCCCCC"/><w:left w:val="single" w:sz="1" w:space="0" w:color="CCCCCC"/><w:bottom w:val="single" w:sz="1" w:space="0" w:color="CCCCCC"/><w:right w:val="single" w:sz="1" w:space="0" w:color="CCCCCC"/></w:tcBorders><w:shd w:val="clear" w:color="auto" w:fill="F5F5F5"/><w:tcMar><w:top w:w="80" w:type="dxa"/><w:left w:w="120" w:type="dxa"/><w:bottom w:w="80" w:type="dxa"/><w:right w:w="120" w:type="dxa"/></w:tcMar></w:tcPr><w:p w14:paraId="0FDA836B" w14:textId="77777777" w:rsidR="00370331" w:rsidRDefault="00000000"><w:r><w:rPr><w:color w:val="333333"/><w:sz w:val="20"/><w:szCs w:val="20"/></w:rPr><w:t>NF-004
+Database queries for reports must complete in under 10 seconds for datasets up to 100,000 donation records
+Medium
+Indexing required
+[Heading2] 6.2 Security
+Req ID
+Requirement Description
+Priority
+Notes
+SEC-001
+All pages must be served over HTTPS with a valid SSL certificate
+High
+<w:tblPrEx><w:tblCellMar><w:top w:w="0" w:type="dxa"/><w:bottom w:w="0" w:type="dxa"/></w:tblCellMar></w:tblPrEx><w:tc><w:tcPr><w:tcW w:w="1000" w:type="dxa"/><w:tcBorders><w:top w:val="single" w:sz="1" w:space="0" w:color="CCCCCC"/><w:left w:val="single" w:sz="1" w:space="0" w:color="CCCCCC"/><w:bottom w:val="single" w:sz="1" w:space="0" w:color="CCCCCC"/><w:right w:val="single" w:sz="1" w:space="0" w:color="CCCCCC"/></w:tcBorders><w:shd w:val="clear" w:color="auto" w:fill="F5F5F5"/><w:tcMar><w:top w:w="80" w:type="dxa"/><w:left w:w="120" w:type="dxa"/><w:bottom w:w="80" w:type="dxa"/><w:right w:w="120" w:type="dxa"/></w:tcMar></w:tcPr><w:p w14:paraId="18F9752F" w14:textId="77777777" w:rsidR="00370331" w:rsidRDefault="00000000"><w:r><w:rPr><w:color w:val="333333"/><w:sz w:val="20"/><w:szCs w:val="20"/></w:rPr><w:t>SEC-002
+Admin dashboard must require authentication; unauthenticated access redirects to login
+High
+<w:tblPrEx><w:tblCellMar><w:top w:w="0" w:type="dxa"/><w:bottom w:w="0" w:type="dxa"/></w:tblCellMar></w:tblPrEx><w:tc><w:tcPr><w:tcW w:w="1000" w:type="dxa"/><w:tcBorders><w:top w:val="single" w:sz="1" w:space="0" w:color="CCCCCC"/><w:left w:val="single" w:sz="1" w:space="0" w:color="CCCCCC"/><w:bottom w:val="single" w:sz="1" w:space="0" w:color="CCCCCC"/><w:right w:val="single" w:sz="1" w:space="0" w:color="CCCCCC"/></w:tcBorders><w:shd w:val="clear" w:color="auto" w:fill="FFFFFF"/><w:tcMar><w:top w:w="80" w:type="dxa"/><w:left w:w="120" w:type="dxa"/><w:bottom w:w="80" w:type="dxa"/><w:right w:w="120" w:type="dxa"/></w:tcMar></w:tcPr><w:p w14:paraId="62B1DCA0" w14:textId="77777777" w:rsidR="00370331" w:rsidRDefault="00000000"><w:r><w:rPr><w:color w:val="333333"/><w:sz w:val="20"/><w:szCs w:val="20"/></w:rPr><w:t>SEC-003
+Razorpay webhook signature must be verified on every incoming webhook request
+High
+Critical
+SEC-004
+All user inputs must be sanitized to prevent XSS and SQL injection attacks
+High
+<w:tblPrEx><w:tblCellMar><w:top w:w="0" w:type="dxa"/><w:bottom w:w="0" w:type="dxa"/></w:tblCellMar></w:tblPrEx><w:tc><w:tcPr><w:tcW w:w="1000" w:type="dxa"/><w:tcBorders><w:top w:val="single" w:sz="1" w:space="0" w:color="CCCCCC"/><w:left w:val="single" w:sz="1" w:space="0" w:color="CCCCCC"/><w:bottom w:val="single" w:sz="1" w:space="0" w:color="CCCCCC"/><w:right w:val="single" w:sz="1" w:space="0" w:color="CCCCCC"/></w:tcBorders><w:shd w:val="clear" w:color="auto" w:fill="FFFFFF"/><w:tcMar><w:top w:w="80" w:type="dxa"/><w:left w:w="120" w:type="dxa"/><w:bottom w:w="80" w:type="dxa"/><w:right w:w="120" w:type="dxa"/></w:tcMar></w:tcPr><w:p w14:paraId="4F98B848" w14:textId="77777777" w:rsidR="00370331" w:rsidRDefault="00000000"><w:r><w:rPr><w:color w:val="333333"/><w:sz w:val="20"/><w:szCs w:val="20"/></w:rPr><w:t>SEC-005
+Passwords must be hashed using bcrypt with minimum cost factor of 12
+High
+<w:tblPrEx><w:tblCellMar><w:top w:w="0" w:type="dxa"/><w:bottom w:w="0" w:type="dxa"/></w:tblCellMar></w:tblPrEx><w:tc><w:tcPr><w:tcW w:w="1000" w:type="dxa"/><w:tcBorders><w:top w:val="single" w:sz="1" w:space="0" w:color="CCCCCC"/><w:left w:val="single" w:sz="1" w:space="0" w:color="CCCCCC"/><w:bottom w:val="single" w:sz="1" w:space="0" w:color="CCCCCC"/><w:right w:val="single" w:sz="1" w:space="0" w:color="CCCCCC"/></w:tcBorders><w:shd w:val="clear" w:color="auto" w:fill="F5F5F5"/><w:tcMar><w:top w:w="80" w:type="dxa"/><w:left w:w="120" w:type="dxa"/><w:bottom w:w="80" w:type="dxa"/><w:right w:w="120" w:type="dxa"/></w:tcMar></w:tcPr><w:p w14:paraId="2B05603B" w14:textId="77777777" w:rsidR="00370331" w:rsidRDefault="00000000"><w:r><w:rPr><w:color w:val="333333"/><w:sz w:val="20"/><w:szCs w:val="20"/></w:rPr><w:t>SEC-006
+API keys and secrets must be stored as encrypted environment variables, not in source code
+High
+<w:tblPrEx><w:tblCellMar><w:top w:w="0" w:type="dxa"/><w:bottom w:w="0" w:type="dxa"/></w:tblCellMar></w:tblPrEx><w:tc><w:tcPr><w:tcW w:w="1000" w:type="dxa"/><w:tcBorders><w:top w:val="single" w:sz="1" w:space="0" w:color="CCCCCC"/><w:left w:val="single" w:sz="1" w:space="0" w:color="CCCCCC"/><w:bottom w:val="single" w:sz="1" w:space="0" w:color="CCCCCC"/><w:right w:val="single" w:sz="1" w:space="0" w:color="CCCCCC"/></w:tcBorders><w:shd w:val="clear" w:color="auto" w:fill="FFFFFF"/><w:tcMar><w:top w:w="80" w:type="dxa"/><w:left w:w="120" w:type="dxa"/><w:bottom w:w="80" w:type="dxa"/><w:right w:w="120" w:type="dxa"/></w:tcMar></w:tcPr><w:p w14:paraId="2B0D3A3F" w14:textId="77777777" w:rsidR="00370331" w:rsidRDefault="00000000"><w:r><w:rPr><w:color w:val="333333"/><w:sz w:val="20"/><w:szCs w:val="20"/></w:rPr><w:t>SEC-007
+PAN data must be stored encrypted in the database and masked in the UI (show only last 4 characters)
+High
+Data protection
+SEC-008
+Rate limiting on public-facing donation forms to prevent spam submissions (e.g., 10 submissions per IP per hour)
+High
+<w:tblPrEx><w:tblCellMar><w:top w:w="0" w:type="dxa"/><w:bottom w:w="0" w:type="dxa"/></w:tblCellMar></w:tblPrEx><w:tc><w:tcPr><w:tcW w:w="1000" w:type="dxa"/><w:tcBorders><w:top w:val="single" w:sz="1" w:space="0" w:color="CCCCCC"/><w:left w:val="single" w:sz="1" w:space="0" w:color="CCCCCC"/><w:bottom w:val="single" w:sz="1" w:space="0" w:color="CCCCCC"/><w:right w:val="single" w:sz="1" w:space="0" w:color="CCCCCC"/></w:tcBorders><w:shd w:val="clear" w:color="auto" w:fill="FFFFFF"/><w:tcMar><w:top w:w="80" w:type="dxa"/><w:left w:w="120" w:type="dxa"/><w:bottom w:w="80" w:type="dxa"/><w:right w:w="120" w:type="dxa"/></w:tcMar></w:tcPr><w:p w14:paraId="1AC1E1DF" w14:textId="77777777" w:rsidR="00370331" w:rsidRDefault="00000000"><w:r><w:rPr><w:color w:val="333333"/><w:sz w:val="20"/><w:szCs w:val="20"/></w:rPr><w:t>SEC-009
+CSRF protection on all forms (CSRF tokens)
+High
+[Heading2] 6.3 Usability
+Req ID
+Requirement Description
+Priority
+Notes
+UX-001
+The public portal must be fully responsive across mobile (320px+), tablet (768px+), and desktop (1200px+)
+High
+<w:tblPrEx><w:tblCellMar><w:top w:w="0" w:type="dxa"/><w:bottom w:w="0" w:type="dxa"/></w:tblCellMar></w:tblPrEx><w:tc><w:tcPr><w:tcW w:w="1000" w:type="dxa"/><w:tcBorders><w:top w:val="single" w:sz="1" w:space="0" w:color="CCCCCC"/><w:left w:val="single" w:sz="1" w:space="0" w:color="CCCCCC"/><w:bottom w:val="single" w:sz="1" w:space="0" w:color="CCCCCC"/><w:right w:val="single" w:sz="1" w:space="0" w:color="CCCCCC"/></w:tcBorders><w:shd w:val="clear" w:color="auto" w:fill="F5F5F5"/><w:tcMar><w:top w:w="80" w:type="dxa"/><w:left w:w="120" w:type="dxa"/><w:bottom w:w="80" w:type="dxa"/><w:right w:w="120" w:type="dxa"/></w:tcMar></w:tcPr><w:p w14:paraId="21CB82B0" w14:textId="77777777" w:rsidR="00370331" w:rsidRDefault="00000000"><w:r><w:rPr><w:color w:val="333333"/><w:sz w:val="20"/><w:szCs w:val="20"/></w:rPr><w:t>UX-002
+Donation flow must be completable in 3 clicks or fewer from the home page for online donations
+High
+<w:tblPrEx><w:tblCellMar><w:top w:w="0" w:type="dxa"/><w:bottom w:w="0" w:type="dxa"/></w:tblCellMar></w:tblPrEx><w:tc><w:tcPr><w:tcW w:w="1000" w:type="dxa"/><w:tcBorders><w:top w:val="single" w:sz="1" w:space="0" w:color="CCCCCC"/><w:left w:val="single" w:sz="1" w:space="0" w:color="CCCCCC"/><w:bottom w:val="single" w:sz="1" w:space="0" w:color="CCCCCC"/><w:right w:val="single" w:sz="1" w:space="0" w:color="CCCCCC"/></w:tcBorders><w:shd w:val="clear" w:color="auto" w:fill="FFFFFF"/><w:tcMar><w:top w:w="80" w:type="dxa"/><w:left w:w="120" w:type="dxa"/><w:bottom w:w="80" w:type="dxa"/><w:right w:w="120" w:type="dxa"/></w:tcMar></w:tcPr><w:p w14:paraId="7603654E" w14:textId="77777777" w:rsidR="00370331" w:rsidRDefault="00000000"><w:r><w:rPr><w:color w:val="333333"/><w:sz w:val="20"/><w:szCs w:val="20"/></w:rPr><w:lastRenderedPageBreak/><w:t>UX-003
+Admin interface must be intuitive for non-technical content managers with inline help/tooltips
+Medium
+<w:tblPrEx><w:tblCellMar><w:top w:w="0" w:type="dxa"/><w:bottom w:w="0" w:type="dxa"/></w:tblCellMar></w:tblPrEx><w:tc><w:tcPr><w:tcW w:w="1000" w:type="dxa"/><w:tcBorders><w:top w:val="single" w:sz="1" w:space="0" w:color="CCCCCC"/><w:left w:val="single" w:sz="1" w:space="0" w:color="CCCCCC"/><w:bottom w:val="single" w:sz="1" w:space="0" w:color="CCCCCC"/><w:right w:val="single" w:sz="1" w:space="0" w:color="CCCCCC"/></w:tcBorders><w:shd w:val="clear" w:color="auto" w:fill="F5F5F5"/><w:tcMar><w:top w:w="80" w:type="dxa"/><w:left w:w="120" w:type="dxa"/><w:bottom w:w="80" w:type="dxa"/><w:right w:w="120" w:type="dxa"/></w:tcMar></w:tcPr><w:p w14:paraId="079B992A" w14:textId="77777777" w:rsidR="00370331" w:rsidRDefault="00000000"><w:r><w:rPr><w:color w:val="333333"/><w:sz w:val="20"/><w:szCs w:val="20"/></w:rPr><w:t>UX-004
+All admin forms must show inline validation errors in real-time
+High
+<w:tblPrEx><w:tblCellMar><w:top w:w="0" w:type="dxa"/><w:bottom w:w="0" w:type="dxa"/></w:tblCellMar></w:tblPrEx><w:tc><w:tcPr><w:tcW w:w="1000" w:type="dxa"/><w:tcBorders><w:top w:val="single" w:sz="1" w:space="0" w:color="CCCCCC"/><w:left w:val="single" w:sz="1" w:space="0" w:color="CCCCCC"/><w:bottom w:val="single" w:sz="1" w:space="0" w:color="CCCCCC"/><w:right w:val="single" w:sz="1" w:space="0" w:color="CCCCCC"/></w:tcBorders><w:shd w:val="clear" w:color="auto" w:fill="FFFFFF"/><w:tcMar><w:top w:w="80" w:type="dxa"/><w:left w:w="120" w:type="dxa"/><w:bottom w:w="80" w:type="dxa"/><w:right w:w="120" w:type="dxa"/></w:tcMar></w:tcPr><w:p w14:paraId="4D9B969F" w14:textId="77777777" w:rsidR="00370331" w:rsidRDefault="00000000"><w:r><w:rPr><w:color w:val="333333"/><w:sz w:val="20"/><w:szCs w:val="20"/></w:rPr><w:t>UX-005
+The site must pass WCAG 2.1 Level AA accessibility guidelines
+Medium
+[Heading2] 6.4 Reliability & Availability
+Req ID
+Requirement Description
+Priority
+Notes
+RL-001
+Target uptime: 99.5% monthly (allows ~3.6 hours downtime/month)
+High
+<w:tblPrEx><w:tblCellMar><w:top w:w="0" w:type="dxa"/><w:bottom w:w="0" w:type="dxa"/></w:tblCellMar></w:tblPrEx><w:tc><w:tcPr><w:tcW w:w="1000" w:type="dxa"/><w:tcBorders><w:top w:val="single" w:sz="1" w:space="0" w:color="CCCCCC"/><w:left w:val="single" w:sz="1" w:space="0" w:color="CCCCCC"/><w:bottom w:val="single" w:sz="1" w:space="0" w:color="CCCCCC"/><w:right w:val="single" w:sz="1" w:space="0" w:color="CCCCCC"/></w:tcBorders><w:shd w:val="clear" w:color="auto" w:fill="F5F5F5"/><w:tcMar><w:top w:w="80" w:type="dxa"/><w:left w:w="120" w:type="dxa"/><w:bottom w:w="80" w:type="dxa"/><w:right w:w="120" w:type="dxa"/></w:tcMar></w:tcPr><w:p w14:paraId="39855EEF" w14:textId="77777777" w:rsidR="00370331" w:rsidRDefault="00000000"><w:r><w:rPr><w:color w:val="333333"/><w:sz w:val="20"/><w:szCs w:val="20"/></w:rPr><w:t>RL-002
+Daily automated database backups with 30-day retention
+High
+<w:tblPrEx><w:tblCellMar><w:top w:w="0" w:type="dxa"/><w:bottom w:w="0" w:type="dxa"/></w:tblCellMar></w:tblPrEx><w:tc><w:tcPr><w:tcW w:w="1000" w:type="dxa"/><w:tcBorders><w:top w:val="single" w:sz="1" w:space="0" w:color="CCCCCC"/><w:left w:val="single" w:sz="1" w:space="0" w:color="CCCCCC"/><w:bottom w:val="single" w:sz="1" w:space="0" w:color="CCCCCC"/><w:right w:val="single" w:sz="1" w:space="0" w:color="CCCCCC"/></w:tcBorders><w:shd w:val="clear" w:color="auto" w:fill="FFFFFF"/><w:tcMar><w:top w:w="80" w:type="dxa"/><w:left w:w="120" w:type="dxa"/><w:bottom w:w="80" w:type="dxa"/><w:right w:w="120" w:type="dxa"/></w:tcMar></w:tcPr><w:p w14:paraId="0326BDFB" w14:textId="77777777" w:rsidR="00370331" w:rsidRDefault="00000000"><w:r><w:rPr><w:color w:val="333333"/><w:sz w:val="20"/><w:szCs w:val="20"/></w:rPr><w:t>RL-003
+Webhook processing must be idempotent (duplicate webhook events must not create duplicate donations)
+High
+Use Razorpay payment ID as idempotency key
+RL-004
+Transactional email queue must retry failed sends up to 3 times with exponential backoff
+High
+[Heading2] 6.5 Scalability
+Req ID
+Requirement Description
+Priority
+Notes
+SC-001
+Architecture must support horizontal scaling for web server layer without requiring refactoring
+Medium
+Stateless application design
+SC-002
+Database schema must support up to 1 million donor records and 5 million donation records without architectural changes
+Medium
+Proper indexing + normalization
+[Heading1] 7. High-Level Data Model
+The following outlines the primary data entities and their key attributes:
+Entity
+Key Attributes
+Donation Page (Cause)
+id, title, slug, content_html, featured_images[], goal_amount, status, enable_online, enable_offline, bank_instructions, share_message, meta_title, meta_desc, category, start_date, end_date, created_by, created_at, updated_at
+Donation
+id, cause_id (FK), donor_id (FK), amount, type (online/offline), status (pending/approved/rejected/failed), razorpay_payment_id, razorpay_order_id, pan, address, admin_notes, receipt_sent_at, receipt_pdf_url, created_at, approved_at, approved_by
+Donor
+id, name, email, phone, address, pan_encrypted, first_donation_at, last_donation_at, total_donated, donation_count, unsubscribed, created_at, updated_at
+User (Admin)
+id, name, email, password_hash, role (admin/content_manager), is_active, last_login_at, created_at
+Receipt Template
+id, name, html_content, is_default, receipt_prefix, sequence_start, logo_url, signature_url, created_at, updated_at
+Donation Receipt
+id, donation_id (FK), receipt_number, pdf_url, sent_to_email, sent_at, created_at
+Email Campaign
+id, subject, body_html, preview_text, segment_type, segment_params, sent_at, recipient_count, status, triggered_by (user_id), cause_id (optional)
+Disbursement
+id, cause_id (FK), amount, date, beneficiary_name, notes, created_by, created_at
+Static Page
+id, title, slug, content_html, meta_title, meta_desc, in_nav, nav_order, created_at, updated_at
+Unsubscribe List
+id, email, unsubscribed_at, reason
+Audit Log
+id, user_id (FK), action, entity_type, entity_id, payload_json, ip_address, created_at
+[Heading1] 8. Appendices
+[Heading2] 8.1 Email Templates Required
+The following email templates must be built and configurable via the admin panel:
+#
+Template Name
+Trigger / Description
+1
+Donation Receipt — Online
+Auto-sent on Razorpay payment success. Contains PDF receipt attachment.
+2
+Donation Receipt — Offline (Manual)
+Manually triggered by admin after bank confirmation. Contains PDF receipt attachment.
+3
+Offline Donation Instructions
+Auto-sent when offline donation form is submitted. Contains bank transfer details and reference.
+4
+Offline Donation Received — Admin Alert
+Auto-sent to admin email when offline form is submitted.
+5
+Donor — Thank You / Welcome
+Sent to first-time donors after first approved donation.
+6
+New Cause Campaign Email
+Sent to donor list when a new cause is published. Configurable per publish action.
+7
+Cumulative / Annual Receipt
+On-demand PDF covering all donations in a specified date range for a donor.
+8
+Password Reset
+Sent to admin/content manager users for password reset.
+9
+Contact Form Notification
+Sent to admin when public contact form is submitted.
+[Heading2] 8.2 Razorpay Donation Flow
+The following describes the end-to-end online donation flow:
+[ListParagraph] Visitor opens a Donation Page on the public portal.
+[ListParagraph] Visitor selects or enters a donation amount and clicks 'Donate Now'.
+[ListParagraph] System creates a Razorpay Order via API (stores order_id with status 'created').
+[ListParagraph] Razorpay Checkout modal opens in the browser for the visitor to complete payment.
+[ListParagraph] On payment success, Razorpay redirects to success URL and triggers a webhook to the portal backend.
+[ListParagraph] Backend verifies the Razorpay webhook signature.
+[ListParagraph] Backend marks the donation as Approved, updates cause totals, creates/updates donor record.
+[ListParagraph] Backend generates PDF receipt and sends it to donor email.
+[ListParagraph] Visitor sees a success message with receipt confirmation.
+[Heading2] 8.3 Priority Definitions
+Requirements in this document are tagged with the following priority levels:
+Priority
+Label
+Meaning
+P1
+High
+Must be present in initial launch (v1.0). Blocking.
+P2
+Medium
+Should be included in v1.0 but can be deferred to v1.1 if timeline is tight.
+P3
+Low
+Nice-to-have; planned for Phase 2 / future versions.
+[Heading2] 8.4 Revision History
+Version
+Date
+Author
+Description
+1.0
+May 2026
+MicroCharity Team
+Initial draft — complete requirements capture for portal rebuild
+</w:pBdr><w:spacing w:before="120"/><w:jc w:val="center"/></w:pPr><w:r><w:rPr><w:i/><w:iCs/><w:color w:val="666666"/><w:sz w:val="20"/><w:szCs w:val="20"/></w:rPr><w:t xml:space="preserve">End of Document — MicroCharity SRS v1.0

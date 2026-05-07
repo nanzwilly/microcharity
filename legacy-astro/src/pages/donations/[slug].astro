@@ -1,0 +1,163 @@
+---
+import Base from "../../layouts/Base.astro";
+import { allCampaigns, findCampaign } from "../../data/causes";
+
+export function getStaticPaths() {
+  return allCampaigns.map(c => ({ params: { slug: c.slug } }));
+}
+
+const { slug } = Astro.params;
+const found = findCampaign(slug!);
+if (!found) throw new Error(`No campaign for slug ${slug}`);
+const { campaign, beneficiary } = found;
+
+const pct = campaign.goal > 0 ? Math.min(100, Math.round((campaign.raised / campaign.goal) * 100)) : 0;
+const fmt = (n: number) => "₹" + n.toLocaleString("en-IN");
+const remaining = Math.max(0, campaign.goal - campaign.raised);
+const presets = [500, 1000, 2500, 5000, 10000];
+const other = beneficiary.campaigns.filter(c => c.slug !== campaign.slug);
+---
+<Base title={campaign.title} description={campaign.summary}>
+  <section class="border-b border-[var(--color-line)]">
+    <div class="container-page py-6 text-sm text-muted">
+      <a href="/current-causes/" class="hover:text-accent-600">Causes</a>
+      <span class="mx-2">/</span>
+      <span class="text-ink">{beneficiary.beneficiary}</span>
+    </div>
+  </section>
+
+  <section class="container-page py-10 md:py-14 grid lg:grid-cols-12 gap-10">
+    <div class="lg:col-span-7">
+      <span class="inline-flex items-center gap-2 rounded-full border border-[var(--color-line)] px-3 py-1 text-xs font-semibold text-ink mb-4">
+        <span class={`w-1.5 h-1.5 rounded-full ${campaign.status === "active" ? "bg-accent-600 animate-pulse" : "bg-muted"}`}></span>
+        {campaign.status === "active" ? "Active cause" : "Closed cause"}
+      </span>
+
+      <h1 class="font-display text-3xl md:text-5xl text-ink leading-[1.1] mb-4">{campaign.title}</h1>
+
+      {campaign.image && (
+        <div class="aspect-[16/9] rounded-2xl overflow-hidden bg-[var(--color-soft)] border border-[var(--color-line)] mb-8">
+          <img src={campaign.image} alt={campaign.title} class="w-full h-full object-cover" loading="eager" />
+        </div>
+      )}
+
+      {campaign.updates.length > 0 ? (
+        <div class="space-y-8">
+          {campaign.updates.map(u => (
+            <article class="border-l-2 border-[var(--color-line)] pl-5 md:pl-7 relative">
+              <span class="absolute -left-[7px] top-1.5 w-3 h-3 rounded-full bg-accent-600 border-2 border-white"></span>
+              {u.caption && (
+                <p class="text-xs font-semibold text-accent-600 uppercase tracking-wider mb-2">{u.caption}</p>
+              )}
+              <div class="prose-mc max-w-none">
+                {u.body.split(/\r?\n\r?\n/).map(p => p.trim()).filter(Boolean).map(p => <p>{p}</p>)}
+              </div>
+            </article>
+          ))}
+        </div>
+      ) : campaign.summary ? (
+        <div class="prose-mc max-w-none">
+          {campaign.summary.split(/\r?\n\r?\n/).map(p => p.trim()).filter(Boolean).map(p => <p>{p}</p>)}
+        </div>
+      ) : null}
+    </div>
+
+    <aside class="lg:col-span-5 lg:pl-4">
+      <div class="lg:sticky lg:top-28 space-y-6">
+        <div class="rounded-2xl border border-[var(--color-line)] bg-white p-6 md:p-8">
+          <p class="font-display text-3xl md:text-4xl text-accent-600 leading-none">{fmt(campaign.raised)}</p>
+          <p class="text-sm text-muted mt-1">raised of {fmt(campaign.goal)} goal</p>
+
+          <div class="mt-4 h-2 rounded-full bg-[var(--color-line)] overflow-hidden">
+            <div class="h-full bg-accent-600 rounded-full" style={`width: ${pct}%`}></div>
+          </div>
+
+          <div class="mt-3 flex items-baseline justify-between text-xs">
+            <span class="font-semibold text-ink">{pct}% funded</span>
+            {campaign.status === "active" && remaining > 0 && (
+              <span class="text-muted">{fmt(remaining)} to go</span>
+            )}
+          </div>
+
+          {campaign.status === "active" ? (
+            <form id="donate-form" class="mt-6 space-y-4" data-slug={campaign.slug}>
+              <div>
+                <label class="block text-sm font-semibold text-ink mb-2">Choose an amount (₹)</label>
+                <div class="grid grid-cols-3 gap-2">
+                  {presets.map(p => (
+                    <button type="button" data-preset={p} class="preset-btn rounded-lg border border-[var(--color-line)] hover:border-accent-600 px-2 py-2 text-sm font-semibold text-ink transition">
+                      {fmt(p)}
+                    </button>
+                  ))}
+                </div>
+                <input type="number" name="amount" min="100" step="100" required placeholder="Or enter another amount" class="mt-3 w-full rounded-lg border border-[var(--color-line)] focus:border-accent-600 focus:ring-2 focus:ring-accent-100 outline-none px-3 py-2.5 text-sm" />
+              </div>
+              <div>
+                <label class="block text-sm font-semibold text-ink mb-2">Your name</label>
+                <input type="text" name="name" required class="w-full rounded-lg border border-[var(--color-line)] focus:border-accent-600 focus:ring-2 focus:ring-accent-100 outline-none px-3 py-2.5 text-sm" />
+              </div>
+              <div>
+                <label class="block text-sm font-semibold text-ink mb-2">Email (for the receipt)</label>
+                <input type="email" name="email" required class="w-full rounded-lg border border-[var(--color-line)] focus:border-accent-600 focus:ring-2 focus:ring-accent-100 outline-none px-3 py-2.5 text-sm" />
+              </div>
+              <button type="submit" class="w-full inline-flex items-center justify-center gap-2 rounded-full bg-accent-600 hover:bg-accent-700 text-white font-semibold px-6 py-3 transition">
+                Donate now
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+              </button>
+              <p class="text-xs text-muted leading-relaxed">
+                You'll be redirected to a secure payment gateway. 100% of your contribution reaches the beneficiary. Eligible for 80G tax exemption.
+              </p>
+            </form>
+          ) : (
+            <div class="mt-6 rounded-lg bg-[var(--color-soft)] border border-[var(--color-line)] p-4 text-sm">
+              <p class="font-semibold text-ink">This cause is closed.</p>
+              <p class="text-muted mt-1">Thank you to everyone who contributed.</p>
+            </div>
+          )}
+        </div>
+
+        {other.length > 0 && (
+          <div class="rounded-2xl border border-[var(--color-line)] bg-white p-6">
+            <h3 class="font-display text-lg text-ink mb-1">Other campaigns for this beneficiary</h3>
+            <p class="text-xs text-muted mb-4">{beneficiary.campaigns.length} total · {fmt(beneficiary.totalRaised)} raised over time</p>
+            <ul class="space-y-3">
+              {other.map(o => (
+                <li>
+                  <a href={`/donations/${o.slug}/`} class="block rounded-lg border border-[var(--color-line)] hover:border-accent-600 p-3 transition">
+                    <div class="flex items-baseline justify-between gap-3">
+                      <span class="text-sm font-semibold text-ink">{o.title}</span>
+                      <span class={`text-[10px] uppercase tracking-wider font-semibold ${o.status === "active" ? "text-accent-600" : "text-muted"}`}>
+                        {o.status}
+                      </span>
+                    </div>
+                    <div class="text-xs text-muted mt-1">{fmt(o.raised)} of {fmt(o.goal)}</div>
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
+      </div>
+    </aside>
+  </section>
+</Base>
+
+<script>
+  const form = document.getElementById('donate-form') as HTMLFormElement | null;
+  if (form) {
+    const amountInput = form.querySelector<HTMLInputElement>('input[name="amount"]');
+    form.querySelectorAll<HTMLButtonElement>('.preset-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        if (amountInput) amountInput.value = btn.dataset.preset ?? '';
+        form.querySelectorAll('.preset-btn').forEach(b => b.classList.remove('border-accent-600','bg-accent-50','text-accent-700'));
+        btn.classList.add('border-accent-600','bg-accent-50','text-accent-700');
+      });
+    });
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const data = Object.fromEntries(new FormData(form).entries());
+      console.log('Donate intent:', { slug: form.dataset.slug, ...data });
+      alert('Payment gateway not yet connected. Form data logged to console.');
+    });
+  }
+</script>
