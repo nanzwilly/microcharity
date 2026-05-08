@@ -110,10 +110,7 @@ export default function HomePage() {
       <section className="bg-white border-t border-[var(--color-line)]">
         <div className="container-page py-20 md:py-24">
           <div className="flex flex-wrap items-end justify-between gap-4 mb-10">
-            <div>
-              <p className="text-sm font-semibold text-accent-600 uppercase tracking-wider mb-2">Open causes</p>
-              <h2 className="font-display text-3xl md:text-4xl text-ink">People who need help right now</h2>
-            </div>
+            <h2 className="font-display text-3xl md:text-4xl text-ink">Open causes</h2>
             <Link href="/current-causes" className="text-sm font-semibold text-accent-600 hover:text-accent-700 inline-flex items-center gap-1">
               View all causes
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
@@ -128,10 +125,7 @@ export default function HomePage() {
       {/* FOCUS AREAS */}
       <section className="bg-white border-t border-[var(--color-line)]">
         <div className="container-page py-20 md:py-24">
-          <div className="max-w-2xl mb-12">
-            <p className="text-sm font-semibold text-accent-600 uppercase tracking-wider mb-2">What we focus on</p>
-            <h2 className="font-display text-3xl md:text-4xl text-ink">Five areas where small help changes everything</h2>
-          </div>
+          <h2 className="font-display text-3xl md:text-4xl text-ink mb-12">What we focus on</h2>
           <div className="grid sm:grid-cols-2 lg:grid-cols-5 gap-4">
             {site.focusAreas.map(area => (
               <div key={area.title} className="rounded-[var(--radius-card)] bg-white border border-[var(--color-line)] p-6 hover:border-accent-600 transition">

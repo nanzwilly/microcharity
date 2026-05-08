@@ -32,8 +32,7 @@ export default function WhoWeArePage() {
       {/* PATRON */}
       <section className="border-t border-[var(--color-line)]">
         <div className="container-page py-16 md:py-20">
-          <p className="text-sm font-semibold text-accent-600 uppercase tracking-wider mb-3">Patron</p>
-          <h2 className="font-display text-3xl text-ink mb-10">Our spiritual guide</h2>
+          <h2 className="font-display text-3xl text-ink mb-10">Our patron</h2>
 
           <div className="max-w-2xl flex flex-col sm:flex-row gap-6 items-start">
             {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -50,9 +49,8 @@ export default function WhoWeArePage() {
       {/* TEAM */}
       <section className="border-t border-[var(--color-line)]">
         <div className="container-page py-16 md:py-20">
-          <p className="text-sm font-semibold text-accent-600 uppercase tracking-wider mb-3">The team</p>
-          <h2 className="font-display text-3xl md:text-4xl text-ink mb-3">14 volunteer families across the world</h2>
-          <p className="text-body max-w-2xl mb-12">Software developers, nurses, doctors, engineers, entrepreneurs — every member of the team is a volunteer, contributing time to make sure each cause is verified, funded, and seen through.</p>
+          <h2 className="font-display text-3xl md:text-4xl text-ink mb-3">Our volunteers</h2>
+          <p className="text-body max-w-2xl mb-12">14 families across cities and continents — software developers, nurses, doctors, engineers, entrepreneurs. Every member of the team is a volunteer, contributing time to make sure each cause is verified, funded, and seen through.</p>
 
           <div className="grid md:grid-cols-2 gap-x-10 gap-y-8">
             {team.map(m => (
