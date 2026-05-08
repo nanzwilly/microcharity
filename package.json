@@ -12,6 +12,7 @@
     "db:studio": "prisma studio",
     "db:seed": "node --env-file=.env.local scripts/seed-causes.mjs",
     "db:seed-admins": "node --env-file=.env.local scripts/seed-admins.mjs",
+    "import:legacy": "node --env-file=.env.local scripts/import-legacy.mjs",
     "postinstall": "prisma generate"
   },
   "dependencies": {
