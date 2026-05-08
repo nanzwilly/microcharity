@@ -16,11 +16,22 @@ type Template = {
 
 const inputCls = "w-full rounded-lg border border-[var(--color-line)] focus:border-accent-600 focus:ring-2 focus:ring-accent-100 outline-none px-3 py-2.5 text-sm";
 
+// Used when auto-deriving from the title — strips leading/trailing hyphens for a clean default.
 function slugify(s: string): string {
   return s
     .toLowerCase()
     .replace(/[^a-z0-9]+/g, "-")
     .replace(/^-+|-+$/g, "")
+    .slice(0, 80);
+}
+
+// Used while the user is TYPING in the slug field — keeps trailing hyphens so they can keep typing
+// after a hyphen ("college-fee" not "collegefee"). The server normalises again on save.
+function slugCleanDuringTyping(s: string): string {
+  return s
+    .toLowerCase()
+    .replace(/[^a-z0-9-]+/g, "-")
+    .replace(/-{2,}/g, "-")
     .slice(0, 80);
 }
 
@@ -61,7 +72,7 @@ export default function CauseForm({ template }: { template?: Template }) {
             name="slug"
             required
             value={slug}
-            onChange={(e) => { setSlug(slugify(e.target.value)); setSlugTouched(true); }}
+            onChange={(e) => { setSlug(slugCleanDuringTyping(e.target.value)); setSlugTouched(true); }}
             className="flex-1 outline-none px-3 py-2.5 text-sm font-mono"
             placeholder="college-fee-saniya-2026"
           />
