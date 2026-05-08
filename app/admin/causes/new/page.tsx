@@ -19,6 +19,7 @@ export default async function NewCausePage({ searchParams }: { searchParams: Pro
         goal: number;
         beneficiaryKey: string;
         category: string;
+        location: string;
         sourceTitle: string;
       }
     | undefined;
@@ -38,6 +39,7 @@ export default async function NewCausePage({ searchParams }: { searchParams: Pro
         goal: src.goalAmount,
         beneficiaryKey: src.beneficiaryKey ?? "",
         category: src.category ?? "",
+        location: src.location ?? "",
         sourceTitle: src.title,
       };
     }

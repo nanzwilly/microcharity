@@ -12,6 +12,7 @@ type Template = {
   goal: number;
   beneficiaryKey: string;
   category: string;
+  location: string;
 };
 
 const inputCls = "w-full rounded-lg border border-[var(--color-line)] focus:border-accent-600 focus:ring-2 focus:ring-accent-100 outline-none px-3 py-2.5 text-sm";
@@ -33,6 +34,14 @@ function slugCleanDuringTyping(s: string): string {
     .replace(/[^a-z0-9-]+/g, "-")
     .replace(/-{2,}/g, "-")
     .slice(0, 80);
+}
+
+function todayISO(): string {
+  const d = new Date();
+  const yyyy = d.getFullYear();
+  const mm = String(d.getMonth() + 1).padStart(2, "0");
+  const dd = String(d.getDate()).padStart(2, "0");
+  return `${yyyy}-${mm}-${dd}`;
 }
 
 export default function CauseForm({ template }: { template?: Template }) {
@@ -97,10 +106,16 @@ export default function CauseForm({ template }: { template?: Template }) {
         </p>
       </div>
 
-      <div className="grid sm:grid-cols-2 gap-4">
+      <div className="grid sm:grid-cols-3 gap-4">
         <div>
-          <label className="block text-sm font-semibold text-ink mb-2">Goal amount (₹)</label>
-          <input type="number" name="goal" min={0} step={500} defaultValue={template?.goal ?? ""} className={inputCls} placeholder="50000" />
+          <label className="block text-sm font-semibold text-ink mb-2">Date posted</label>
+          <input type="date" name="date" defaultValue={todayISO()} required className={inputCls} />
+          <p className="text-xs text-muted mt-1">Defaults to today. Used as the date on the first timeline entry.</p>
+        </div>
+        <div>
+          <label className="block text-sm font-semibold text-ink mb-2">Location</label>
+          <input type="text" name="location" defaultValue={template?.location ?? ""} className={inputCls} placeholder="e.g. Pala, Kerala" />
+          <p className="text-xs text-muted mt-1">Shown on the first timeline entry.</p>
         </div>
         <div>
           <label className="block text-sm font-semibold text-ink mb-2">Category</label>
@@ -114,6 +129,15 @@ export default function CauseForm({ template }: { template?: Template }) {
             <option>Other</option>
           </select>
         </div>
+      </div>
+
+      <div>
+        <label className="block text-sm font-semibold text-ink mb-2">Goal amount (₹)</label>
+        <input type="number" name="goal" min={0} step={500} defaultValue={template?.goal ?? ""} className={inputCls} placeholder="50000" />
+      </div>
+
+      <div className="rounded-lg bg-[var(--color-soft)] border border-[var(--color-line)] p-3 text-xs text-muted">
+        <strong className="text-ink">MicroCharity ID</strong> auto-generates on save in the format <code className="font-mono text-ink">MCID-N-{`{FY}`}</code> (sequence resets each financial year). It appears on the first timeline entry just like the live site.
       </div>
 
       <div>

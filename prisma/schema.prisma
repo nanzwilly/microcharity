@@ -70,6 +70,11 @@ model Cause {
   // Groups multiple campaigns for the same beneficiary (e.g. quarterly support).
   beneficiaryKey   String?
 
+  // MicroCharity ID — human-readable per-FY identifier shown on cause pages, e.g. MCID-105-24-25.
+  // Auto-generated on creation; resets sequence each Indian financial year.
+  mcId             String?       @unique
+  location         String?       // e.g. "Pala, Kerala"
+
   donations        Donation[]
   updates          CauseUpdate[]
 
@@ -90,6 +95,8 @@ model CauseUpdate {
   body       String   @db.Text
   postedAt   DateTime @default(now())
   sortOrder  Int      @default(0)
+  // Optional MCID for fund-request-related entries (e.g. fund approvals).
+  mcId       String?  @unique
 
   @@index([causeId])
 }

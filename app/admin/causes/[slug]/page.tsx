@@ -36,6 +36,10 @@ export default async function AdminCauseDetailPage({ params }: { params: Promise
           <div>
             <h1 className="font-display text-3xl text-ink">{cause.title}</h1>
             <p className="text-xs font-mono text-muted mt-1">/donations/{cause.slug}</p>
+            <div className="flex flex-wrap items-center gap-3 mt-2 text-xs text-muted">
+              {cause.mcId && <span className="inline-flex items-center gap-1.5 rounded-full border border-[var(--color-line)] bg-[var(--color-soft)] px-2 py-0.5 font-mono text-ink">{cause.mcId}</span>}
+              {cause.location && <span>📍 {cause.location}</span>}
+            </div>
           </div>
           <Link href={`/donations/${cause.slug}`} target="_blank" className="text-sm font-semibold text-accent-600 hover:text-accent-700">
             View public page →

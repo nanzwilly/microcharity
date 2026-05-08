@@ -5,6 +5,7 @@ import { redirect } from "next/navigation";
 import type { CauseStatus } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
 import { getCurrentUser } from "@/lib/session";
+import { nextMcId, composeCaption } from "@/lib/mcid";
 
 async function requireAdmin() {
   const user = await getCurrentUser();
@@ -44,26 +45,42 @@ export type UpdateFormState = { error?: string; ok?: true };
 export async function addCauseUpdateAction(_prev: UpdateFormState, formData: FormData): Promise<UpdateFormState> {
   await requireAdmin();
 
-  const slug = String(formData.get("slug") ?? "").trim();
-  const caption = String(formData.get("caption") ?? "").trim();
-  const body = String(formData.get("body") ?? "").trim();
+  const slug      = String(formData.get("slug") ?? "").trim();
+  const heading   = String(formData.get("heading") ?? "").trim();
+  const body      = String(formData.get("body") ?? "").trim();
+  const dateRaw   = String(formData.get("date") ?? "").trim();
+  const generateMcId = formData.get("generateMcId") === "on";
 
   if (!slug) return { error: "Missing cause slug." };
   if (!body) return { error: "Update body is required." };
 
+  const date = dateRaw ? new Date(dateRaw) : new Date();
+  if (Number.isNaN(date.getTime())) return { error: "Invalid date." };
+
   const cause = await prisma.cause.findUnique({ where: { slug }, select: { id: true } });
   if (!cause) return { error: "Cause not found." };
 
-  // Append to the end of the timeline.
-  const last = await prisma.causeUpdate.findFirst({
-    where: { causeId: cause.id },
-    orderBy: { sortOrder: "desc" },
-    select: { sortOrder: true },
-  });
-  const nextOrder = (last?.sortOrder ?? -1) + 1;
+  await prisma.$transaction(async (tx) => {
+    const last = await tx.causeUpdate.findFirst({
+      where: { causeId: cause.id },
+      orderBy: { sortOrder: "desc" },
+      select: { sortOrder: true },
+    });
+    const nextOrder = (last?.sortOrder ?? -1) + 1;
 
-  await prisma.causeUpdate.create({
-    data: { causeId: cause.id, caption: caption || null, body, sortOrder: nextOrder },
+    const mcId = generateMcId ? await nextMcId(tx, date) : null;
+    const caption = composeCaption({ date, heading, mcId });
+
+    await tx.causeUpdate.create({
+      data: {
+        causeId: cause.id,
+        caption,
+        body,
+        sortOrder: nextOrder,
+        postedAt: date,
+        mcId,
+      },
+    });
   });
 
   revalidatePath(`/admin/causes/${slug}`);
@@ -95,6 +112,10 @@ export async function createCauseAction(_prev: CauseFormState, formData: FormDat
   const beneficiaryKey = String(formData.get("beneficiaryKey") ?? "").trim();
   const category = String(formData.get("category") ?? "").trim();
   const statusRaw = String(formData.get("status") ?? "DRAFT") as CauseStatus;
+  const dateRaw = String(formData.get("date") ?? "").trim();
+  const location = String(formData.get("location") ?? "").trim();
+  const date = dateRaw ? new Date(dateRaw) : new Date();
+  if (dateRaw && Number.isNaN(date.getTime())) return { error: "Invalid date." };
 
   if (!title) return { error: "Title is required." };
 
@@ -112,28 +133,46 @@ export async function createCauseAction(_prev: CauseFormState, formData: FormDat
 
   const finalKey = beneficiaryKey || deriveBeneficiaryKey(slug);
 
-  const created = await prisma.cause.create({
-    data: {
-      slug,
-      title,
-      summary: summary || null,
-      featuredImage: image || null,
-      goalAmount: Math.round(goal),
-      raisedAmount: 0,
-      status,
-      beneficiaryKey: finalKey || null,
-      contentHtml: "",
-      category: category || null,
-      createdById: user.userId,
-      // Optional initial story body lands as a single CauseUpdate so the cause page renders something on day one.
-      ...(story
-        ? {
-            updates: {
-              create: [{ caption: "", body: story, sortOrder: 0 }],
-            },
-          }
-        : {}),
-    },
+  const created = await prisma.$transaction(async (tx) => {
+    const mcId = await nextMcId(tx, date);
+    const initialCaption = composeCaption({
+      date,
+      heading: location || undefined,
+      mcId,
+    });
+
+    return tx.cause.create({
+      data: {
+        slug,
+        title,
+        summary: summary || null,
+        featuredImage: image || null,
+        goalAmount: Math.round(goal),
+        raisedAmount: 0,
+        status,
+        beneficiaryKey: finalKey || null,
+        contentHtml: "",
+        category: category || null,
+        location: location || null,
+        startDate: date,
+        mcId,
+        createdById: user.userId,
+        // Initial timeline entry: caption uses the same MCID as the cause, body is the story (if provided).
+        ...(story
+          ? {
+              updates: {
+                create: [{
+                  caption: initialCaption,
+                  body: story,
+                  sortOrder: 0,
+                  postedAt: date,
+                  mcId, // same MCID as the cause itself for the first entry
+                }],
+              },
+            }
+          : {}),
+      },
+    });
   });
 
   revalidatePath("/admin/causes");
