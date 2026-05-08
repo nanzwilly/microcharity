@@ -61,7 +61,55 @@ export async function createManualDonation(input: CreateManualInput) {
   });
 }
 
-export async function approveDonation(donationId: string, approverId: string, opts?: { editedAmount?: number }) {
+/**
+ * Create a PENDING online donation tied to a freshly-created Razorpay order.
+ * Called from /api/donate/online before opening Checkout on the client.
+ */
+export async function createOnlineDonationOrder(input: {
+  causeId: string;
+  donorName: string;
+  donorEmail: string;
+  donorPhone?: string;
+  amount: number;            // INR rupees (integer)
+  razorpayOrderId: string;
+}) {
+  const email = input.donorEmail.trim().toLowerCase();
+  return prisma.$transaction(async (tx) => {
+    const donor = await tx.donor.upsert({
+      where: { email },
+      update: {
+        name: input.donorName,
+        phone: input.donorPhone ?? undefined,
+      },
+      create: {
+        email,
+        name: input.donorName,
+        phone: input.donorPhone,
+      },
+    });
+    const donation = await tx.donation.create({
+      data: {
+        causeId: input.causeId,
+        donorId: donor.id,
+        donorNameSnapshot: input.donorName,
+        donorEmailSnapshot: email,
+        amount: input.amount,
+        type: "ONLINE",
+        status: "PENDING",
+        razorpayOrderId: input.razorpayOrderId,
+      },
+    });
+    return donation;
+  });
+}
+
+/**
+ * Approve a donation. Called from:
+ *   - admin "Approve" button (offline / manual)        → approverId = admin user
+ *   - Razorpay webhook (online payment.captured)        → approverId = null (system)
+ *   - Razorpay client return verification (best effort) → approverId = null (system)
+ */
+export async function approveDonation(donationId: string, approverId: string | null, opts?: { editedAmount?: number; razorpayPaymentId?: string; razorpaySignature?: string }) {
   return prisma.$transaction(async (tx) => {
     const d = await tx.donation.findUnique({ where: { id: donationId } });
     if (!d) throw new Error("Donation not found");
@@ -92,7 +140,9 @@ export async function approveDonation(donationId: string, approverId: string, op
         status: "APPROVED",
         amount: finalAmount,
         approvedAt: new Date(),
-        approvedById: approverId,
+        approvedById: approverId ?? null,
+        ...(opts?.razorpayPaymentId ? { razorpayPaymentId: opts.razorpayPaymentId } : {}),
+        ...(opts?.razorpaySignature ? { razorpaySignature: opts.razorpaySignature } : {}),
       },
     });
 
@@ -118,6 +168,19 @@ export async function approveDonation(donationId: string, approverId: string, op
     }
 
     return updated;
+  });
+}
+
+/** Mark a PENDING online donation as FAILED (no totals adjusted). */
+export async function failDonationByOrderId(orderId: string, reason?: string) {
+  const d = await prisma.donation.findUnique({ where: { razorpayOrderId: orderId } });
+  if (!d || d.status !== "PENDING") return null;
+  return prisma.donation.update({
+    where: { id: d.id },
+    data: {
+      status: "FAILED",
+      ...(reason ? { adminNotes: reason } : {}),
+    },
   });
 }
 

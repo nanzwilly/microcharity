@@ -1,20 +1,78 @@
 import { NextResponse } from "next/server";
+import { prisma } from "@/lib/prisma";
+import { razorpay, razorpayKeyId, isRazorpayConfigured } from "@/lib/razorpay";
+import { createOnlineDonationOrder } from "@/lib/donations";
 
-// Stub for SRS RZ-001…008.
-// Once Razorpay credentials are configured, this should:
-//   1. Validate the cause (slug exists, status === "active") and amount.
-//   2. Create a Razorpay Order via the SDK using RAZORPAY_KEY_ID/SECRET.
-//   3. Persist a Donation row with status="pending", razorpay_order_id, donor info.
-//   4. Return order_id + key_id so the client can open Razorpay Checkout.
+export const runtime = "nodejs";
+export const dynamic = "force-dynamic";
+
+// Creates a Razorpay order, persists a PENDING donation row, and returns what the
+// browser needs to open Razorpay Checkout (key id + order id + display values).
 export async function POST(req: Request) {
-  const data = await req.json().catch(() => ({}));
-  if (!data.amount || data.amount < 100) {
-    return NextResponse.json({ error: "Minimum donation is ₹100" }, { status: 400 });
+  try {
+    if (!isRazorpayConfigured()) {
+      return NextResponse.json({ error: "Online donations are not configured yet." }, { status: 503 });
+    }
+
+    const body = await req.json().catch(() => ({} as Record<string, unknown>));
+    const slug   = String(body.slug ?? "").trim();
+    const amount = Number(body.amount);
+    const name   = String(body.name ?? "").trim();
+    const email  = String(body.email ?? "").trim().toLowerCase();
+    const phone  = String(body.phone ?? "").trim() || undefined;
+
+    if (!slug)                   return NextResponse.json({ error: "Cause is required." }, { status: 400 });
+    if (!Number.isFinite(amount) || amount < 100) {
+      return NextResponse.json({ error: "Minimum donation is ₹100." }, { status: 400 });
+    }
+    if (!name)                   return NextResponse.json({ error: "Your name is required." }, { status: 400 });
+    if (!email || !/^\S+@\S+\.\S+$/.test(email)) {
+      return NextResponse.json({ error: "A valid email is required for the receipt." }, { status: 400 });
+    }
+
+    const cause = await prisma.cause.findUnique({
+      where: { slug },
+      select: { id: true, slug: true, title: true, status: true, enableOnline: true },
+    });
+    if (!cause)                          return NextResponse.json({ error: "Cause not found." }, { status: 404 });
+    if (cause.status !== "PUBLISHED")    return NextResponse.json({ error: "This cause is not accepting donations." }, { status: 400 });
+    if (cause.enableOnline === false)    return NextResponse.json({ error: "Online donations are disabled for this cause." }, { status: 400 });
+
+    const amountInPaise = Math.round(amount * 100);
+
+    const order = await razorpay().orders.create({
+      amount: amountInPaise,
+      currency: "INR",
+      // Receipt is for Razorpay's books — must be ≤40 chars. Slug truncated; donation id added after creation isn't possible since order comes first.
+      receipt: `mch-${cause.slug.slice(0, 30)}-${Date.now().toString().slice(-6)}`,
+      notes: {
+        cause_slug: cause.slug,
+        cause_title: cause.title,
+        donor_name: name,
+        donor_email: email,
+      },
+    });
+
+    await createOnlineDonationOrder({
+      causeId: cause.id,
+      donorName: name,
+      donorEmail: email,
+      donorPhone: phone,
+      amount: Math.round(amount),
+      razorpayOrderId: order.id,
+    });
+
+    return NextResponse.json({
+      ok: true,
+      orderId: order.id,
+      keyId: razorpayKeyId(),
+      amount: amountInPaise,
+      currency: "INR",
+      causeTitle: cause.title,
+      prefill: { name, email, contact: phone ?? "" },
+    });
+  } catch (e) {
+    console.error("[donate/online]", e);
+    return NextResponse.json({ error: "Could not start payment. Please try again." }, { status: 500 });
   }
-  console.log("[donate/online] order intent:", data);
-  return NextResponse.json({
-    ok: true,
-    pending_integration: "razorpay",
-    intent: data,
-  });
 }
