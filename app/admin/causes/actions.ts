@@ -39,6 +39,50 @@ function deriveBeneficiaryKey(slug: string): string {
   return parts.join("-");
 }
 
+export type UpdateFormState = { error?: string; ok?: true };
+
+export async function addCauseUpdateAction(_prev: UpdateFormState, formData: FormData): Promise<UpdateFormState> {
+  await requireAdmin();
+
+  const slug = String(formData.get("slug") ?? "").trim();
+  const caption = String(formData.get("caption") ?? "").trim();
+  const body = String(formData.get("body") ?? "").trim();
+
+  if (!slug) return { error: "Missing cause slug." };
+  if (!body) return { error: "Update body is required." };
+
+  const cause = await prisma.cause.findUnique({ where: { slug }, select: { id: true } });
+  if (!cause) return { error: "Cause not found." };
+
+  // Append to the end of the timeline.
+  const last = await prisma.causeUpdate.findFirst({
+    where: { causeId: cause.id },
+    orderBy: { sortOrder: "desc" },
+    select: { sortOrder: true },
+  });
+  const nextOrder = (last?.sortOrder ?? -1) + 1;
+
+  await prisma.causeUpdate.create({
+    data: { causeId: cause.id, caption: caption || null, body, sortOrder: nextOrder },
+  });
+
+  revalidatePath(`/admin/causes/${slug}`);
+  revalidatePath(`/donations/${slug}`);
+  revalidatePath("/current-causes");
+  revalidatePath("/success-stories");
+
+  return { ok: true };
+}
+
+export async function deleteCauseUpdateAction(formData: FormData) {
+  await requireAdmin();
+  const id = String(formData.get("id"));
+  const slug = String(formData.get("slug"));
+  await prisma.causeUpdate.delete({ where: { id } });
+  revalidatePath(`/admin/causes/${slug}`);
+  revalidatePath(`/donations/${slug}`);
+}
+
 export async function createCauseAction(_prev: CauseFormState, formData: FormData): Promise<CauseFormState> {
   const user = await requireAdmin();
 

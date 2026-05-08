@@ -57,7 +57,7 @@ export default async function CausesAdminPage() {
               return (
                 <tr key={c.id} className="border-t border-[var(--color-line)] hover:bg-[var(--color-soft)]/50">
                   <td className="px-4 py-3 text-ink font-medium max-w-[28rem]">
-                    <span className="block truncate">{c.title}</span>
+                    <Link href={`/admin/causes/${c.slug}`} className="block truncate hover:text-accent-600">{c.title}</Link>
                   </td>
                   <td className="px-4 py-3">
                     <span className={`text-[11px] uppercase tracking-wider font-semibold px-2 py-1 rounded ${STATUS_CLS[c.status] ?? ""}`}>
