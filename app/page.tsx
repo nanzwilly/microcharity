@@ -1,7 +1,9 @@
 import Link from "next/link";
 import CauseCard from "@/components/CauseCard";
 import { site } from "@/lib/data/site";
-import { activeBeneficiaries } from "@/lib/data/causes";
+import { getActiveBeneficiaries } from "@/lib/data/causes";
+
+export const revalidate = 60;
 
 const valueProps = [
   { title: "0% Admin Costs",  desc: "Every single rupee you donate goes directly to the cause. Operations are run by volunteers." },
@@ -9,8 +11,8 @@ const valueProps = [
   { title: "Receipt for Every Donation", desc: "You receive a verified receipt by email immediately after your contribution." },
 ];
 
-export default function HomePage() {
-  const featured = activeBeneficiaries.slice(0, 3);
+export default async function HomePage() {
+  const featured = (await getActiveBeneficiaries()).slice(0, 3);
 
   return (
     <>

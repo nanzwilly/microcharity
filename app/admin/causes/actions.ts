@@ -24,8 +24,10 @@ export async function setCauseStatusAction(formData: FormData) {
 
   await prisma.cause.update({ where: { id }, data: { status } });
 
-  // Refresh both the admin list and the public cause page so the change shows up immediately.
+  // Refresh both admin views and every public surface that lists causes so the change
+  // is visible immediately on the next request.
   revalidatePath("/admin/causes");
+  revalidatePath("/");
   revalidatePath("/current-causes");
   revalidatePath("/success-stories");
   revalidatePath(`/donations/${cause.slug}`);

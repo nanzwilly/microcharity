@@ -1,17 +1,20 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
-import { allCampaigns, findCampaign } from "@/lib/data/causes";
+import { getAllCampaigns, findCampaign } from "@/lib/data/causes";
+
+export const revalidate = 60;
 import { inrShort } from "@/lib/format";
 import DonateForm from "./DonateForm";
 import ShareButtons from "@/components/ShareButtons";
 
-export function generateStaticParams() {
-  return allCampaigns.map(c => ({ slug: c.slug }));
+export async function generateStaticParams() {
+  const all = await getAllCampaigns();
+  return all.map(c => ({ slug: c.slug }));
 }
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
-  const found = findCampaign(slug);
+  const found = await findCampaign(slug);
   if (!found) return { title: "Cause not found" };
   const { campaign } = found;
   const path = `/donations/${slug}`;
@@ -38,7 +41,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
 
 export default async function CausePage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
-  const found = findCampaign(slug);
+  const found = await findCampaign(slug);
   if (!found) notFound();
   const { campaign, beneficiary } = found;
 

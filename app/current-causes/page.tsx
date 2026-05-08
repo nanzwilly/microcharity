@@ -1,10 +1,15 @@
 import PageHero from "@/components/PageHero";
 import CauseCard from "@/components/CauseCard";
-import { activeBeneficiaries, closedBeneficiaries } from "@/lib/data/causes";
+import { getActiveBeneficiaries, getClosedBeneficiaries } from "@/lib/data/causes";
 
 export const metadata = { title: "Current Causes" };
+export const revalidate = 60;
 
-export default function CurrentCausesPage() {
+export default async function CurrentCausesPage() {
+  const [activeBeneficiaries, closedBeneficiaries] = await Promise.all([
+    getActiveBeneficiaries(),
+    getClosedBeneficiaries(),
+  ]);
   return (
     <>
       <PageHero

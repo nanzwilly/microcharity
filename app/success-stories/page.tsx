@@ -1,11 +1,16 @@
 import PageHero from "@/components/PageHero";
 import CauseCard from "@/components/CauseCard";
-import { closedBeneficiaries, grandTotalRaised } from "@/lib/data/causes";
+import { getClosedBeneficiaries, getGrandTotalRaised } from "@/lib/data/causes";
 import { inrShort as fmt } from "@/lib/format";
 
 export const metadata = { title: "Success Stories" };
+export const revalidate = 60;
 
-export default function SuccessStoriesPage() {
+export default async function SuccessStoriesPage() {
+  const [closedBeneficiaries, grandTotalRaised] = await Promise.all([
+    getClosedBeneficiaries(),
+    getGrandTotalRaised(),
+  ]);
   return (
     <>
       <PageHero
