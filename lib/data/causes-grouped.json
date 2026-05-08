@@ -1964,27 +1964,6 @@
     "hasActive": false
   },
   {
-    "key": "medical-expenses-saji",
-    "campaigns": [
-      {
-        "url": "https://www.microcharity.com/donations/medical-expenses-saji/",
-        "slug": "medical-expenses-saji",
-        "title": "Page not found",
-        "goal": 0,
-        "raised": 0,
-        "status": "active",
-        "image": "",
-        "summary": "",
-        "datePosted": "",
-        "updates": []
-      }
-    ],
-    "totalRaised": 0,
-    "totalGoal": 0,
-    "beneficiary": "Page not found",
-    "hasActive": true
-  },
-  {
     "key": "medical-support-for-jibin",
     "campaigns": [
       {
