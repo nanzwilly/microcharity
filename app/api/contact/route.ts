@@ -21,23 +21,40 @@ export async function POST(req: Request) {
     { label: "Message", value: message },
   ];
 
-  const { html, text } = renderFormEmail({
+  // 1. Notify the trust inbox
+  const adminEmail = renderFormEmail({
     heading: "New contact form message",
-    intro: `Submitted from www.microcharity.com — Contact Us page.`,
+    intro: "Submitted from www.microcharity.com — Contact Us page.",
     fields,
     footerNote: "Reply directly to this email to respond to the sender.",
   });
-
-  const result = await sendEmail({
+  const adminResult = await sendEmail({
     subject: `[Contact] ${subject}`,
-    html,
-    text,
+    html: adminEmail.html,
+    text: adminEmail.text,
     replyTo: `${name} <${email}>`,
   });
 
-  if (!result.ok) {
-    // SMTP not configured yet — accept and log so the form still feels responsive in dev.
-    return NextResponse.json({ ok: true, queued: false, reason: result.reason });
+  // 2. Auto-acknowledgement to the submitter (best-effort; don't fail the request if this errors)
+  const ackEmail = renderFormEmail({
+    heading: "Thank you for writing to MicroCharity",
+    intro: `Hi ${name.split(" ")[0]}, we've received your message and a volunteer from our team will reply within 48 hours. For your records, here's a copy of what you sent:`,
+    fields,
+    footerNote: "MicroCharity Trust · Bangalore · info@microcharity.com",
+  });
+  try {
+    await sendEmail({
+      to: email,
+      subject: `We received your message — ${subject}`,
+      html: ackEmail.html,
+      text: ackEmail.text,
+    });
+  } catch (e) {
+    console.warn("[contact] ack email failed:", e);
   }
-  return NextResponse.json({ ok: true, queued: true, id: result.id });
+
+  if (!adminResult.ok) {
+    return NextResponse.json({ ok: true, queued: false, reason: adminResult.reason });
+  }
+  return NextResponse.json({ ok: true, queued: true });
 }

@@ -29,22 +29,40 @@ export async function POST(req: Request) {
     { label: "Description",          value: description },
   ];
 
-  const { html, text } = renderFormEmail({
+  // 1. Notify the trust inbox
+  const adminEmail = renderFormEmail({
     heading: "New cause referral",
-    intro: `Submitted from www.microcharity.com — Refer a Cause page.`,
+    intro: "Submitted from www.microcharity.com — Refer a Cause page.",
     fields,
     footerNote: "Reply directly to this email to contact the referrer.",
   });
-
-  const result = await sendEmail({
+  const adminResult = await sendEmail({
     subject: `[Cause referral] ${category} — ${beneficiary}`,
-    html,
-    text,
+    html: adminEmail.html,
+    text: adminEmail.text,
     replyTo: `${referrerName} <${referrerEmail}>`,
   });
 
-  if (!result.ok) {
-    return NextResponse.json({ ok: true, queued: false, reason: result.reason });
+  // 2. Auto-acknowledgement to the referrer (best-effort)
+  const ackEmail = renderFormEmail({
+    heading: "Thank you for referring a cause",
+    intro: `Hi ${referrerName.split(" ")[0]}, we've received your referral for ${beneficiary}. A MicroCharity volunteer will independently verify the case and reach out within 24–48 hours. For your records, here's what you submitted:`,
+    fields,
+    footerNote: "MicroCharity Trust · Bangalore · info@microcharity.com",
+  });
+  try {
+    await sendEmail({
+      to: referrerEmail,
+      subject: `We received your referral — ${beneficiary}`,
+      html: ackEmail.html,
+      text: ackEmail.text,
+    });
+  } catch (e) {
+    console.warn("[refer-cause] ack email failed:", e);
   }
-  return NextResponse.json({ ok: true, queued: true, id: result.id });
+
+  if (!adminResult.ok) {
+    return NextResponse.json({ ok: true, queued: false, reason: adminResult.reason });
+  }
+  return NextResponse.json({ ok: true, queued: true });
 }

@@ -2,33 +2,58 @@
 
 import { useState } from "react";
 
+const inputCls = "w-full rounded-lg border border-[var(--color-line)] focus:border-accent-600 focus:ring-2 focus:ring-accent-100 outline-none px-3 py-2.5 text-sm";
+
 export default function ReferForm() {
   const [busy, setBusy] = useState(false);
-  const [msg, setMsg] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const [done, setDone] = useState<{ name: string; beneficiary: string } | null>(null);
 
   async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setBusy(true);
-    setMsg("Submitting…");
-    const form = new FormData(e.currentTarget);
-    const payload = Object.fromEntries(form.entries());
+    setError(null);
+    const fd = new FormData(e.currentTarget);
+    const payload = Object.fromEntries(fd.entries());
     try {
       const res = await fetch("/api/refer-cause", {
         method: "POST",
         headers: { "content-type": "application/json" },
         body: JSON.stringify(payload),
       });
-      if (!res.ok) throw new Error("Submission failed");
-      e.currentTarget.reset();
-      setMsg("Thank you — your referral has been submitted. We typically respond within 24 hours.");
+      if (!res.ok) throw new Error("Submission failed.");
+      setDone({
+        name: String(payload.referrer_name ?? ""),
+        beneficiary: String(payload.beneficiary_name ?? ""),
+      });
     } catch {
-      setMsg("Something went wrong. Please email info@microcharity.com instead.");
+      setError("Something went wrong. Please email info@microcharity.com instead.");
     } finally {
       setBusy(false);
     }
   }
 
-  const inputCls = "w-full rounded-lg border border-[var(--color-line)] focus:border-accent-600 focus:ring-2 focus:ring-accent-100 outline-none px-3 py-2.5 text-sm";
+  if (done) {
+    return (
+      <div className="rounded-2xl bg-[var(--color-soft)] border border-[var(--color-line)] p-8 text-center">
+        <div className="w-14 h-14 rounded-full bg-accent-600 text-white mx-auto flex items-center justify-center mb-5">
+          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+        </div>
+        <h2 className="font-display text-2xl text-ink mb-2">Thank you{done.name ? `, ${done.name.split(" ")[0]}` : ""}.</h2>
+        <p className="text-body leading-relaxed max-w-md mx-auto">
+          We&rsquo;ve received your referral{done.beneficiary ? <> for <strong className="text-ink">{done.beneficiary}</strong></> : null}.
+          A volunteer will independently verify the case and reach out within 24&ndash;48 hours.
+          We&rsquo;ve also sent a copy of your referral to your inbox.
+        </p>
+        <button
+          onClick={() => setDone(null)}
+          className="mt-6 text-sm font-semibold text-accent-600 hover:text-accent-700"
+        >
+          Refer another cause →
+        </button>
+      </div>
+    );
+  }
 
   return (
     <form onSubmit={onSubmit} className="space-y-5">
@@ -86,7 +111,7 @@ export default function ReferForm() {
         {busy ? "Submitting…" : "Submit referral"}
       </button>
 
-      {msg && <p className="text-sm text-muted">{msg}</p>}
+      {error && <p className="text-sm text-accent-700 bg-accent-50 border border-accent-200 rounded-lg px-3 py-2">{error}</p>}
     </form>
   );
 }
