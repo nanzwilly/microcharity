@@ -32,11 +32,11 @@ export default async function CausesAdminPage() {
       <div className="flex items-end justify-between">
         <div>
           <h1 className="font-display text-3xl text-ink">Causes</h1>
-          <p className="text-sm text-muted mt-1">{causes.length} total. Edit form coming next iteration.</p>
+          <p className="text-sm text-muted mt-1">{causes.length} total. Use <strong>Duplicate</strong> to publish a follow-up campaign for an existing beneficiary.</p>
         </div>
-        <button disabled className="rounded-full bg-accent-600/40 text-white text-sm font-semibold px-4 py-2 cursor-not-allowed">
-          + New cause (coming soon)
-        </button>
+        <Link href="/admin/causes/new" className="rounded-full bg-accent-600 hover:bg-accent-700 text-white text-sm font-semibold px-4 py-2 transition">
+          + New cause
+        </Link>
       </div>
 
       <div className="rounded-2xl bg-white border border-[var(--color-line)] overflow-hidden">
@@ -100,6 +100,9 @@ export default async function CausesAdminPage() {
                           </button>
                         </form>
                       )}
+                      <Link href={`/admin/causes/new?from=${encodeURIComponent(c.slug)}`} className="text-xs font-semibold text-ink hover:text-accent-600" title="Create a follow-up campaign with these details pre-filled">
+                        Duplicate
+                      </Link>
                       <Link href={`/donations/${c.slug}`} target="_blank" className="text-xs font-semibold text-accent-600 hover:text-accent-700">
                         View →
                       </Link>
