@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import crypto from "node:crypto";
+import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/prisma";
 import { razorpayKeySecret } from "@/lib/razorpay";
 import { approveDonation, issueReceiptForDonation } from "@/lib/donations";
@@ -38,7 +39,7 @@ export async function POST(req: Request) {
 
     const donation = await prisma.donation.findUnique({
       where: { razorpayOrderId: orderId },
-      select: { id: true, status: true, causeId: true },
+      select: { id: true, status: true, causeId: true, cause: { select: { slug: true } } },
     });
     if (!donation) {
       return NextResponse.json({ error: "Donation not found." }, { status: 404 });
@@ -54,6 +55,13 @@ export async function POST(req: Request) {
     // Razorpay path: 80G receipt goes out immediately (no separate ack email).
     // Idempotent — webhook may also call this; second call is a no-op.
     await issueReceiptForDonation(donation.id);
+
+    // Bust ISR caches so the cause page reflects the new "raised" total on the donor's
+    // very next request (instead of waiting for the 60s revalidate window or the webhook
+    // hop, which may not be configured in test mode).
+    revalidatePath("/");
+    revalidatePath("/current-causes");
+    revalidatePath(`/donations/${donation.cause.slug}`);
 
     return NextResponse.json({ ok: true });
   } catch (e) {
