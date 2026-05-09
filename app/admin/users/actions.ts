@@ -77,6 +77,10 @@ export async function inviteUserAction(_prev: UserFormState, formData: FormData)
   return { ok: true, sentTo: email, inviteUrl: link, emailDelivered };
 }
 
+// Used both for "resend the original invite" (user never set a password yet) and
+// "send a password reset link" (user has been using the system but forgot their
+// password). The plumbing is identical — fresh token + 24h expiry — only the email
+// wording changes based on whether the user already has a passwordHash.
 export async function resendInviteAction(_prev: UserFormState, formData: FormData): Promise<UserFormState> {
   await requireAdminRole();
   const id = String(formData.get("id"));
@@ -89,9 +93,10 @@ export async function resendInviteAction(_prev: UserFormState, formData: FormDat
     data: { inviteToken: token, inviteExpiresAt: inviteExpiry() },
   });
   const link = inviteUrl(token, await originFromHeaders());
+  const mode = u.passwordHash ? "reset" : "invite";
   let emailDelivered = false;
   try {
-    const result = await sendAdminInvite({ name: u.name, email: u.email, inviteUrl: link });
+    const result = await sendAdminInvite({ name: u.name, email: u.email, inviteUrl: link, mode });
     emailDelivered = result.ok === true;
   } catch (e) {
     console.error("[users/resend] email send failed", e);

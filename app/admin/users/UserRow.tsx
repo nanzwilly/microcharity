@@ -74,9 +74,9 @@ export default function UserRow({ user, currentUserId }: { user: UserView; curre
                 type="submit"
                 disabled={resendPending}
                 className="text-xs font-semibold text-accent-700 hover:text-accent-600 disabled:opacity-60"
-                title="Generate a new invite link and email it"
+                title={invitePending ? "Resend the invite email and link" : "Email this user a password reset link"}
               >
-                {resendPending ? "Sending…" : invitePending ? "Resend invite" : "Send invite link"}
+                {resendPending ? "Sending…" : invitePending ? "Resend invite" : "Reset password"}
               </button>
             </form>
             <form action={setUserActiveAction} className="inline">
