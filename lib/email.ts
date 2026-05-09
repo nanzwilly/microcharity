@@ -235,3 +235,25 @@ export async function sendDonationReceipt80G(input: Receipt80GInput) {
     ],
   });
 }
+
+// ---------- Admin user invite (one-time link) ----------
+
+export async function sendAdminInvite(input: { name: string; email: string; inviteUrl: string }) {
+  const subject = "You're invited to MicroCharity admin";
+  const text =
+    `Hi ${input.name},\n\n` +
+    `You've been invited to access the MicroCharity admin panel. ` +
+    `Open the link below to set your password and sign in:\n\n` +
+    `${input.inviteUrl}\n\n` +
+    `This link will expire in 24 hours. If it expires before you use it, ask another admin to resend.\n\n` +
+    `— MicroCharity`;
+  // Plain-text email is intentional here — the link is the secret; dressing it up
+  // adds nothing and triggers more spam filters than a short text message.
+  const html =
+    `<p>Hi ${input.name},</p>` +
+    `<p>You've been invited to access the MicroCharity admin panel. Open the link below to set your password and sign in:</p>` +
+    `<p><a href="${input.inviteUrl}">${input.inviteUrl}</a></p>` +
+    `<p style="color:#6b6363;font-size:13px">This link will expire in 24 hours. If it expires before you use it, ask another admin to resend.</p>` +
+    `<p>— MicroCharity</p>`;
+  return sendEmail({ to: input.email, subject, html, text });
+}

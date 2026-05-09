@@ -14,8 +14,9 @@ export async function POST(req: Request) {
     }
 
     const user = await prisma.user.findUnique({ where: { email: String(email).toLowerCase() } });
-    // Same generic error whether the user doesn't exist or the password is wrong — avoids enumeration.
-    if (!user || !user.isActive || !(await verifyPassword(String(password), user.passwordHash))) {
+    // Same generic error whether the user doesn't exist, hasn't accepted their invite yet
+    // (passwordHash is null), or the password is wrong — avoids enumeration.
+    if (!user || !user.isActive || !user.passwordHash || !(await verifyPassword(String(password), user.passwordHash))) {
       return NextResponse.json({ error: "Invalid email or password" }, { status: 401 });
     }
 

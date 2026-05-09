@@ -31,9 +31,12 @@ export default async function AdminLayout({ children }: { children: React.ReactN
             <Link href="/admin/donations" className="text-ink hover:text-accent-600">Donations</Link>
             <Link href="/admin/donors" className="text-ink hover:text-accent-600">Donors</Link>
             <Link href="/admin/reports" className="text-ink hover:text-accent-600">Reports</Link>
+            {user?.role === "ADMIN" && (
+              <Link href="/admin/users" className="text-ink hover:text-accent-600">Users</Link>
+            )}
             {user && (
               <div className="hidden lg:flex items-center gap-3 pl-4 border-l border-[var(--color-line)]">
-                <span className="text-xs text-muted">{user.name} · {user.role === "ADMIN" ? "Admin" : "Manager"}</span>
+                <Link href="/admin/profile" className="text-xs text-muted hover:text-ink">{user.name} · {user.role === "ADMIN" ? "Admin" : "Editor"}</Link>
                 <LogoutButton />
               </div>
             )}

@@ -22,8 +22,13 @@ async function isAuthed(req: NextRequest) {
 export async function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl;
 
-  // Login page is public. The login API is also public.
-  if (pathname === "/admin/login" || pathname.startsWith("/api/auth/")) {
+  // Login page is public. The login API is also public. Invite-acceptance pages are
+  // public too — that's how brand-new users get into the system without a session.
+  if (
+    pathname === "/admin/login" ||
+    pathname.startsWith("/admin/accept-invite/") ||
+    pathname.startsWith("/api/auth/")
+  ) {
     return NextResponse.next();
   }
 
