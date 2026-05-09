@@ -153,19 +153,30 @@ export default async function CausePage({ params }: { params: Promise<{ slug: st
                 <h3 className="font-display text-lg text-ink mb-1">Other campaigns for this beneficiary</h3>
                 <p className="text-xs text-muted mb-4">{beneficiary.campaigns.length} total · {fmt(beneficiary.totalRaised)} raised over time</p>
                 <ul className="space-y-3">
-                  {other.map(o => (
-                    <li key={o.slug}>
-                      <Link href={`/donations/${o.slug}`} className="block rounded-lg border border-[var(--color-line)] hover:border-accent-600 p-3 transition">
-                        <div className="flex items-baseline justify-between gap-3">
-                          <span className="text-sm font-semibold text-ink">{o.title}</span>
-                          <span className={`text-[10px] uppercase tracking-wider font-semibold ${o.status === "active" ? "text-accent-600" : "text-muted"}`}>
-                            {o.status}
-                          </span>
-                        </div>
-                        <div className="text-xs text-muted mt-1">{fmt(o.raised)} of {fmt(o.goal)}</div>
-                      </Link>
-                    </li>
-                  ))}
+                  {other.map(o => {
+                    // datePosted is "YYYY-MM-DD" — render as "Mon YYYY" so admins / donors can
+                    // distinguish multiple campaigns for the same beneficiary at a glance.
+                    const launched = o.datePosted
+                      ? new Date(o.datePosted).toLocaleDateString("en-IN", { month: "short", year: "numeric" })
+                      : null;
+                    return (
+                      <li key={o.slug}>
+                        <Link href={`/donations/${o.slug}`} className="block rounded-lg border border-[var(--color-line)] hover:border-accent-600 p-3 transition">
+                          <div className="flex items-baseline justify-between gap-3">
+                            <span className="text-sm font-semibold text-ink">{o.title}</span>
+                            <span className={`text-[10px] uppercase tracking-wider font-semibold ${o.status === "active" ? "text-accent-600" : "text-muted"}`}>
+                              {o.status}
+                            </span>
+                          </div>
+                          <div className="text-xs text-muted mt-1 flex flex-wrap gap-x-2">
+                            <span>{fmt(o.raised)} of {fmt(o.goal)}</span>
+                            {launched && <span aria-hidden="true">·</span>}
+                            {launched && <span>Launched {launched}</span>}
+                          </div>
+                        </Link>
+                      </li>
+                    );
+                  })}
                 </ul>
               </div>
             )}
