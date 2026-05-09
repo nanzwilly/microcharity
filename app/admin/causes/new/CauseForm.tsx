@@ -28,9 +28,6 @@ type SearchHit = {
 const inputCls =
   "w-full rounded-lg border border-[var(--color-line)] focus:border-accent-600 focus:ring-2 focus:ring-accent-100 outline-none px-3 py-2.5 text-sm";
 
-function slugify(s: string): string {
-  return s.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "").slice(0, 80);
-}
 function slugCleanDuringTyping(s: string): string {
   return s.toLowerCase().replace(/[^a-z0-9-]+/g, "-").replace(/-{2,}/g, "-").slice(0, 80);
 }
@@ -46,14 +43,7 @@ function fmtDate(iso: string | null): string {
 export default function CauseForm({ predecessor }: { predecessor?: Predecessor }) {
   const [state, formAction, pending] = useActionState<CauseFormState, FormData>(createCauseAction, {});
 
-  const [title, setTitle] = useState("");
   const [slug, setSlug] = useState("");
-  const [slugTouched, setSlugTouched] = useState(false);
-
-  function onTitleChange(v: string) {
-    setTitle(v);
-    if (!slugTouched) setSlug(slugify(v));
-  }
 
   return (
     <div className="space-y-8">
@@ -91,10 +81,8 @@ export default function CauseForm({ predecessor }: { predecessor?: Predecessor }
             type="text"
             name="title"
             required
-            value={title}
-            onChange={(e) => onTitleChange(e.target.value)}
             className={inputCls}
-            placeholder="e.g. College Fee for Saniya — May 2026"
+            placeholder="e.g. Fund raising for the fourth year"
           />
         </div>
 
@@ -107,7 +95,7 @@ export default function CauseForm({ predecessor }: { predecessor?: Predecessor }
               name="slug"
               required
               value={slug}
-              onChange={(e) => { setSlug(slugCleanDuringTyping(e.target.value)); setSlugTouched(true); }}
+              onChange={(e) => setSlug(slugCleanDuringTyping(e.target.value))}
               className="flex-1 outline-none px-3 py-2.5 text-sm font-mono"
               placeholder="college-fee-saniya-may-2026"
             />

@@ -127,9 +127,10 @@ export async function createCauseAction(_prev: CauseFormState, formData: FormDat
   if (dateRaw && Number.isNaN(date.getTime())) return { error: "Invalid date." };
 
   if (!title) return { error: "Title is required." };
+  if (!slugRaw) return { error: "URL slug is required." };
 
-  const slug = slugify(slugRaw || title);
-  if (!slug) return { error: "Could not derive a URL slug from the title." };
+  const slug = slugify(slugRaw);
+  if (!slug) return { error: "Slug must contain at least one letter or number." };
 
   const goal = goalRaw ? Number(goalRaw) : 0;
   if (goalRaw && (!Number.isFinite(goal) || goal < 0)) return { error: "Goal must be a positive number." };
