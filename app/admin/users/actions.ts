@@ -17,7 +17,13 @@ async function requireAdminRole() {
   return u;
 }
 
-export type UserFormState = { error?: string; ok?: true; sentTo?: string };
+export type UserFormState = {
+  error?: string;
+  ok?: true;
+  sentTo?: string;
+  inviteUrl?: string;
+  emailDelivered?: boolean;
+};
 
 async function originFromHeaders(): Promise<string> {
   const h = await headers();
@@ -55,17 +61,27 @@ export async function inviteUserAction(_prev: UserFormState, formData: FormData)
   });
 
   const link = inviteUrl(token, await originFromHeaders());
-  await sendAdminInvite({ name, email, inviteUrl: link });
+  // Email may bounce / get spam-filtered (especially on corporate domains).
+  // We still treat the invite as "sent" in the UI, but pass the link back so the
+  // admin can copy-paste it manually when delivery is uncertain.
+  let emailDelivered = false;
+  try {
+    const result = await sendAdminInvite({ name, email, inviteUrl: link });
+    emailDelivered = result.ok === true;
+  } catch (e) {
+    console.error("[users/invite] email send failed", e);
+    emailDelivered = false;
+  }
 
   revalidatePath("/admin/users");
-  return { ok: true, sentTo: email };
+  return { ok: true, sentTo: email, inviteUrl: link, emailDelivered };
 }
 
-export async function resendInviteAction(formData: FormData) {
+export async function resendInviteAction(_prev: UserFormState, formData: FormData): Promise<UserFormState> {
   await requireAdminRole();
   const id = String(formData.get("id"));
   const u = await prisma.user.findUnique({ where: { id } });
-  if (!u) throw new Error("User not found");
+  if (!u) return { error: "User not found." };
 
   const token = generateInviteToken();
   await prisma.user.update({
@@ -73,9 +89,17 @@ export async function resendInviteAction(formData: FormData) {
     data: { inviteToken: token, inviteExpiresAt: inviteExpiry() },
   });
   const link = inviteUrl(token, await originFromHeaders());
-  await sendAdminInvite({ name: u.name, email: u.email, inviteUrl: link });
+  let emailDelivered = false;
+  try {
+    const result = await sendAdminInvite({ name: u.name, email: u.email, inviteUrl: link });
+    emailDelivered = result.ok === true;
+  } catch (e) {
+    console.error("[users/resend] email send failed", e);
+    emailDelivered = false;
+  }
 
   revalidatePath("/admin/users");
+  return { ok: true, sentTo: u.email, inviteUrl: link, emailDelivered };
 }
 
 export async function setUserActiveAction(formData: FormData) {

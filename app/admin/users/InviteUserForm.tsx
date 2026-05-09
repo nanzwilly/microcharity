@@ -1,7 +1,35 @@
 "use client";
 
-import { useActionState, useEffect, useRef } from "react";
+import { useActionState, useEffect, useRef, useState } from "react";
 import { inviteUserAction, type UserFormState } from "./actions";
+
+export function InviteResult({ sentTo, inviteUrl, delivered }: { sentTo: string; inviteUrl: string; delivered: boolean }) {
+  const [copied, setCopied] = useState(false);
+  return (
+    <div className={`text-sm rounded-lg px-3 py-2 border ${delivered ? "bg-green-50 border-green-200 text-green-900" : "bg-amber-50 border-amber-200 text-amber-900"}`}>
+      {delivered ? (
+        <p>Invite emailed to <strong>{sentTo}</strong>. The link is valid for 24 hours.</p>
+      ) : (
+        <p>
+          Invite created for <strong>{sentTo}</strong>, but the email could not be delivered (the recipient&apos;s server may have rejected or quarantined it).
+          Copy the link below and share it directly. The link is valid for 24 hours.
+        </p>
+      )}
+      <div className="mt-2 flex flex-wrap items-center gap-2">
+        <code className="flex-1 min-w-0 truncate text-xs font-mono bg-white border border-[var(--color-line)] rounded-md px-2 py-1.5">{inviteUrl}</code>
+        <button
+          type="button"
+          onClick={async () => {
+            try { await navigator.clipboard.writeText(inviteUrl); setCopied(true); setTimeout(() => setCopied(false), 2000); } catch {}
+          }}
+          className="text-xs font-semibold rounded-md border border-[var(--color-line)] hover:border-ink px-2.5 py-1.5"
+        >
+          {copied ? "Copied!" : "Copy link"}
+        </button>
+      </div>
+    </div>
+  );
+}
 
 const inputCls =
   "w-full rounded-lg border border-[var(--color-line)] focus:border-accent-600 focus:ring-2 focus:ring-accent-100 outline-none px-3 py-2.5 text-sm";
@@ -38,10 +66,8 @@ export default function InviteUserForm() {
       {state.error && (
         <p className="text-sm text-accent-700 bg-accent-50 border border-accent-200 rounded-lg px-3 py-2">{state.error}</p>
       )}
-      {state.ok && (
-        <p className="text-sm text-green-800 bg-green-50 border border-green-200 rounded-lg px-3 py-2">
-          Invite sent to <strong>{state.sentTo}</strong>. The link is valid for 24 hours.
-        </p>
+      {state.ok && state.inviteUrl && (
+        <InviteResult sentTo={state.sentTo ?? ""} inviteUrl={state.inviteUrl} delivered={state.emailDelivered ?? false} />
       )}
 
       <button
