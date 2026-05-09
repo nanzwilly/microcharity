@@ -2,7 +2,7 @@ import Link from "next/link";
 import type { DonationStatus, DonationType, Prisma } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
 import { inrShort } from "@/lib/format";
-import { approveDonationAction, rejectDonationAction } from "./actions";
+import PendingActions from "./PendingActions";
 
 export const metadata = { title: "Donations — Admin" };
 export const dynamic = "force-dynamic";
@@ -163,26 +163,7 @@ export default async function DonationsAdminPage({ searchParams }: { searchParam
                   <td className="px-4 py-3 text-xs text-muted whitespace-nowrap">{d.createdAt.toLocaleDateString("en-IN")}</td>
                   <td className="px-4 py-3">
                     {d.status === "PENDING" ? (
-                      <div className="flex flex-col items-end gap-2">
-                        <form action={approveDonationAction} className="flex items-center gap-1.5">
-                          <input type="hidden" name="id" value={d.id} />
-                          <input
-                            type="number"
-                            name="amount"
-                            min={1}
-                            defaultValue={d.amount}
-                            className="w-24 rounded-md border border-[var(--color-line)] focus:border-accent-600 outline-none px-2 py-1 text-xs text-right"
-                            title="Edit amount before approving (DM-015)"
-                          />
-                          <button type="submit" className="rounded-md bg-green-600 hover:bg-green-700 text-white text-xs font-semibold px-2.5 py-1.5">
-                            Approve
-                          </button>
-                        </form>
-                        <form action={rejectDonationAction}>
-                          <input type="hidden" name="id" value={d.id} />
-                          <button type="submit" className="text-xs font-semibold text-muted hover:text-accent-600">Reject</button>
-                        </form>
-                      </div>
+                      <PendingActions id={d.id} amount={d.amount} />
                     ) : d.paymentReference ? (
                       <span className="text-xs text-muted block text-right" title={d.paymentReference}>ref · {d.paymentReference}</span>
                     ) : null}
