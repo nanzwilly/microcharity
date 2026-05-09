@@ -77,13 +77,13 @@ export default async function CausePage({ params }: { params: Promise<{ slug: st
           )}
 
           {/*
-            Show timeline entries from EVERY campaign of this beneficiary in one stream — so a
-            newly-published follow-up cause automatically inherits the history of previous campaigns.
-            Campaigns are already ordered chronologically (oldest first) in the data layer; updates
-            within each campaign are in sortOrder.
+            Each cause owns its own cumulative timeline (the active / latest cause holds the
+            full unified history of the beneficiary; older causes are legacy snapshots). So we
+            render only this campaign's updates — no merging across the beneficiary's other
+            causes.
           */}
           {(() => {
-            const allUpdates = beneficiary.campaigns.flatMap(c => c.updates);
+            const allUpdates = campaign.updates;
             if (allUpdates.length > 0) {
               return (
                 <div className="space-y-8">
