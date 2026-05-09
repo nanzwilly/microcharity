@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import crypto from "node:crypto";
 import { prisma } from "@/lib/prisma";
 import { razorpayKeySecret } from "@/lib/razorpay";
-import { approveDonation } from "@/lib/donations";
+import { approveDonation, issueReceiptForDonation } from "@/lib/donations";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -50,6 +50,10 @@ export async function POST(req: Request) {
         razorpaySignature: signature,
       });
     }
+
+    // Razorpay path: 80G receipt goes out immediately (no separate ack email).
+    // Idempotent — webhook may also call this; second call is a no-op.
+    await issueReceiptForDonation(donation.id);
 
     return NextResponse.json({ ok: true });
   } catch (e) {

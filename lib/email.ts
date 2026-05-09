@@ -23,12 +23,19 @@ function transport() {
   });
 }
 
+export type EmailAttachment = {
+  filename: string;
+  content: Buffer | Uint8Array;
+  contentType?: string;
+};
+
 export type SendOptions = {
   to?: string;            // defaults to ADMIN_INBOX
   subject: string;
   html: string;
   text?: string;
   replyTo?: string;
+  attachments?: EmailAttachment[];
 };
 
 export async function sendEmail(opts: SendOptions): Promise<{ ok: true; id?: string } | { ok: false; reason: string }> {
@@ -36,6 +43,7 @@ export async function sendEmail(opts: SendOptions): Promise<{ ok: true; id?: str
   if (!tx) {
     console.log("[email] SMTP not configured — logging instead:", {
       to: opts.to ?? ADMIN_INBOX, subject: opts.subject, replyTo: opts.replyTo,
+      attachments: opts.attachments?.map(a => ({ filename: a.filename, size: a.content.length })),
     });
     console.log(opts.text ?? opts.html);
     return { ok: false, reason: "SMTP not configured" };
@@ -47,6 +55,11 @@ export async function sendEmail(opts: SendOptions): Promise<{ ok: true; id?: str
     html: opts.html,
     text: opts.text,
     replyTo: opts.replyTo,
+    attachments: opts.attachments?.map(a => ({
+      filename: a.filename,
+      content: Buffer.isBuffer(a.content) ? a.content : Buffer.from(a.content),
+      contentType: a.contentType,
+    })),
   });
   return { ok: true, id: info.messageId };
 }
@@ -114,4 +127,111 @@ export function renderFormEmail(opts: {
     (opts.footerNote ? `\n\n— ${opts.footerNote}` : "");
 
   return { html, text };
+}
+
+// ---------- Donation acknowledgment (sent immediately for offline / QR) ----------
+
+export type DonationAckInput = {
+  donorName: string;
+  donorEmail: string;
+  causeTitle: string;
+  donationDate: Date;
+  amount: number;            // INR
+  paymentMethod: string;     // "Offline Donation" | "UPI / QR Code" | "Razorpay"
+  paymentId: string;         // internal donation id or external txn ref
+};
+
+const fmtINR = (n: number) => `₹${n.toLocaleString("en-IN")}`;
+const fmtLongDate = (d: Date) =>
+  d.toLocaleDateString("en-IN", { year: "numeric", month: "long", day: "numeric" });
+
+export async function sendDonationAck(input: DonationAckInput) {
+  const subject = `Thank you for your donation to ${input.causeTitle} - MicroCharity`;
+  const firstName = input.donorName.trim().split(/\s+/)[0] || input.donorName;
+
+  const text =
+    `Dear ${firstName},\n\n` +
+    `Greetings from MicroCharity.com\n\n` +
+    `We hereby acknowledge the receipt of your donation. Thank you very much for your donation. ` +
+    `Your generosity is highly appreciated! Here are the details of your donation:\n\n` +
+    `Donor: ${input.donorName}\n` +
+    `Donation: ${input.causeTitle}\n` +
+    `Donation Date: ${fmtLongDate(input.donationDate)}\n` +
+    `Amount: ${fmtINR(input.amount)}\n` +
+    `Payment Method: ${input.paymentMethod}\n` +
+    `Payment ID: ${input.paymentId}\n\n` +
+    `You will be receiving 80G Donation Receipt of this donation shortly from us.\n\n` +
+    `Sincerely,\n\n` +
+    `MicroCharity.com`;
+
+  const rows: Field[] = [
+    { label: "Donor", value: input.donorName },
+    { label: "Donation", value: input.causeTitle },
+    { label: "Donation Date", value: fmtLongDate(input.donationDate) },
+    { label: "Amount", value: fmtINR(input.amount) },
+    { label: "Payment Method", value: input.paymentMethod },
+    { label: "Payment ID", value: input.paymentId },
+  ];
+  const { html } = renderFormEmail({
+    heading: "Thank you for your donation",
+    intro:
+      `Dear ${firstName}, greetings from MicroCharity.com. We hereby acknowledge the receipt of your donation. ` +
+      `Your generosity is highly appreciated. You will receive your 80G Donation Receipt shortly.`,
+    fields: rows,
+    footerNote: "Sincerely, MicroCharity.com",
+  });
+
+  return sendEmail({ to: input.donorEmail, subject, html, text });
+}
+
+// ---------- 80G receipt email (sent on approval / Razorpay capture) ----------
+
+export type Receipt80GInput = {
+  donorName: string;
+  donorEmail: string;
+  causeTitle: string;
+  receiptNumber: string;
+  amount: number;
+  paymentMethod: string;
+  pdf: Buffer | Uint8Array;
+};
+
+export async function sendDonationReceipt80G(input: Receipt80GInput) {
+  const firstName = input.donorName.trim().split(/\s+/)[0] || input.donorName;
+  const subject = `Your 80G Donation Receipt - ${input.receiptNumber}`;
+
+  const text =
+    `Dear ${firstName},\n\n` +
+    `Thank you for your donation of ${fmtINR(input.amount)} towards "${input.causeTitle}".\n\n` +
+    `Your 80G donation receipt is attached as a PDF (Receipt No: ${input.receiptNumber}). ` +
+    `This receipt qualifies for tax deduction under section 80G(5) of the Income Tax Act, 1961.\n\n` +
+    `Sincerely,\n\nMicroCharity.com`;
+
+  const { html } = renderFormEmail({
+    heading: "Your 80G Donation Receipt",
+    intro:
+      `Dear ${firstName}, thank you for your donation. Your 80G donation receipt is attached as a PDF. ` +
+      `It qualifies for tax deduction under section 80G(5) of the Income Tax Act, 1961.`,
+    fields: [
+      { label: "Receipt No", value: input.receiptNumber },
+      { label: "Donation", value: input.causeTitle },
+      { label: "Amount", value: fmtINR(input.amount) },
+      { label: "Payment Method", value: input.paymentMethod },
+    ],
+    footerNote: "Sincerely, MicroCharity.com",
+  });
+
+  return sendEmail({
+    to: input.donorEmail,
+    subject,
+    html,
+    text,
+    attachments: [
+      {
+        filename: `MicroCharity_${input.donorName.replace(/\s+/g, "_")}_${input.receiptNumber.replace(/\s|\//g, "-")}.pdf`,
+        content: input.pdf,
+        contentType: "application/pdf",
+      },
+    ],
+  });
 }

@@ -5,6 +5,8 @@
 
 import { prisma } from "./prisma";
 import type { DonationType } from "@prisma/client";
+import { buildReceiptPdf, nextReceiptNumber } from "./receipt";
+import { sendDonationReceipt80G } from "./email";
 
 export type CreateManualInput = {
   causeId: string;
@@ -58,6 +60,59 @@ export async function createManualDonation(input: CreateManualInput) {
     });
 
     return donation;
+  });
+}
+
+/**
+ * Create a PENDING donation submitted by the donor themselves (Offline / QR flows).
+ * Mirrors createOnlineDonationOrder but covers the non-Razorpay paths.
+ *
+ * The cause amount is NOT incremented here — that happens in approveDonation when
+ * an admin verifies the bank transfer / UTR.
+ */
+export async function createUnverifiedDonation(input: {
+  causeId: string;
+  donorName: string;
+  donorEmail: string;
+  donorPhone?: string;
+  donorAddress?: string;
+  amount: number;
+  type: "OFFLINE" | "QR";
+  paymentReference?: string;
+  utr?: string;
+  paymentDate?: Date;
+}) {
+  const email = input.donorEmail.trim().toLowerCase();
+  return prisma.$transaction(async (tx) => {
+    const donor = await tx.donor.upsert({
+      where: { email },
+      update: {
+        name: input.donorName,
+        phone: input.donorPhone ?? undefined,
+        address: input.donorAddress ?? undefined,
+      },
+      create: {
+        email,
+        name: input.donorName,
+        phone: input.donorPhone,
+        address: input.donorAddress,
+      },
+    });
+    return tx.donation.create({
+      data: {
+        causeId: input.causeId,
+        donorId: donor.id,
+        donorNameSnapshot: input.donorName,
+        donorEmailSnapshot: email,
+        addressSnapshot: input.donorAddress,
+        amount: input.amount,
+        type: input.type,
+        status: "PENDING",
+        paymentReference: input.paymentReference,
+        utr: input.utr,
+        paymentDate: input.paymentDate,
+      },
+    });
   });
 }
 
@@ -182,6 +237,81 @@ export async function failDonationByOrderId(orderId: string, reason?: string) {
       ...(reason ? { adminNotes: reason } : {}),
     },
   });
+}
+
+/**
+ * Generate (if needed) and email the 80G receipt for an APPROVED donation.
+ *
+ * Idempotent — if a Receipt row already exists with sentAt, this is a no-op. Safe to call
+ * from Razorpay verify, the Razorpay webhook (separate hop), and the admin approve action.
+ *
+ * Errors here are logged but never thrown to callers, since failing to send a receipt
+ * should not roll back the approval (the cause total is already updated; we'll let an
+ * admin trigger a resend).
+ */
+export async function issueReceiptForDonation(donationId: string): Promise<void> {
+  try {
+    const d = await prisma.donation.findUnique({
+      where: { id: donationId },
+      include: { cause: { select: { title: true, mcId: true } } },
+    });
+    if (!d) return;
+    if (d.status !== "APPROVED") return;
+
+    const existing = await prisma.receipt.findUnique({ where: { donationId } });
+    if (existing?.sentAt) return; // already sent
+
+    let receiptRow = existing;
+    if (!receiptRow) {
+      // Allocate number and create row inside a transaction; the @@unique on receiptNumber
+      // catches any concurrent collision.
+      receiptRow = await prisma.$transaction(async (tx) => {
+        const num = await nextReceiptNumber(tx, d.approvedAt ?? d.createdAt);
+        return tx.receipt.create({
+          data: {
+            receiptNumber: num,
+            donationId: d.id,
+          },
+        });
+      });
+    }
+
+    const paymentMode =
+      d.type === "ONLINE" ? "Razorpay" :
+      d.type === "QR" ? "UPI" :
+      d.type === "OFFLINE" ? "NEFT / Bank Transfer" :
+      "Manual";
+
+    const paymentDate = d.paymentDate ?? d.approvedAt ?? d.createdAt;
+
+    const pdf = await buildReceiptPdf({
+      receiptNumber: receiptRow.receiptNumber,
+      receiptDate: new Date(),
+      donorName: d.donorNameSnapshot,
+      donorAddress: d.addressSnapshot ?? null,
+      causeMcId: d.cause.mcId ?? null,
+      amount: d.amount,
+      paymentMode,
+      paymentDate,
+    });
+
+    await sendDonationReceipt80G({
+      donorName: d.donorNameSnapshot,
+      donorEmail: d.donorEmailSnapshot,
+      causeTitle: d.cause.title,
+      receiptNumber: receiptRow.receiptNumber,
+      amount: d.amount,
+      paymentMethod: paymentMode,
+      pdf: Buffer.from(pdf),
+    });
+
+    await prisma.receipt.update({
+      where: { id: receiptRow.id },
+      data: { sentAt: new Date(), sentToEmail: d.donorEmailSnapshot },
+    });
+  } catch (err) {
+    console.error("[issueReceiptForDonation] failed for", donationId, err);
+  }
 }
 
 export async function rejectDonation(donationId: string, approverId: string, reason?: string) {

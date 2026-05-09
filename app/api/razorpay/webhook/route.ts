@@ -3,7 +3,7 @@ import crypto from "node:crypto";
 import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/prisma";
 import { razorpayWebhookSecret } from "@/lib/razorpay";
-import { approveDonation, failDonationByOrderId } from "@/lib/donations";
+import { approveDonation, failDonationByOrderId, issueReceiptForDonation } from "@/lib/donations";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -63,6 +63,8 @@ export async function POST(req: Request) {
         revalidatePath("/current-causes");
         revalidatePath(`/donations/${donation.cause.slug}`);
       }
+      // Razorpay path: 80G receipt sent immediately. Idempotent across verify + webhook hops.
+      await issueReceiptForDonation(donation.id);
       return NextResponse.json({ ok: true });
     }
 

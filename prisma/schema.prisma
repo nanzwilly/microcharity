@@ -25,6 +25,7 @@ enum CauseStatus {
 enum DonationType {
   ONLINE
   OFFLINE
+  QR
   MANUAL
 }
 
@@ -147,7 +148,9 @@ model Donation {
   razorpaySignature  String?
 
   // Offline / manual entries
-  paymentReference   String?
+  paymentReference   String?        // bank transaction ref / cheque #
+  utr                String?        // UPI UTR / txn id (QR donations)
+  paymentDate        DateTime?      // donor-entered date of payment (offline / QR)
   panEncrypted       String?
   addressSnapshot    String?
   adminNotes         String?

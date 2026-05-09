@@ -4,7 +4,7 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import type { DonationType } from "@prisma/client";
 import { getCurrentUser } from "@/lib/session";
-import { createManualDonation, approveDonation, rejectDonation } from "@/lib/donations";
+import { createManualDonation, approveDonation, rejectDonation, issueReceiptForDonation } from "@/lib/donations";
 
 async function requireAdmin() {
   const user = await getCurrentUser();
@@ -60,6 +60,8 @@ export async function approveDonationAction(formData: FormData) {
   const amountRaw = String(formData.get("amount") ?? "").trim();
   const editedAmount = amountRaw ? Number(amountRaw) : undefined;
   await approveDonation(id, user.userId, { editedAmount });
+  // Issue + email the 80G receipt now that this offline / QR / manual donation is approved.
+  await issueReceiptForDonation(id);
   revalidatePath("/admin/donations");
 }
 
