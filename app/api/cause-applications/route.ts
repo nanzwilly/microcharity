@@ -10,6 +10,7 @@ import {
 } from "@/lib/applications";
 import { sendApplicationToAdmin, sendApplicationConfirmation, type EmailAttachment } from "@/lib/email";
 import { rateLimit, callerIp, LIMITS } from "@/lib/rate-limit";
+import { retryOnUniqueViolation } from "@/lib/retry";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -79,7 +80,10 @@ export async function POST(req: Request) {
 
     const ip = req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ?? null;
 
-    const created = await prisma.$transaction(async (tx) => {
+    // Retry handles the rare race where two simultaneous submissions both pick the
+    // same `MC/<TYPE>/<FY>/<seq>` — the @@unique on applicationNo throws P2002 on the
+    // loser, the wrapper re-runs with the now-incremented max.
+    const created = await retryOnUniqueViolation(() => prisma.$transaction(async (tx) => {
       const applicationNo = await nextApplicationNo(tx, formType);
       return tx.causeApplication.create({
         data: {
@@ -94,7 +98,7 @@ export async function POST(req: Request) {
           submittedFromIp: ip,
         },
       });
-    });
+    }));
 
     // Forward to admin (with attachments) — awaited so failures surface to the caller.
     try {

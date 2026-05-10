@@ -3,8 +3,10 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import type { DonationType } from "@prisma/client";
+import { prisma } from "@/lib/prisma";
 import { getCurrentUser } from "@/lib/session";
 import { createManualDonation, approveDonation, rejectDonation, issueReceiptForDonation } from "@/lib/donations";
+import { audit } from "@/lib/audit";
 
 async function requireAdmin() {
   const user = await getCurrentUser();
@@ -17,7 +19,7 @@ export type FormState = { error?: string; ok?: true };
 const TYPES: DonationType[] = ["ONLINE", "OFFLINE", "MANUAL"];
 
 export async function createManualDonationAction(_prev: FormState, formData: FormData): Promise<FormState> {
-  await requireAdmin();
+  const me = await requireAdmin();
 
   const causeId    = String(formData.get("causeId") ?? "").trim();
   const donorName  = String(formData.get("donorName") ?? "").trim();
@@ -49,19 +51,58 @@ export async function createManualDonationAction(_prev: FormState, formData: For
     adminNotes:       toStr(formData.get("adminNotes")),
     date,
   });
+  await audit({
+    action: "donation.create.manual",
+    userId: me.userId,
+    entityType: "Donation",
+    entityId: d.id,
+    payload: { causeId, donorEmail, amount, type: typeRaw },
+  });
 
   revalidatePath("/admin/donations");
   redirect(`/admin/donations?created=${d.id}`);
 }
+
+// Sanity ceiling for editedAmount on approval. Anything above this is presumed a typo
+// or an attempt to corrupt cause.raisedAmount; we reject early before touching the DB.
+const APPROVE_MAX_AMOUNT = 1_00_00_00_000; // ₹100 crore — well above any real donation
+const APPROVE_MAX_MULTIPLIER = 10;          // also bounded to 10× the originally-submitted amount
 
 export async function approveDonationAction(formData: FormData) {
   const user = await requireAdmin();
   const id = String(formData.get("id"));
   const amountRaw = String(formData.get("amount") ?? "").trim();
   const editedAmount = amountRaw ? Number(amountRaw) : undefined;
+
+  if (editedAmount !== undefined) {
+    if (!Number.isFinite(editedAmount) || editedAmount < 1) {
+      throw new Error("Edited amount must be a positive integer.");
+    }
+    if (editedAmount > APPROVE_MAX_AMOUNT) {
+      throw new Error(`Edited amount exceeds the ₹${APPROVE_MAX_AMOUNT.toLocaleString("en-IN")} cap.`);
+    }
+    // Cross-check against the donation's original amount.
+    const original = await prisma.donation.findUnique({ where: { id }, select: { amount: true } });
+    if (original && editedAmount > original.amount * APPROVE_MAX_MULTIPLIER) {
+      throw new Error(
+        `Edited amount is more than ${APPROVE_MAX_MULTIPLIER}× the submitted amount (₹${original.amount.toLocaleString("en-IN")}). Reject this donation and re-create it manually if the figure is correct.`
+      );
+    }
+  }
+
+  const before = await prisma.donation.findUnique({ where: { id }, select: { amount: true } });
   await approveDonation(id, user.userId, { editedAmount });
-  // Issue + email the 80G receipt now that this offline / QR / manual donation is approved.
   await issueReceiptForDonation(id);
+  await audit({
+    action: "donation.approve",
+    userId: user.userId,
+    entityType: "Donation",
+    entityId: id,
+    payload: {
+      originalAmount: before?.amount ?? null,
+      editedAmount: editedAmount ?? null,
+    },
+  });
   revalidatePath("/admin/donations");
 }
 
@@ -70,6 +111,13 @@ export async function rejectDonationAction(formData: FormData) {
   const id = String(formData.get("id"));
   const reason = toStr(formData.get("reason"));
   await rejectDonation(id, user.userId, reason);
+  await audit({
+    action: "donation.reject",
+    userId: user.userId,
+    entityType: "Donation",
+    entityId: id,
+    payload: { reason: reason ?? null },
+  });
   revalidatePath("/admin/donations");
 }
 

@@ -22,10 +22,18 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "Webhook not configured" }, { status: 500 });
   }
 
-  const expected = crypto.createHmac("sha256", secret).update(raw).digest("hex");
-  const sigOk =
-    expected.length === signature.length &&
-    crypto.timingSafeEqual(Buffer.from(expected), Buffer.from(signature));
+  // Compare as hex-decoded bytes — explicit encoding prevents the comparison from
+  // accidentally working in utf-8 mode (where mismatched cases or stray whitespace
+  // could pass length parity without matching the actual signature bytes).
+  const expectedHex = crypto.createHmac("sha256", secret).update(raw).digest("hex");
+  const sigOk = (() => {
+    if (!/^[0-9a-f]+$/i.test(signature) || expectedHex.length !== signature.length) return false;
+    try {
+      return crypto.timingSafeEqual(Buffer.from(expectedHex, "hex"), Buffer.from(signature, "hex"));
+    } catch {
+      return false;
+    }
+  })();
   if (!sigOk) {
     console.warn("[razorpay/webhook] signature mismatch");
     return NextResponse.json({ error: "Bad signature" }, { status: 400 });

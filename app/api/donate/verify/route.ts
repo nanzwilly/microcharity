@@ -23,15 +23,21 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "Missing payment fields." }, { status: 400 });
     }
 
-    const expected = crypto
+    const expectedHex = crypto
       .createHmac("sha256", razorpayKeySecret())
       .update(`${orderId}|${paymentId}`)
       .digest("hex");
 
-    // Constant-time compare to avoid timing leaks
-    const sigOk =
-      expected.length === signature.length &&
-      crypto.timingSafeEqual(Buffer.from(expected), Buffer.from(signature));
+    // Constant-time compare on hex-decoded bytes — explicit encoding prevents subtle
+    // matches against malformed inputs.
+    const sigOk = (() => {
+      if (!/^[0-9a-f]+$/i.test(signature) || expectedHex.length !== signature.length) return false;
+      try {
+        return crypto.timingSafeEqual(Buffer.from(expectedHex, "hex"), Buffer.from(signature, "hex"));
+      } catch {
+        return false;
+      }
+    })();
 
     if (!sigOk) {
       return NextResponse.json({ error: "Signature verification failed." }, { status: 400 });

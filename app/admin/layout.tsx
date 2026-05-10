@@ -1,9 +1,35 @@
 import Link from "next/link";
+import { redirect } from "next/navigation";
+import { cookies } from "next/headers";
 import { getCurrentUser } from "@/lib/session";
+import { prisma } from "@/lib/prisma";
+import { sessionCookieName } from "@/lib/auth";
 import LogoutButton from "./LogoutButton";
 
 export default async function AdminLayout({ children }: { children: React.ReactNode }) {
-  const user = await getCurrentUser();
+  const sessionUser = await getCurrentUser();
+
+  // Session re-check against the live DB. Middleware only verifies the JWT signature,
+  // which means a deactivated / role-demoted user keeps access until their cookie
+  // expires (4 days). On every admin request, we cross-check `isActive` and `role`
+  // here — the cost is one cheap indexed lookup per page load.
+  let user = sessionUser;
+  if (sessionUser) {
+    const live = await prisma.user.findUnique({
+      where: { id: sessionUser.userId },
+      select: { id: true, isActive: true, role: true, name: true, email: true },
+    });
+    if (!live || !live.isActive) {
+      // User has been deactivated (or hard-deleted) since their JWT was issued.
+      // Clear the cookie and bounce them to login.
+      const jar = await cookies();
+      jar.delete(sessionCookieName);
+      redirect("/admin/login");
+    }
+    // Reflect any role change without forcing a re-login. We patch the in-memory user
+    // so the nav renders the correct items; the JWT will catch up on next sign-in.
+    user = { ...sessionUser, role: live.role, name: live.name, email: live.email };
+  }
 
   return (
     <div className="min-h-screen bg-[var(--color-soft)]">

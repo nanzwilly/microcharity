@@ -7,6 +7,7 @@ import { put } from "@vercel/blob";
 import { prisma } from "@/lib/prisma";
 import { getCurrentUser } from "@/lib/session";
 import { nextMcId, composeCaption } from "@/lib/mcid";
+import { retryOnUniqueViolation } from "@/lib/retry";
 
 async function requireAdmin() {
   const user = await getCurrentUser();
@@ -69,7 +70,9 @@ export async function addCauseUpdateAction(_prev: UpdateFormState, formData: For
   const cause = await prisma.cause.findUnique({ where: { slug }, select: { id: true } });
   if (!cause) return { error: "Cause not found." };
 
-  await prisma.$transaction(async (tx) => {
+  // The MCID allocator is "max+1 scan"; concurrent calls from the same FY can collide.
+  // Retry on the unique-constraint violation picks up the new max and proceeds.
+  await retryOnUniqueViolation(() => prisma.$transaction(async (tx) => {
     const last = await tx.causeUpdate.findFirst({
       where: { causeId: cause.id },
       orderBy: { sortOrder: "desc" },
@@ -90,7 +93,7 @@ export async function addCauseUpdateAction(_prev: UpdateFormState, formData: For
         mcId,
       },
     });
-  });
+  }));
 
   revalidatePath(`/admin/causes/${slug}`);
   revalidatePath(`/donations/${slug}`);
@@ -156,12 +159,13 @@ export async function createCauseAction(_prev: CauseFormState, formData: FormDat
       return { error: "Featured image must be JPG, PNG, or WebP." };
     }
     try {
+      // Use a random suffix (Vercel Blob default) so the URL isn't guessable from the
+      // slug. allowOverwrite: false means a typo on a slug never silently clobbers an
+      // existing image — the upload fails and the admin gets a clear error.
       const ext = featuredImageFile.name.includes(".") ? featuredImageFile.name.slice(featuredImageFile.name.lastIndexOf(".")) : "";
       const blob = await put(`causes/${slug}/featured${ext}`, featuredImageFile, {
         access: "public",
         contentType: featuredImageFile.type || "image/jpeg",
-        addRandomSuffix: false,
-        allowOverwrite: true,
       });
       image = blob.url;
     } catch (e) {
@@ -193,7 +197,10 @@ export async function createCauseAction(_prev: CauseFormState, formData: FormDat
 
   const creatorId = await safeCreatorId(user.userId);
 
-  const created = await prisma.$transaction(async (tx) => {
+  // Retry on unique-constraint races — both Cause.mcId and the embedded CauseUpdate.mcId
+  // share the same generated value, and nextMcId is "max+1 scan" so simultaneous creates
+  // from the same FY can collide. Retry picks up the now-incremented max.
+  const created = await retryOnUniqueViolation(() => prisma.$transaction(async (tx) => {
     const mcId = await nextMcId(tx, date);
     const initialCaption = composeCaption({
       date,
@@ -242,7 +249,7 @@ export async function createCauseAction(_prev: CauseFormState, formData: FormDat
         ...(allUpdates.length > 0 ? { updates: { create: allUpdates } } : {}),
       },
     });
-  });
+  }));
 
   revalidatePath("/admin/causes");
   revalidatePath("/");

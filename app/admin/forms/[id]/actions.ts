@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import type { ApplicationStatus } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
 import { getCurrentUser } from "@/lib/session";
+import { audit } from "@/lib/audit";
 
 async function requireUser() {
   const u = await getCurrentUser();
@@ -22,23 +23,40 @@ export async function setApplicationStatusAction(formData: FormData) {
 
   // Only set reviewedBy/At if the new status is a "decision" — Submitted is the
   // initial state and shouldn't claim a reviewer.
-  const audit = status === "SUBMITTED"
+  const auditFields = status === "SUBMITTED"
     ? { reviewedAt: null, reviewedById: null }
     : { reviewedAt: new Date(), reviewedById: await safeReviewerId(me.userId) };
 
+  const before = await prisma.causeApplication.findUnique({ where: { id }, select: { status: true } });
   await prisma.causeApplication.update({
     where: { id },
-    data: { status, ...audit },
+    data: { status, ...auditFields },
+  });
+  await audit({
+    action: "application.status.change",
+    userId: me.userId,
+    entityType: "CauseApplication",
+    entityId: id,
+    payload: { from: before?.status ?? null, to: status },
   });
   revalidatePath("/admin/forms");
   revalidatePath(`/admin/forms/${id}`);
 }
 
 export async function saveApplicationNotesAction(formData: FormData) {
-  await requireUser();
+  const me = await requireUser();
   const id = String(formData.get("id"));
   const adminNotes = String(formData.get("adminNotes") ?? "").trim() || null;
   await prisma.causeApplication.update({ where: { id }, data: { adminNotes } });
+  await audit({
+    action: "application.notes.save",
+    userId: me.userId,
+    entityType: "CauseApplication",
+    entityId: id,
+    // Don't include the notes body in the audit payload — it can be sensitive and
+    // governance only needs the fact-of-change.
+    payload: { changed: true },
+  });
   revalidatePath(`/admin/forms/${id}`);
 }
 

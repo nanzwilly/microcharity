@@ -7,6 +7,7 @@ import { getCurrentUser } from "@/lib/session";
 import { generateInviteToken, inviteExpiry, inviteUrl, activateInvite } from "@/lib/users";
 import { sendAdminInvite } from "@/lib/email";
 import { hashPassword, verifyPassword } from "@/lib/auth";
+import { audit } from "@/lib/audit";
 
 // Only ADMIN-role users may manage other users. CONTENT_MANAGER users can edit causes,
 // donations, etc., but not access the user-management surface at all.
@@ -33,7 +34,7 @@ async function originFromHeaders(): Promise<string> {
 }
 
 export async function inviteUserAction(_prev: UserFormState, formData: FormData): Promise<UserFormState> {
-  await requireAdminRole();
+  const me = await requireAdminRole();
 
   const name = String(formData.get("name") ?? "").trim();
   const email = String(formData.get("email") ?? "").trim().toLowerCase();
@@ -48,7 +49,7 @@ export async function inviteUserAction(_prev: UserFormState, formData: FormData)
 
   const { raw, hash } = generateInviteToken();
   const exp = inviteExpiry();
-  await prisma.user.create({
+  const created = await prisma.user.create({
     data: {
       name,
       email,
@@ -60,6 +61,13 @@ export async function inviteUserAction(_prev: UserFormState, formData: FormData)
       inviteToken: hash,
       inviteExpiresAt: exp,
     },
+  });
+  await audit({
+    action: "user.invite",
+    userId: me.userId,
+    entityType: "User",
+    entityId: created.id,
+    payload: { email, role },
   });
 
   const link = inviteUrl(raw, await originFromHeaders());
@@ -84,7 +92,7 @@ export async function inviteUserAction(_prev: UserFormState, formData: FormData)
 // password). The plumbing is identical — fresh token + 24h expiry — only the email
 // wording changes based on whether the user already has a passwordHash.
 export async function resendInviteAction(_prev: UserFormState, formData: FormData): Promise<UserFormState> {
-  await requireAdminRole();
+  const me = await requireAdminRole();
   const id = String(formData.get("id"));
   const u = await prisma.user.findUnique({ where: { id } });
   if (!u) return { error: "User not found." };
@@ -96,6 +104,13 @@ export async function resendInviteAction(_prev: UserFormState, formData: FormDat
   });
   const link = inviteUrl(raw, await originFromHeaders());
   const mode = u.passwordHash ? "reset" : "invite";
+  await audit({
+    action: mode === "reset" ? "user.password.reset" : "user.invite.resend",
+    userId: me.userId,
+    entityType: "User",
+    entityId: id,
+    payload: { email: u.email },
+  });
   let emailDelivered = false;
   try {
     const result = await sendAdminInvite({ name: u.name, email: u.email, inviteUrl: link, mode });
@@ -132,6 +147,12 @@ export async function setUserActiveAction(formData: FormData) {
   }
 
   await prisma.user.update({ where: { id }, data: { isActive: next } });
+  await audit({
+    action: next ? "user.activate" : "user.deactivate",
+    userId: me.userId,
+    entityType: "User",
+    entityId: id,
+  });
   revalidatePath("/admin/users");
 }
 
@@ -157,7 +178,15 @@ export async function setUserRoleAction(formData: FormData) {
     }
   }
 
+  const before = await prisma.user.findUnique({ where: { id }, select: { role: true } });
   await prisma.user.update({ where: { id }, data: { role } });
+  await audit({
+    action: "user.role.change",
+    userId: me.userId,
+    entityType: "User",
+    entityId: id,
+    payload: { from: before?.role ?? null, to: role },
+  });
   revalidatePath("/admin/users");
 }
 

@@ -8,6 +8,7 @@ import type { DonationType } from "@prisma/client";
 import { buildReceiptPdf, nextReceiptNumber } from "./receipt";
 import { sendDonationReceipt80G } from "./email";
 import { encryptPii } from "./crypto";
+import { retryOnUniqueViolation } from "./retry";
 
 export type CreateManualInput = {
   causeId: string;
@@ -266,8 +267,8 @@ export async function issueReceiptForDonation(donationId: string): Promise<void>
     let receiptRow = existing;
     if (!receiptRow) {
       // Allocate number and create row inside a transaction; the @@unique on receiptNumber
-      // catches any concurrent collision.
-      receiptRow = await prisma.$transaction(async (tx) => {
+      // catches any concurrent collision and the retry wrapper picks up the new max.
+      receiptRow = await retryOnUniqueViolation(() => prisma.$transaction(async (tx) => {
         const num = await nextReceiptNumber(tx, d.approvedAt ?? d.createdAt);
         return tx.receipt.create({
           data: {
@@ -275,7 +276,7 @@ export async function issueReceiptForDonation(donationId: string): Promise<void>
             donationId: d.id,
           },
         });
-      });
+      }));
     }
 
     const paymentMode =
