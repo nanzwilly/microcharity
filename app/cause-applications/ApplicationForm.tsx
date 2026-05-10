@@ -1,7 +1,24 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import Script from "next/script";
 import { useRouter } from "next/navigation";
+
+// Cloudflare Turnstile site key — public, safe to embed in client bundle. When unset
+// (e.g. local dev without Cloudflare credentials), the widget is skipped entirely
+// and the server-side verifier also fails open. In prod, set this and the matching
+// TURNSTILE_SECRET_KEY (server-only) to enforce the captcha.
+const TURNSTILE_SITE_KEY = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY ?? "";
+
+// Minimal type for the global script the Cloudflare loader installs on window.
+declare global {
+  interface Window {
+    turnstile?: {
+      render: (el: HTMLElement, opts: { sitekey: string; callback: (token: string) => void; "error-callback"?: () => void; "expired-callback"?: () => void }) => string;
+      reset: (widgetId?: string) => void;
+    };
+  }
+}
 
 type FormType = "EDUCATIONAL" | "MEDICAL" | "INDIVIDUAL" | "ORGANIZATIONAL";
 
@@ -96,6 +113,36 @@ export default function ApplicationForm() {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [done, setDone] = useState<{ applicationNo: string } | null>(null);
+  const [captchaToken, setCaptchaToken] = useState<string | null>(null);
+  const turnstileMountRef = useRef<HTMLDivElement | null>(null);
+  const turnstileWidgetIdRef = useRef<string | null>(null);
+  const [turnstileReady, setTurnstileReady] = useState(false);
+
+  // Mount the Turnstile widget once both the script has loaded and the form-type has
+  // been picked (we render the captcha only when the rest of the form is visible).
+  useEffect(() => {
+    if (!TURNSTILE_SITE_KEY) return;
+    if (!formType) return;
+    if (!turnstileReady) return;
+    if (!turnstileMountRef.current) return;
+    if (turnstileWidgetIdRef.current) return; // already rendered
+
+    const w = window.turnstile;
+    if (!w) return;
+    turnstileWidgetIdRef.current = w.render(turnstileMountRef.current, {
+      sitekey: TURNSTILE_SITE_KEY,
+      callback: (token) => setCaptchaToken(token),
+      "error-callback": () => setCaptchaToken(null),
+      "expired-callback": () => setCaptchaToken(null),
+    });
+  }, [formType, turnstileReady]);
+
+  // Reset the captcha whenever the form-type changes (which re-renders the captcha block).
+  useEffect(() => {
+    if (!turnstileWidgetIdRef.current) return;
+    setCaptchaToken(null);
+    window.turnstile?.reset(turnstileWidgetIdRef.current);
+  }, [formType]);
 
   function handleTypeChange(next: FormType | "") {
     setFormType(next);
@@ -135,12 +182,17 @@ export default function ApplicationForm() {
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
     if (!formType) { setError("Pick an application type."); return; }
+    if (TURNSTILE_SITE_KEY && !captchaToken) {
+      setError("Please complete the CAPTCHA below before submitting.");
+      return;
+    }
     setBusy(true);
     setError(null);
     try {
       const fd = new FormData();
       fd.set("formType", formType);
       fd.set("payload", JSON.stringify(data));
+      if (captchaToken) fd.set("cf-turnstile-response", captchaToken);
       for (const [k, f] of Object.entries(files)) if (f) fd.set(k, f);
       const res = await fetch("/api/cause-applications", { method: "POST", body: fd });
       const j = await res.json();
@@ -247,6 +299,23 @@ export default function ApplicationForm() {
           <BankDetailsSection data={data} setSection={setSection} />
           <AttachmentsSection formType={formType} files={files} setFiles={setFiles} />
           <AcknowledgementSection data={data} setSection={setSection} />
+
+          {/* CAPTCHA — Cloudflare Turnstile. Only renders when the public site key
+              is configured; otherwise the form submits without one. */}
+          {TURNSTILE_SITE_KEY && (
+            <section className="rounded-2xl bg-white border border-[var(--color-line)] p-6">
+              <h2 className="font-display text-lg text-ink mb-3">Verify you&apos;re human</h2>
+              <Script
+                src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit"
+                strategy="afterInteractive"
+                onLoad={() => setTurnstileReady(true)}
+              />
+              <div ref={turnstileMountRef} />
+              <p className="text-xs text-muted mt-2">
+                Powered by Cloudflare Turnstile. No personal data is collected.
+              </p>
+            </section>
+          )}
 
           {error && <p className="text-sm text-accent-700 bg-accent-50 border border-accent-200 rounded-lg px-3 py-2">{error}</p>}
 

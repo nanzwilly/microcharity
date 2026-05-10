@@ -7,7 +7,10 @@ import bcrypt from "bcryptjs";
 const COOKIE_NAME = "mc_session";
 const ALG = "HS256";
 const ONE_DAY = 60 * 60 * 24;
-const SESSION_TTL_SEC = ONE_DAY * 4; // SRS UM-007 default 4 hours minimum, we keep 4 days for convenience
+// 1 day. Tighter than the 4-day default — combined with the per-request session
+// re-check in app/admin/layout.tsx (deactivation kicks in immediately), this caps
+// the window during which a stolen cookie remains valid.
+const SESSION_TTL_SEC = ONE_DAY * 1;
 
 function secretKey() {
   const s = process.env.ADMIN_SESSION_SECRET;

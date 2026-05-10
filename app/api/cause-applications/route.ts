@@ -11,6 +11,7 @@ import {
 import { sendApplicationToAdmin, sendApplicationConfirmation, type EmailAttachment } from "@/lib/email";
 import { rateLimit, callerIp, LIMITS } from "@/lib/rate-limit";
 import { retryOnUniqueViolation } from "@/lib/retry";
+import { isTurnstileConfigured, verifyTurnstileToken } from "@/lib/turnstile";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -26,7 +27,8 @@ export const dynamic = "force-dynamic";
 // only their filename/size/mime/slot lands in the DB on the row's `attachmentMeta`.
 export async function POST(req: Request) {
   try {
-    const rl = await rateLimit(LIMITS.causeApplication, callerIp(req));
+    const ipForLimits = callerIp(req);
+    const rl = await rateLimit(LIMITS.causeApplication, ipForLimits);
     if (!rl.ok) {
       return NextResponse.json(
         { error: "Too many submissions from your network. Please try again in a while." },
@@ -35,6 +37,17 @@ export async function POST(req: Request) {
     }
 
     const form = await req.formData();
+
+    // CAPTCHA verification before any DB or email work — the cheapest way to bounce
+    // bots before they consume more expensive resources. Skipped automatically when
+    // Turnstile isn't configured (dev environments).
+    if (isTurnstileConfigured()) {
+      const token = String(form.get("cf-turnstile-response") ?? "");
+      const v = await verifyTurnstileToken(token, ipForLimits);
+      if (!v.ok) {
+        return NextResponse.json({ error: v.reason }, { status: 400 });
+      }
+    }
     const formTypeRaw = String(form.get("formType") ?? "");
     const validTypes: ApplicationFormType[] = ["EDUCATIONAL", "MEDICAL", "INDIVIDUAL", "ORGANIZATIONAL"];
     if (!validTypes.includes(formTypeRaw as ApplicationFormType)) {
