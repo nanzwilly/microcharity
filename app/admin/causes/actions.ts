@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import type { CauseStatus } from "@prisma/client";
+import { put } from "@vercel/blob";
 import { prisma } from "@/lib/prisma";
 import { getCurrentUser } from "@/lib/session";
 import { nextMcId, composeCaption } from "@/lib/mcid";
@@ -115,7 +116,10 @@ export async function createCauseAction(_prev: CauseFormState, formData: FormDat
   const slugRaw = String(formData.get("slug") ?? "").trim();
   const summary = String(formData.get("summary") ?? "").trim();
   const story = String(formData.get("story") ?? "").trim();
-  const image = String(formData.get("image") ?? "").trim();
+  // `image` is a fallback URL — pre-filled from the predecessor when continuing a
+  // campaign. `featuredImageFile`, if present, takes precedence: uploaded to Vercel
+  // Blob below, the resulting public URL replaces `image`.
+  let image = String(formData.get("image") ?? "").trim();
   const goalRaw = String(formData.get("goal") ?? "").trim();
   const beneficiaryKey = String(formData.get("beneficiaryKey") ?? "").trim();
   const category = String(formData.get("category") ?? "").trim();
@@ -140,6 +144,31 @@ export async function createCauseAction(_prev: CauseFormState, formData: FormDat
   // Slug must be unique
   const clash = await prisma.cause.findUnique({ where: { slug }, select: { id: true } });
   if (clash) return { error: `A cause with slug "${slug}" already exists. Pick a different one.` };
+
+  // Featured image: if admin uploaded a file, push it to Vercel Blob and use that URL.
+  // Otherwise keep whatever `image` URL came in (predecessor's, manually pasted, or empty).
+  const featuredImageFile = formData.get("featuredImageFile");
+  if (featuredImageFile instanceof File && featuredImageFile.size > 0) {
+    const MAX = 2 * 1024 * 1024; // 2 MB
+    const ALLOWED = ["image/jpeg", "image/png", "image/webp"];
+    if (featuredImageFile.size > MAX) return { error: "Featured image is larger than 2 MB. Please compress and try again." };
+    if (featuredImageFile.type && !ALLOWED.includes(featuredImageFile.type)) {
+      return { error: "Featured image must be JPG, PNG, or WebP." };
+    }
+    try {
+      const ext = featuredImageFile.name.includes(".") ? featuredImageFile.name.slice(featuredImageFile.name.lastIndexOf(".")) : "";
+      const blob = await put(`causes/${slug}/featured${ext}`, featuredImageFile, {
+        access: "public",
+        contentType: featuredImageFile.type || "image/jpeg",
+        addRandomSuffix: false,
+        allowOverwrite: true,
+      });
+      image = blob.url;
+    } catch (e) {
+      console.error("[causes/create] image upload failed", e);
+      return { error: "Could not upload the featured image. Try again or paste a URL instead." };
+    }
+  }
 
   // If continuing from a predecessor, load its full timeline now so we can copy it
   // onto the new cause inside the transaction below.

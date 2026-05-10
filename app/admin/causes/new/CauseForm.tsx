@@ -3,6 +3,55 @@
 import { useActionState, useEffect, useState } from "react";
 import { createCauseAction, type CauseFormState } from "../actions";
 
+function FeaturedImageField({ inheritedUrl }: { inheritedUrl?: string }) {
+  // Preview state — either a freshly-picked file (object URL) or the inherited
+  // predecessor URL. The hidden `image` input carries the predecessor URL through
+  // as the fallback; if a file is picked, the server-side action uploads it and
+  // overrides this URL.
+  const [previewUrl, setPreviewUrl] = useState<string | null>(inheritedUrl || null);
+  const [pickedFromFile, setPickedFromFile] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  function onFile(e: React.ChangeEvent<HTMLInputElement>) {
+    setError(null);
+    const f = e.target.files?.[0];
+    if (!f) return;
+    if (f.size > 2 * 1024 * 1024) { setError("Image is larger than 2 MB. Compress and try again."); e.target.value = ""; return; }
+    if (!["image/jpeg","image/png","image/webp"].includes(f.type)) { setError("JPG, PNG, or WebP only."); e.target.value = ""; return; }
+    const url = URL.createObjectURL(f);
+    setPreviewUrl(url);
+    setPickedFromFile(true);
+  }
+
+  return (
+    <div>
+      <label className="block text-sm font-semibold text-ink mb-2">Featured image</label>
+      <div className="flex items-start gap-4">
+        {previewUrl ? (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img src={previewUrl} alt="Featured preview" className="w-40 aspect-[16/9] object-cover rounded-lg border border-[var(--color-line)] bg-[var(--color-soft)]" />
+        ) : (
+          <div className="w-40 aspect-[16/9] rounded-lg border border-dashed border-[var(--color-line)] bg-[var(--color-soft)] flex items-center justify-center text-xs text-muted">No image</div>
+        )}
+        <div className="flex-1 space-y-2">
+          <input
+            type="file"
+            name="featuredImageFile"
+            accept="image/jpeg,image/png,image/webp"
+            onChange={onFile}
+            className="block text-sm text-ink file:mr-3 file:rounded-md file:border file:border-[var(--color-line)] file:bg-[var(--color-soft)] file:px-3 file:py-1.5 file:text-xs file:font-semibold file:text-ink hover:file:border-ink"
+          />
+          <p className="text-xs text-muted leading-relaxed">
+            Recommended: <strong className="text-ink">1200×675 px</strong> (16:9), JPG or WebP, under 2 MB.
+            {inheritedUrl && !pickedFromFile && <> Currently inherited from the predecessor — pick a file above to replace it.</>}
+          </p>
+          {error && <p className="text-xs text-accent-700">{error}</p>}
+        </div>
+      </div>
+    </div>
+  );
+}
+
 type Predecessor = {
   slug: string;
   title: string;
@@ -127,6 +176,8 @@ export default function CauseForm({ predecessor }: { predecessor?: Predecessor }
             placeholder="50000"
           />
         </div>
+
+        <FeaturedImageField inheritedUrl={predecessor?.image} />
 
         {/* Hidden / less-frequently-changed fields kept as inputs so the action receives them */}
         <input type="hidden" name="beneficiaryKey" value={predecessor?.beneficiaryKey ?? ""} />
