@@ -11,7 +11,12 @@ import {
 import { sendApplicationToAdmin, sendApplicationConfirmation, type EmailAttachment } from "@/lib/email";
 import { rateLimit, callerIp, LIMITS } from "@/lib/rate-limit";
 import { retryOnUniqueViolation } from "@/lib/retry";
-import { isTurnstileConfigured, verifyTurnstileToken } from "@/lib/turnstile";
+
+// Bot-trap thresholds. The form has 30+ fields across multiple sections; even with
+// browser autofill a human takes >2 seconds. Any submission below this is treated
+// as bot-driven and silently dropped — we return a generic success so the bot
+// can't probe for the threshold by tweaking timings.
+const MIN_FILL_MS = 2000;
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -38,15 +43,15 @@ export async function POST(req: Request) {
 
     const form = await req.formData();
 
-    // CAPTCHA verification before any DB or email work — the cheapest way to bounce
-    // bots before they consume more expensive resources. Skipped automatically when
-    // Turnstile isn't configured (dev environments).
-    if (isTurnstileConfigured()) {
-      const token = String(form.get("cf-turnstile-response") ?? "");
-      const v = await verifyTurnstileToken(token, ipForLimits);
-      if (!v.ok) {
-        return NextResponse.json({ error: v.reason }, { status: 400 });
-      }
+    // Bot trap — checked before any DB or email work. We answer 200 OK with a
+    // fake-looking application number so the bot thinks it succeeded; nothing is
+    // persisted, no emails are sent. This avoids leaking the threshold to anyone
+    // tuning their bot.
+    const honeypot = String(form.get("website") ?? "").trim();
+    const elapsedMs = Number(form.get("elapsedMs") ?? 0);
+    if (honeypot || !Number.isFinite(elapsedMs) || elapsedMs < MIN_FILL_MS) {
+      console.warn("[cause-applications] bot-trap fired", { honeypotFilled: !!honeypot, elapsedMs });
+      return NextResponse.json({ ok: true, applicationNo: "MC/PENDING" });
     }
     const formTypeRaw = String(form.get("formType") ?? "");
     const validTypes: ApplicationFormType[] = ["EDUCATIONAL", "MEDICAL", "INDIVIDUAL", "ORGANIZATIONAL"];
