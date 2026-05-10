@@ -3,6 +3,7 @@ import { prisma } from "@/lib/prisma";
 import { createUnverifiedDonation } from "@/lib/donations";
 import { sendDonationAck } from "@/lib/email";
 import { parseDonorPayload } from "@/lib/donate-input";
+import { rateLimit, callerIp, LIMITS } from "@/lib/rate-limit";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -13,6 +14,14 @@ export const dynamic = "force-dynamic";
 // - 80G receipt is sent only after admin approval — wired in approveDonationAction.
 export async function POST(req: Request) {
   try {
+    const rl = await rateLimit(LIMITS.donateOffline, callerIp(req));
+    if (!rl.ok) {
+      return NextResponse.json(
+        { error: "Too many requests. Please wait a moment and try again." },
+        { status: 429, headers: { "Retry-After": String(Math.ceil(rl.retryAfterMs / 1000)) } }
+      );
+    }
+
     const data = await req.json().catch(() => ({} as Record<string, unknown>));
     const parsed = parseDonorPayload(data);
     if ("error" in parsed) return NextResponse.json({ error: parsed.error }, { status: 400 });

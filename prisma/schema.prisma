@@ -209,10 +209,16 @@ model User {
   isActive        Boolean    @default(true)
   lastLoginAt     DateTime?
 
-  // One-time invite link. Set on user creation / re-invite; cleared once the user
-  // activates by setting their password.
+  // One-time invite link. Stores the SHA-256 hash of the token (not the raw token)
+  // so a database leak doesn't surrender active invites. The raw token only exists
+  // in the email link sent to the invitee. Set on user creation / re-invite; cleared
+  // once the user activates by setting their password.
   inviteToken     String?    @unique
   inviteExpiresAt DateTime?
+
+  // Login lockout: tracks failed login bursts per user; cleared on successful login.
+  failedLoginAttempts Int       @default(0)
+  lockedUntil         DateTime?
 
   causes              Cause[]
   approvals           Donation[]
@@ -288,6 +294,24 @@ model CauseApplication {
   @@index([formType])
   @@index([status])
   @@index([createdAt])
+}
+
+// ---------- Rate limiting ----------
+//
+// Fixed-window counters keyed by (route, identifier). identifier is typically the
+// caller's IP. windowStart is bucket-aligned to the route's window size.
+//
+// Rows are kept indefinitely (cheap), but a periodic cleanup of buckets older than
+// 24h is harmless and easy to add later.
+
+model RateLimitBucket {
+  id          String   @id @default(cuid())
+  key         String   // "route:identifier", e.g. "login:103.21.55.4"
+  windowStart DateTime
+  count       Int      @default(1)
+
+  @@unique([key, windowStart])
+  @@index([windowStart])
 }
 
 // ---------- Unsubscribe list ----------

@@ -1,7 +1,19 @@
 import { NextResponse } from "next/server";
-import { sendEmail, renderFormEmail, type Field } from "@/lib/email";
+import { sendEmail, renderFormEmail, safeHeader, isPlainEmail, buildReplyTo, type Field } from "@/lib/email";
+import { rateLimit, callerIp, LIMITS } from "@/lib/rate-limit";
+
+export const runtime = "nodejs";
+export const dynamic = "force-dynamic";
 
 export async function POST(req: Request) {
+  const rl = await rateLimit(LIMITS.referCause, callerIp(req));
+  if (!rl.ok) {
+    return NextResponse.json(
+      { error: "Too many submissions. Please wait a moment and try again." },
+      { status: 429, headers: { "Retry-After": String(Math.ceil(rl.retryAfterMs / 1000)) } }
+    );
+  }
+
   const data = await req.json().catch(() => ({} as Record<string, unknown>));
   const get = (k: string) => (typeof data[k] === "string" ? (data[k] as string).trim() : "");
 
@@ -16,6 +28,9 @@ export async function POST(req: Request) {
 
   if (!referrerName || !referrerEmail || !category || !beneficiary || !description) {
     return NextResponse.json({ error: "Missing required fields." }, { status: 400 });
+  }
+  if (!isPlainEmail(referrerEmail)) {
+    return NextResponse.json({ error: "Please enter a valid email address." }, { status: 400 });
   }
 
   const fields: Field[] = [
@@ -37,10 +52,10 @@ export async function POST(req: Request) {
     footerNote: "Reply directly to this email to contact the referrer.",
   });
   const adminResult = await sendEmail({
-    subject: `[Cause referral] ${category} — ${beneficiary}`,
+    subject: safeHeader(`[Cause referral] ${category} — ${beneficiary}`),
     html: adminEmail.html,
     text: adminEmail.text,
-    replyTo: `${referrerName} <${referrerEmail}>`,
+    replyTo: buildReplyTo(referrerName, referrerEmail),
   });
 
   // 2. Auto-acknowledgement to the referrer (best-effort)
@@ -53,7 +68,7 @@ export async function POST(req: Request) {
   try {
     await sendEmail({
       to: referrerEmail,
-      subject: `We received your referral — ${beneficiary}`,
+      subject: safeHeader(`We received your referral — ${beneficiary}`),
       html: ackEmail.html,
       text: ackEmail.text,
     });

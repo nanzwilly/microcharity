@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { razorpay, razorpayKeyId, isRazorpayConfigured } from "@/lib/razorpay";
 import { createOnlineDonationOrder } from "@/lib/donations";
+import { rateLimit, callerIp, LIMITS } from "@/lib/rate-limit";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -10,6 +11,14 @@ export const dynamic = "force-dynamic";
 // browser needs to open Razorpay Checkout (key id + order id + display values).
 export async function POST(req: Request) {
   try {
+    const rl = await rateLimit(LIMITS.donateOnline, callerIp(req));
+    if (!rl.ok) {
+      return NextResponse.json(
+        { error: "Too many requests. Please wait a moment and try again." },
+        { status: 429, headers: { "Retry-After": String(Math.ceil(rl.retryAfterMs / 1000)) } }
+      );
+    }
+
     if (!isRazorpayConfigured()) {
       return NextResponse.json({ error: "Online donations are not configured yet." }, { status: 503 });
     }

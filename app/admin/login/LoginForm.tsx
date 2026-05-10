@@ -22,7 +22,13 @@ export default function LoginForm() {
       });
       const json = await res.json();
       if (!res.ok) throw new Error(json.error ?? "Login failed");
-      const next = params.get("from") || "/admin";
+      // Defend against open-redirect via the ?from= parameter — accept only same-origin
+      // paths (must start with "/", must not start with "//" or "/\\" which can be
+      // re-parsed as protocol-relative URLs).
+      const fromRaw = params.get("from");
+      const next = fromRaw && fromRaw.startsWith("/") && !fromRaw.startsWith("//") && !fromRaw.startsWith("/\\")
+        ? fromRaw
+        : "/admin";
       router.push(next);
       router.refresh();
     } catch (e) {
@@ -34,8 +40,15 @@ export default function LoginForm() {
 
   const inputCls = "w-full rounded-lg border border-[var(--color-line)] focus:border-accent-600 focus:ring-2 focus:ring-accent-100 outline-none px-3 py-2.5 text-sm";
 
+  const justInvited = params.get("invited") === "1";
+
   return (
     <form onSubmit={onSubmit} className="space-y-4">
+      {justInvited && (
+        <p className="text-sm text-green-800 bg-green-50 border border-green-200 rounded-lg px-3 py-2">
+          Your password is set. Please sign in below.
+        </p>
+      )}
       <div>
         <label className="block text-sm font-semibold text-ink mb-2">Email</label>
         <input type="email" name="email" required autoFocus autoComplete="username" className={inputCls} />

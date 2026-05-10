@@ -9,6 +9,7 @@ import {
   type AttachmentMeta,
 } from "@/lib/applications";
 import { sendApplicationToAdmin, sendApplicationConfirmation, type EmailAttachment } from "@/lib/email";
+import { rateLimit, callerIp, LIMITS } from "@/lib/rate-limit";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -24,6 +25,14 @@ export const dynamic = "force-dynamic";
 // only their filename/size/mime/slot lands in the DB on the row's `attachmentMeta`.
 export async function POST(req: Request) {
   try {
+    const rl = await rateLimit(LIMITS.causeApplication, callerIp(req));
+    if (!rl.ok) {
+      return NextResponse.json(
+        { error: "Too many submissions from your network. Please try again in a while." },
+        { status: 429, headers: { "Retry-After": String(Math.ceil(rl.retryAfterMs / 1000)) } }
+      );
+    }
+
     const form = await req.formData();
     const formTypeRaw = String(form.get("formType") ?? "");
     const validTypes: ApplicationFormType[] = ["EDUCATIONAL", "MEDICAL", "INDIVIDUAL", "ORGANIZATIONAL"];

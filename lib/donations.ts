@@ -7,6 +7,7 @@ import { prisma } from "./prisma";
 import type { DonationType } from "@prisma/client";
 import { buildReceiptPdf, nextReceiptNumber } from "./receipt";
 import { sendDonationReceipt80G } from "./email";
+import { encryptPii } from "./crypto";
 
 export type CreateManualInput = {
   causeId: string;
@@ -52,7 +53,8 @@ export async function createManualDonation(input: CreateManualInput) {
         type: input.type,
         status: "PENDING",
         paymentReference: input.paymentReference,
-        panEncrypted: input.pan, // TODO: encrypt at rest (SEC-007)
+        // PAN is PII — store ciphertext only (lib/crypto.ts AES-256-GCM, key in PII_ENC_KEY env).
+        panEncrypted: encryptPii(input.pan),
         addressSnapshot: input.donorAddress,
         adminNotes: input.adminNotes,
         ...(input.date ? { createdAt: input.date } : {}),

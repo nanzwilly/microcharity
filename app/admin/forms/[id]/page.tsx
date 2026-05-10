@@ -2,6 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import type { ApplicationStatus } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
+import { getCurrentUser } from "@/lib/session";
 import { FORM_TYPE_LABEL } from "@/lib/applications";
 import { setApplicationStatusAction, saveApplicationNotesAction } from "./actions";
 
@@ -53,13 +54,22 @@ function lbl(k: string) { return FIELD_LABELS[k] ?? k; }
 
 export default async function AdminFormDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
+  const me = await getCurrentUser();
   const app = await prisma.causeApplication.findUnique({
     where: { id },
     include: { reviewedBy: { select: { name: true, email: true } } },
   });
   if (!app) notFound();
 
-  const data = (app.data as Record<string, unknown>) ?? {};
+  // Bank account details are sensitive — only ADMIN role sees them; Editors see a
+  // redacted placeholder. The full payload is still in the DB; this is a UI gate.
+  const isAdmin = me?.role === "ADMIN";
+  const fullData = (app.data as Record<string, unknown>) ?? {};
+  const data = isAdmin
+    ? fullData
+    : Object.fromEntries(
+        Object.entries(fullData).filter(([k]) => k !== "bankDetails")
+      );
   const attachments = (app.attachmentMeta as Array<{ field: string; filename: string; size: number; mimeType: string }> | null) ?? [];
 
   return (

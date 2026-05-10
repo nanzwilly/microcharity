@@ -1,12 +1,12 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { cookies, headers } from "next/headers";
+import { headers } from "next/headers";
 import { prisma } from "@/lib/prisma";
 import { getCurrentUser } from "@/lib/session";
 import { generateInviteToken, inviteExpiry, inviteUrl, activateInvite } from "@/lib/users";
 import { sendAdminInvite } from "@/lib/email";
-import { createSession, hashPassword, sessionCookieName, sessionMaxAge, verifyPassword } from "@/lib/auth";
+import { hashPassword, verifyPassword } from "@/lib/auth";
 
 // Only ADMIN-role users may manage other users. CONTENT_MANAGER users can edit causes,
 // donations, etc., but not access the user-management surface at all.
@@ -46,7 +46,7 @@ export async function inviteUserAction(_prev: UserFormState, formData: FormData)
   const clash = await prisma.user.findUnique({ where: { email }, select: { id: true } });
   if (clash) return { error: "A user with that email already exists. Use 'Resend invite' if they need a new link." };
 
-  const token = generateInviteToken();
+  const { raw, hash } = generateInviteToken();
   const exp = inviteExpiry();
   await prisma.user.create({
     data: {
@@ -55,12 +55,14 @@ export async function inviteUserAction(_prev: UserFormState, formData: FormData)
       passwordHash: null,
       role,
       isActive: true,
-      inviteToken: token,
+      // Only the SHA-256 hash is persisted — the raw token only ever exists in the
+      // outgoing email link. A DB leak therefore can't surrender active invites.
+      inviteToken: hash,
       inviteExpiresAt: exp,
     },
   });
 
-  const link = inviteUrl(token, await originFromHeaders());
+  const link = inviteUrl(raw, await originFromHeaders());
   // Email may bounce / get spam-filtered (especially on corporate domains).
   // We still treat the invite as "sent" in the UI, but pass the link back so the
   // admin can copy-paste it manually when delivery is uncertain.
@@ -87,12 +89,12 @@ export async function resendInviteAction(_prev: UserFormState, formData: FormDat
   const u = await prisma.user.findUnique({ where: { id } });
   if (!u) return { error: "User not found." };
 
-  const token = generateInviteToken();
+  const { raw, hash } = generateInviteToken();
   await prisma.user.update({
     where: { id },
-    data: { inviteToken: token, inviteExpiresAt: inviteExpiry() },
+    data: { inviteToken: hash, inviteExpiresAt: inviteExpiry() },
   });
-  const link = inviteUrl(token, await originFromHeaders());
+  const link = inviteUrl(raw, await originFromHeaders());
   const mode = u.passwordHash ? "reset" : "invite";
   let emailDelivered = false;
   try {
@@ -174,23 +176,10 @@ export async function acceptInviteAction(_prev: AcceptInviteState, formData: For
   const result = await activateInvite(token, password);
   if (!result.ok) return { error: result.error };
 
-  // Sign the user in immediately so accepting the invite lands them straight on /admin.
-  const sessionToken = await createSession({
-    userId: result.user.id,
-    email: result.user.email,
-    name: result.user.name,
-    role: result.user.role,
-  });
-  const jar = await cookies();
-  jar.set(sessionCookieName, sessionToken, {
-    httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
-    sameSite: "lax",
-    path: "/",
-    maxAge: sessionMaxAge,
-  });
-  await prisma.user.update({ where: { id: result.user.id }, data: { lastLoginAt: new Date() } });
-
+  // Deliberately NOT signing the user in here — they must explicitly log in with the
+  // password they just set. This caps the blast radius if an invite link is ever
+  // exfiltrated (referer headers, screenshots, mailbox compromise): the attacker still
+  // has to defeat the login (rate-limited, lockout, future MFA) before they're in.
   return { ok: true };
 }
 

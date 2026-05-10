@@ -11,9 +11,12 @@ export default function AcceptInviteForm({ token }: { token: string }) {
   const [state, formAction, pending] = useActionState<AcceptInviteState, FormData>(acceptInviteAction, {});
   const router = useRouter();
 
-  // Server action sets the session cookie itself; on success we just navigate to /admin.
+  // After the password is set, send the user to the login page to authenticate
+  // explicitly. This avoids auto-issuing a session from a public route — if the invite
+  // link ever leaks, an attacker still has to defeat the login flow (rate limit +
+  // account lockout) before they're in.
   useEffect(() => {
-    if (state.ok) router.replace("/admin");
+    if (state.ok) router.replace("/admin/login?invited=1");
   }, [state.ok, router]);
 
   return (
@@ -53,7 +56,7 @@ export default function AcceptInviteForm({ token }: { token: string }) {
         disabled={pending || state.ok}
         className="inline-flex items-center gap-2 rounded-full bg-accent-600 hover:bg-accent-700 disabled:opacity-60 text-white font-semibold px-6 py-2.5 transition w-full justify-center"
       >
-        {pending ? "Saving…" : state.ok ? "Signing you in…" : "Set password & sign in"}
+        {pending ? "Saving…" : state.ok ? "Redirecting to login…" : "Set password"}
       </button>
     </form>
   );
