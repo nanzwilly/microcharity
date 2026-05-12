@@ -62,54 +62,93 @@ export default async function CausePage({ params }: { params: Promise<{ slug: st
 
       <section className="container-page py-10 md:py-14 grid lg:grid-cols-12 gap-10">
         <div className="lg:col-span-7">
-          <span className="inline-flex items-center gap-2 rounded-full border border-[var(--color-line)] px-3 py-1 text-xs font-semibold text-ink mb-4">
-            <span className={`w-1.5 h-1.5 rounded-full ${campaign.status === "active" ? "bg-accent-600 animate-pulse" : "bg-muted"}`}></span>
-            {campaign.status === "active" ? "Active cause" : "Closed cause"}
-          </span>
+          {campaign.slug === "support-microcharity" ? (
+            // Curated copy + onward navigation for the unrestricted-giving page. No
+            // timeline entries, no status pill, no featured image — just the
+            // narrative the user wrote and a row of links to other parts of the site.
+            <>
+              <h1 className="font-display text-3xl md:text-5xl text-ink leading-[1.1] mb-6">Support MicroCharity</h1>
+              <div className="prose-mc max-w-none space-y-4 text-body">
+                <p>
+                  All our administrative expenses are absorbed by MicroCharity volunteers. That gives us
+                  the unique tag of &lsquo;zero-expense charity&rsquo; where every penny of the donor reaches
+                  the needy. Would you like to donate towards our running expenses? Please do!
+                </p>
+                <p>
+                  Your donation will be spent towards day-to-day running of MicroCharity like accounting
+                  expenses, IT expenses, even paying 2% commission towards each online transaction which
+                  we incur. All the work at MicroCharity is done by its volunteers, so we don&rsquo;t have
+                  any salary expense!
+                </p>
+                <p>
+                  Your help, however small it may be, will be really appreciated!
+                </p>
+              </div>
 
-          <h1 className="font-display text-3xl md:text-5xl text-ink leading-[1.1] mb-4">{campaign.title}</h1>
+              <div className="mt-10 pt-8 border-t border-[var(--color-line)]">
+                <p className="text-xs uppercase tracking-wider font-semibold text-muted mb-3">Explore more</p>
+                <ul className="grid sm:grid-cols-2 gap-3 text-sm">
+                  <li><Link href="/refer-a-cause" className="text-accent-600 hover:text-accent-700 font-semibold">Refer a cause →</Link></li>
+                  <li><Link href="/current-causes" className="text-accent-600 hover:text-accent-700 font-semibold">Current causes →</Link></li>
+                  <li><Link href="/who-we-are" className="text-accent-600 hover:text-accent-700 font-semibold">Who we are →</Link></li>
+                  <li><Link href="/how-we-work" className="text-accent-600 hover:text-accent-700 font-semibold">How we work →</Link></li>
+                  <li><Link href="/success-stories" className="text-accent-600 hover:text-accent-700 font-semibold">Success stories →</Link></li>
+                  <li><Link href="/legal-financial" className="text-accent-600 hover:text-accent-700 font-semibold">Legal &amp; financial →</Link></li>
+                </ul>
+              </div>
+            </>
+          ) : (
+            <>
+              <span className="inline-flex items-center gap-2 rounded-full border border-[var(--color-line)] px-3 py-1 text-xs font-semibold text-ink mb-4">
+                <span className={`w-1.5 h-1.5 rounded-full ${campaign.status === "active" ? "bg-accent-600 animate-pulse" : "bg-muted"}`}></span>
+                {campaign.status === "active" ? "Active cause" : "Closed cause"}
+              </span>
 
-          {campaign.image && (
-            <div className="aspect-[16/9] rounded-2xl overflow-hidden bg-[var(--color-soft)] border border-[var(--color-line)] mb-8">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src={campaign.image} alt={campaign.title} className="w-full h-full object-cover" loading="eager" />
-            </div>
+              <h1 className="font-display text-3xl md:text-5xl text-ink leading-[1.1] mb-4">{campaign.title}</h1>
+
+              {campaign.image && (
+                <div className="aspect-[16/9] rounded-2xl overflow-hidden bg-[var(--color-soft)] border border-[var(--color-line)] mb-8">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img src={campaign.image} alt={campaign.title} className="w-full h-full object-cover" loading="eager" />
+                </div>
+              )}
+
+              {/*
+                Each cause owns its own cumulative timeline (the active / latest cause holds the
+                full unified history of the beneficiary; older causes are legacy snapshots). So we
+                render only this campaign's updates — no merging across the beneficiary's other
+                causes.
+              */}
+              {(() => {
+                const allUpdates = campaign.updates;
+                if (allUpdates.length > 0) {
+                  return (
+                    <div className="space-y-8">
+                      {allUpdates.map((u, i) => (
+                        <article key={i} className="border-l-2 border-[var(--color-line)] pl-5 md:pl-7 relative">
+                          <span className="absolute -left-[7px] top-1.5 w-3 h-3 rounded-full bg-accent-600 border-2 border-white"></span>
+                          {u.caption && (
+                            <p className="text-xs font-semibold text-accent-600 uppercase tracking-wider mb-2">{u.caption}</p>
+                          )}
+                          <div className="prose-mc max-w-none">
+                            {u.body.split(/\r?\n\r?\n/).map(p => p.trim()).filter(Boolean).map((p, j) => <p key={j}>{p}</p>)}
+                          </div>
+                        </article>
+                      ))}
+                    </div>
+                  );
+                }
+                if (campaign.summary) {
+                  return (
+                    <div className="prose-mc max-w-none">
+                      {campaign.summary.split(/\r?\n\r?\n/).map(p => p.trim()).filter(Boolean).map((p, i) => <p key={i}>{p}</p>)}
+                    </div>
+                  );
+                }
+                return null;
+              })()}
+            </>
           )}
-
-          {/*
-            Each cause owns its own cumulative timeline (the active / latest cause holds the
-            full unified history of the beneficiary; older causes are legacy snapshots). So we
-            render only this campaign's updates — no merging across the beneficiary's other
-            causes.
-          */}
-          {(() => {
-            const allUpdates = campaign.updates;
-            if (allUpdates.length > 0) {
-              return (
-                <div className="space-y-8">
-                  {allUpdates.map((u, i) => (
-                    <article key={i} className="border-l-2 border-[var(--color-line)] pl-5 md:pl-7 relative">
-                      <span className="absolute -left-[7px] top-1.5 w-3 h-3 rounded-full bg-accent-600 border-2 border-white"></span>
-                      {u.caption && (
-                        <p className="text-xs font-semibold text-accent-600 uppercase tracking-wider mb-2">{u.caption}</p>
-                      )}
-                      <div className="prose-mc max-w-none">
-                        {u.body.split(/\r?\n\r?\n/).map(p => p.trim()).filter(Boolean).map((p, j) => <p key={j}>{p}</p>)}
-                      </div>
-                    </article>
-                  ))}
-                </div>
-              );
-            }
-            if (campaign.summary) {
-              return (
-                <div className="prose-mc max-w-none">
-                  {campaign.summary.split(/\r?\n\r?\n/).map(p => p.trim()).filter(Boolean).map((p, i) => <p key={i}>{p}</p>)}
-                </div>
-              );
-            }
-            return null;
-          })()}
         </div>
 
         <aside className="lg:col-span-5 lg:pl-4">
@@ -122,10 +161,7 @@ export default async function CausePage({ params }: { params: Promise<{ slug: st
               */}
               {campaign.slug === "support-microcharity" ? (
                 <>
-                  <p className="font-display text-2xl md:text-3xl text-ink leading-tight">Support MicroCharity</p>
-                  <p className="text-sm text-muted mt-2 leading-relaxed">
-                    Every contribution funds the running of MicroCharity. 100% of donations to specific causes reach the beneficiaries — your support here covers the operations.
-                  </p>
+                  <p className="font-display text-xl text-ink">Donate</p>
                   <DonateForm slug={campaign.slug} />
                 </>
               ) : (
