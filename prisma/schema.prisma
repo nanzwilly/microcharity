@@ -330,6 +330,11 @@ model CauseAnnouncement {
   successCount    Int                      @default(0)
   failureCount    Int                      @default(0)
 
+  // True when this was a test send (recipient list is just the sending admin's
+  // email instead of every opted-in donor). Kept in history so admins can tell
+  // dry-runs apart from the real fires-at-everyone send.
+  isTest          Boolean                  @default(false)
+
   status          AnnouncementStatus       @default(PENDING)
 
   startedAt       DateTime                 @default(now())

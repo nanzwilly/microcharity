@@ -41,6 +41,7 @@ export async function POST(_req: Request, { params }: { params: Promise<{ id: st
         successCount: after.successCount,
         failureCount: after.failureCount,
         status: after.status,
+        isTest: after.isTest,
         startedAt: after.startedAt.toISOString(),
         completedAt: after.completedAt?.toISOString() ?? null,
       },

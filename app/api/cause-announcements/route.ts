@@ -29,11 +29,17 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "Publish the cause before announcing it." }, { status: 400 });
   }
 
+  // "Send test to me" — sender's own email is the only recipient. Required for
+  // safe template iteration without spamming the full donor list.
+  const isTest = String(form.get("test") ?? "") === "1";
+  const testSubject = isTest ? `[TEST] ${cause.title}` : `MicroCharity announces support for a new cause: ${cause.title}`;
+
   try {
     const { id, totalRecipients } = await createAnnouncement({
       causeId: cause.id,
-      subject: `MicroCharity announces support for a new cause: ${cause.title}`,
+      subject: testSubject,
       sentByUserId: await safeUserId(user.userId),
+      testRecipient: isTest ? { name: user.name, email: user.email } : undefined,
     });
 
     await audit({
@@ -41,7 +47,7 @@ export async function POST(req: Request) {
       userId: user.userId,
       entityType: "CauseAnnouncement",
       entityId: id,
-      payload: { causeId: cause.id, totalRecipients },
+      payload: { causeId: cause.id, totalRecipients, isTest },
     });
 
     const fresh = await prisma.causeAnnouncement.findUniqueOrThrow({
@@ -67,6 +73,7 @@ function serialize(row: {
   successCount: number;
   failureCount: number;
   status: "PENDING" | "SENDING" | "COMPLETED" | "CANCELLED";
+  isTest: boolean;
   startedAt: Date;
   completedAt: Date | null;
 }) {
@@ -77,6 +84,7 @@ function serialize(row: {
     successCount: row.successCount,
     failureCount: row.failureCount,
     status: row.status,
+    isTest: row.isTest,
     startedAt: row.startedAt.toISOString(),
     completedAt: row.completedAt?.toISOString() ?? null,
   };

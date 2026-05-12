@@ -185,19 +185,29 @@ export function renderAnnouncementText(opts: {
  * Returns the announcement id and the recipient count. Idempotency note: this is
  * intentionally NOT idempotent — clicking "Send" twice creates two announcements.
  * The UI prevents that by showing a single in-flight row.
+ *
+ * When `testRecipient` is provided, the recipient list is overridden to be just
+ * that email + name. Used by the "Send test to me" toggle so admins can preview
+ * the email in their own inbox before fanning out to 300+ donors.
  */
 export async function createAnnouncement(input: {
   causeId: string;
   subject: string;
   sentByUserId: string | null;
-}): Promise<{ id: string; totalRecipients: number }> {
-  const donors = await prisma.donor.findMany({
-    where: { unsubscribed: false, email: { contains: "@" } },
-    select: { name: true, email: true },
-  });
+  testRecipient?: { name: string; email: string };
+}): Promise<{ id: string; totalRecipients: number; isTest: boolean }> {
+  const isTest = !!input.testRecipient;
+  const recipients: Array<{ name: string; email: string }> = isTest
+    ? [input.testRecipient!]
+    : (await prisma.donor.findMany({
+        where: { unsubscribed: false, email: { contains: "@" } },
+        select: { name: true, email: true },
+      }));
 
-  if (donors.length === 0) {
-    throw new Error("No opted-in donors to send to.");
+  if (recipients.length === 0) {
+    throw new Error(isTest
+      ? "Test recipient is missing — you need an email on your admin profile."
+      : "No opted-in donors to send to.");
   }
 
   return prisma.$transaction(async (tx) => {
@@ -206,13 +216,13 @@ export async function createAnnouncement(input: {
         causeId: input.causeId,
         sentByUserId: input.sentByUserId,
         subject: input.subject,
-        totalRecipients: donors.length,
+        totalRecipients: recipients.length,
+        isTest,
         status: "PENDING",
       },
     });
-    // Bulk-insert recipients.
     await tx.announcementRecipient.createMany({
-      data: donors.map((d) => ({
+      data: recipients.map((d) => ({
         announcementId: a.id,
         donorEmail: d.email,
         donorName: d.name,
@@ -220,7 +230,7 @@ export async function createAnnouncement(input: {
       })),
       skipDuplicates: true,
     });
-    return { id: a.id, totalRecipients: donors.length };
+    return { id: a.id, totalRecipients: recipients.length, isTest };
   });
 }
 
@@ -353,6 +363,7 @@ export const ANNOUNCEMENT_PROGRESS_SELECT = {
   successCount: true,
   failureCount: true,
   status: true,
+  isTest: true,
   startedAt: true,
   completedAt: true,
 } satisfies Prisma.CauseAnnouncementSelect;

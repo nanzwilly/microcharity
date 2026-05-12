@@ -37,7 +37,7 @@ export default async function AdminCauseDetailPage({ params }: { params: Promise
       orderBy: { startedAt: "desc" },
       select: {
         id: true, subject: true, totalRecipients: true, successCount: true,
-        failureCount: true, status: true, startedAt: true, completedAt: true,
+        failureCount: true, status: true, isTest: true, startedAt: true, completedAt: true,
       },
     }),
   ]);
@@ -159,6 +159,7 @@ export default async function AdminCauseDetailPage({ params }: { params: Promise
               causeSlug={cause.slug}
               causeTitle={cause.title}
               optedInDonorCount={optedInDonorCount}
+              adminEmail={me.email}
               history={announcements}
             />
           </div>
