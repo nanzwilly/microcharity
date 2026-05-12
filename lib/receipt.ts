@@ -17,11 +17,11 @@ import path from "node:path";
 import {
   PDFDocument,
   PDFPage,
-  StandardFonts,
   rgb,
   RGB,
   PDFFont,
 } from "pdf-lib";
+import fontkit from "@pdf-lib/fontkit";
 import type { Prisma } from "@prisma/client";
 import { TRUST } from "./trust";
 
@@ -140,6 +140,11 @@ function loadAsset(filename: string): Buffer | null {
   catch { return null; }
 }
 
+async function embedFontFile(pdf: PDFDocument, filename: string): Promise<PDFFont> {
+  const bytes = fs.readFileSync(path.join(process.cwd(), "public", "fonts", filename));
+  return pdf.embedFont(bytes, { subset: true });
+}
+
 // dd/mm/yyyy per the new template.
 function fmtDate(d: Date): string {
   const dd = String(d.getDate()).padStart(2, "0");
@@ -181,12 +186,18 @@ export type ReceiptPdfInput = {
 
 export async function buildReceiptPdf(input: ReceiptPdfInput): Promise<Uint8Array> {
   const pdf = await PDFDocument.create();
+  // Register fontkit so we can embed TTF fonts (StandardFonts use the WinAnsi
+  // encoding which can't render the ₹ symbol — Noto Sans includes it).
+  pdf.registerFontkit(fontkit);
   const page = pdf.addPage([PAGE_W, PAGE_H]);
-  const helv  = await pdf.embedFont(StandardFonts.Helvetica);
-  const helvB = await pdf.embedFont(StandardFonts.HelveticaBold);
-  const helvI  = await pdf.embedFont(StandardFonts.HelveticaOblique);
-  const helvBI = await pdf.embedFont(StandardFonts.HelveticaBoldOblique);
-  const ctx: Ctx = { page, helv, helvB, helvI, helvBI };
+
+  const [reg, bold, italic, boldItalic] = await Promise.all([
+    embedFontFile(pdf, "NotoSans-Regular.ttf"),
+    embedFontFile(pdf, "NotoSans-Bold.ttf"),
+    embedFontFile(pdf, "NotoSans-Italic.ttf"),
+    embedFontFile(pdf, "NotoSans-BoldItalic.ttf"),
+  ]);
+  const ctx: Ctx = { page, helv: reg, helvB: bold, helvI: italic, helvBI: boldItalic };
 
   // ---------- Top band: logo (left) + DONATION RECEIPT (right) ----------
 
