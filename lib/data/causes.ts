@@ -88,23 +88,31 @@ async function loadGrouped(): Promise<Beneficiary[]> {
   });
 }
 
+// "support-microcharity" is the unrestricted-giving page — it should be reachable
+// at its direct URL (and via findCampaign, used by /donations/[slug]) but kept out
+// of every public listing (Current causes, Success stories, the home page).
+const HIDDEN_FROM_LISTINGS = new Set(["support-microcharity"]);
+
+function withoutHidden(all: Beneficiary[]): Beneficiary[] {
+  return all
+    .map((b) => ({ ...b, campaigns: b.campaigns.filter((c) => !HIDDEN_FROM_LISTINGS.has(c.slug)) }))
+    .filter((b) => b.campaigns.length > 0);
+}
+
 export async function getBeneficiaries(): Promise<Beneficiary[]> {
-  return loadGrouped();
+  return withoutHidden(await loadGrouped());
 }
 
 export async function getActiveBeneficiaries(): Promise<Beneficiary[]> {
-  const all = await loadGrouped();
-  return all.filter((b) => b.hasActive);
+  return withoutHidden(await loadGrouped()).filter((b) => b.hasActive);
 }
 
 export async function getClosedBeneficiaries(): Promise<Beneficiary[]> {
-  const all = await loadGrouped();
-  return all.filter((b) => !b.hasActive);
+  return withoutHidden(await loadGrouped()).filter((b) => !b.hasActive);
 }
 
 export async function getAllCampaigns(): Promise<Campaign[]> {
-  const all = await loadGrouped();
-  return all.flatMap((b) => b.campaigns);
+  return withoutHidden(await loadGrouped()).flatMap((b) => b.campaigns);
 }
 
 export function headlineCampaign(b: Beneficiary): Campaign {
