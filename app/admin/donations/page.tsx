@@ -3,7 +3,7 @@ import type { DonationStatus, DonationType, Prisma } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
 import { inrShort } from "@/lib/format";
 import PendingActions from "./PendingActions";
-import { resendReceiptAction } from "./actions";
+import ResendReceiptButton from "./ResendReceiptButton";
 
 export const metadata = { title: "Donations — Admin" };
 export const dynamic = "force-dynamic";
@@ -170,12 +170,7 @@ export default async function DonationsAdminPage({ searchParams }: { searchParam
                         {d.paymentReference && (
                           <span className="text-xs text-muted" title={d.paymentReference}>ref · {d.paymentReference}</span>
                         )}
-                        <form action={resendReceiptAction}>
-                          <input type="hidden" name="id" value={d.id} />
-                          <button type="submit" className="text-xs font-semibold text-accent-700 hover:text-accent-600" title="Re-build the 80G PDF and email it again">
-                            Resend receipt
-                          </button>
-                        </form>
+                        <ResendReceiptButton donationId={d.id} />
                       </div>
                     ) : d.paymentReference ? (
                       <span className="text-xs text-muted block text-right" title={d.paymentReference}>ref · {d.paymentReference}</span>

@@ -246,9 +246,16 @@ export async function failDonationByOrderId(orderId: string, reason?: string) {
  * Force a re-send of the 80G receipt for an APPROVED donation. Clears Receipt.sentAt
  * first so issueReceiptForDonation will go through the build+email path even if the
  * row already exists. Used by the admin "Resend receipt" action.
+ *
+ * Throws if the receipt was already (re-)sent within RESEND_COOLDOWN_MS — defense
+ * against double-clicks / accidental form re-submits leading to duplicate emails.
  */
+const RESEND_COOLDOWN_MS = 30_000; // 30 seconds
 export async function resendReceiptForDonation(donationId: string): Promise<void> {
   const r = await prisma.receipt.findUnique({ where: { donationId } });
+  if (r?.sentAt && Date.now() - r.sentAt.getTime() < RESEND_COOLDOWN_MS) {
+    throw new Error("Receipt was sent in the last 30 seconds — please wait before resending again.");
+  }
   if (r) {
     await prisma.receipt.update({ where: { id: r.id }, data: { sentAt: null, sentToEmail: null } });
   }
