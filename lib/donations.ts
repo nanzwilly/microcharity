@@ -243,6 +243,19 @@ export async function failDonationByOrderId(orderId: string, reason?: string) {
 }
 
 /**
+ * Force a re-send of the 80G receipt for an APPROVED donation. Clears Receipt.sentAt
+ * first so issueReceiptForDonation will go through the build+email path even if the
+ * row already exists. Used by the admin "Resend receipt" action.
+ */
+export async function resendReceiptForDonation(donationId: string): Promise<void> {
+  const r = await prisma.receipt.findUnique({ where: { donationId } });
+  if (r) {
+    await prisma.receipt.update({ where: { id: r.id }, data: { sentAt: null, sentToEmail: null } });
+  }
+  await issueReceiptForDonation(donationId);
+}
+
+/**
  * Generate (if needed) and email the 80G receipt for an APPROVED donation.
  *
  * Idempotent — if a Receipt row already exists with sentAt, this is a no-op. Safe to call

@@ -5,7 +5,7 @@ import { redirect } from "next/navigation";
 import type { DonationType } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
 import { getCurrentUser } from "@/lib/session";
-import { createManualDonation, approveDonation, rejectDonation, issueReceiptForDonation } from "@/lib/donations";
+import { createManualDonation, approveDonation, rejectDonation, issueReceiptForDonation, resendReceiptForDonation } from "@/lib/donations";
 import { audit } from "@/lib/audit";
 
 async function requireAdmin() {
@@ -115,6 +115,23 @@ export async function approveDonationAction(formData: FormData) {
   revalidatePath("/");
   revalidatePath("/current-causes");
   if (before?.cause.slug) revalidatePath(`/donations/${before.cause.slug}`);
+}
+
+export async function resendReceiptAction(formData: FormData) {
+  const user = await requireAdmin();
+  const id = String(formData.get("id"));
+  const d = await prisma.donation.findUnique({ where: { id }, select: { status: true, cause: { select: { slug: true } } } });
+  if (!d) throw new Error("Donation not found.");
+  if (d.status !== "APPROVED") throw new Error("Receipt can only be resent for APPROVED donations.");
+  await resendReceiptForDonation(id);
+  await audit({
+    action: "donation.approve", // closest existing — represents the "receipt issued" follow-up
+    userId: user.userId,
+    entityType: "Donation",
+    entityId: id,
+    payload: { resend: true },
+  });
+  revalidatePath("/admin/donations");
 }
 
 export async function rejectDonationAction(formData: FormData) {
