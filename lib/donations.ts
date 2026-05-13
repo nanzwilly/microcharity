@@ -6,7 +6,7 @@
 import { prisma } from "./prisma";
 import type { DonationType } from "@prisma/client";
 import { buildReceiptPdf, nextReceiptNumber } from "./receipt";
-import { sendDonationReceipt80G } from "./email";
+import { sendDonationReceipt80G, sendDonationAck } from "./email";
 import { encryptPii, decryptPiiSafe } from "./crypto";
 import { retryOnUniqueViolation } from "./retry";
 
@@ -342,6 +342,27 @@ export async function issueReceiptForDonation(donationId: string): Promise<void>
       paymentMode,
       paymentDate,
     });
+
+    // For Razorpay donations the donor never got an ack at submission time (unlike
+    // UPI / Offline where it goes out from the API route). Send it here, just
+    // before the 80G — both arrive together for the donor. Idempotent because the
+    // outer Receipt.sentAt guard at the top of this function blocks re-runs.
+    if (d.type === "ONLINE") {
+      try {
+        await sendDonationAck({
+          donorName: d.donorNameSnapshot,
+          donorEmail: d.donorEmailSnapshot,
+          causeTitle: d.cause.title,
+          donationDate: d.approvedAt ?? d.createdAt,
+          amount: d.amount,
+          paymentMethod: paymentMode,
+          paymentId: d.razorpayPaymentId ?? d.id.slice(-8).toUpperCase(),
+        });
+      } catch (e) {
+        // Don't fail the 80G send because the ack hiccupped — 80G is the priority.
+        console.error("[issueReceiptForDonation] ack email failed (continuing to 80G)", e);
+      }
+    }
 
     await sendDonationReceipt80G({
       donorName: d.donorNameSnapshot,
