@@ -224,10 +224,6 @@ export default function DonateForm({ slug }: { slug: string }) {
               <li><span className="text-muted">IFSC Code</span> — SIBL0000583</li>
             </ul>
             <p className="text-muted leading-relaxed">All contributions will be gratefully acknowledged and are tax deductible.</p>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
-              <Field label="Bank Reference (optional)" name="reference" />
-              <Field label="Payment Date" name="paymentDate" type="date" />
-            </div>
           </div>
         )}
 
