@@ -1,6 +1,7 @@
 import { prisma } from "@/lib/prisma";
 import { getCurrentUser } from "@/lib/session";
 import { inrShort } from "@/lib/format";
+import SiteStatsEditor from "./SiteStatsEditor";
 
 export const metadata = { title: "Admin" };
 export const dynamic = "force-dynamic";
@@ -8,12 +9,18 @@ export const dynamic = "force-dynamic";
 export default async function AdminHome() {
   const user = await getCurrentUser();
 
-  const [activeCount, totalCauses, totalDonationCount, totalDonors, raisedAgg] = await Promise.all([
+  const [activeCount, totalCauses, totalDonationCount, totalDonors, raisedAgg, siteStat] = await Promise.all([
     prisma.cause.count({ where: { status: "PUBLISHED" } }),
     prisma.cause.count(),
     prisma.donation.count({ where: { status: "APPROVED" } }),
     prisma.donor.count(),
     prisma.cause.aggregate({ _sum: { raisedAmount: true } }),
+    prisma.siteStat.upsert({
+      where: { id: 1 },
+      create: { id: 1, donationCount: 4505, raisedAmount: 16112720 },
+      update: {},
+      include: { updatedBy: { select: { name: true } } },
+    }),
   ]);
 
   const kpis = [
@@ -39,6 +46,14 @@ export default async function AdminHome() {
           </div>
         ))}
       </div>
+
+      <SiteStatsEditor
+        donationCount={siteStat.donationCount}
+        raisedAmount={siteStat.raisedAmount}
+        isAdmin={user?.role === "ADMIN"}
+        updatedAt={siteStat.updatedAt.toISOString()}
+        updatedByName={siteStat.updatedBy?.name ?? null}
+      />
 
       <div className="rounded-2xl bg-white border border-[var(--color-line)] p-6">
         <h2 className="font-display text-xl text-ink mb-2">Build order</h2>

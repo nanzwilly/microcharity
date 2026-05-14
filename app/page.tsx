@@ -2,6 +2,7 @@ import Link from "next/link";
 import CauseCard from "@/components/CauseCard";
 import { site } from "@/lib/data/site";
 import { getActiveBeneficiaries, getClosedBeneficiaries, type Beneficiary } from "@/lib/data/causes";
+import { getSiteTotals, type SiteTotals } from "@/lib/data/stats";
 
 export const revalidate = 60;
 
@@ -21,9 +22,10 @@ const valueProps = [
 ];
 
 export default async function HomePage() {
-  const [activeAll, closedAll] = await Promise.all([
+  const [activeAll, closedAll, totals] = await Promise.all([
     getActiveBeneficiaries(),
     getClosedBeneficiaries(),
+    getSiteTotals(),
   ]);
   const featured = activeAll.slice(0, 3);
   // Past causes: newest 6 closed beneficiaries by most-recent campaign date.
@@ -38,7 +40,7 @@ export default async function HomePage() {
         2. Uncomment the <BannerPortrait /> block below.
         Both components are defined at the bottom of this file.
       */}
-      <BannerEditorial />
+      <BannerEditorial totals={totals} />
 
       {/*
       <BannerPortrait />
@@ -76,9 +78,9 @@ export default async function HomePage() {
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v10M9 9.5h4a2 2 0 0 1 0 4H10a2 2 0 0 0 0 4h5"/></svg>
               </div>
               <div className="min-w-0">
-                <h3 className="font-display text-lg text-ink mb-1">{site.totalRaised} raised &amp; disbursed</h3>
+                <h3 className="font-display text-lg text-ink mb-1">{totals.raisedAmountLabel} raised &amp; disbursed</h3>
                 <p className="text-sm text-muted leading-relaxed">
-                  From {site.totalDonations} micro-donations, supporting hundreds of causes and touching thousands of lives across India.
+                  From {totals.donationCountLabel} micro-donations, supporting hundreds of causes and touching thousands of lives across India.
                 </p>
               </div>
             </div>
@@ -237,7 +239,7 @@ export default async function HomePage() {
 /*                      revert; not rendered unless you swap the JSX above.   */
 /* -------------------------------------------------------------------------- */
 
-function BannerEditorial() {
+function BannerEditorial({ totals }: { totals: SiteTotals }) {
   return (
     <section className="bg-[#fdecec] text-ink">
       {/* Grid is NOT wrapped in container-page so the right column can bleed to the viewport edge. */}
@@ -274,7 +276,7 @@ function BannerEditorial() {
 
             <div className="mt-10 pt-6 grid grid-cols-3 gap-4 border-t border-ink/10">
               <div>
-                <p className="font-display text-2xl text-ink">{site.totalDonations}+</p>
+                <p className="font-display text-2xl text-ink">{totals.donationCountLabel}+</p>
                 <p className="text-xs text-muted mt-0.5">Donations</p>
               </div>
               <div>
@@ -282,7 +284,7 @@ function BannerEditorial() {
                 <p className="text-xs text-muted mt-0.5">To the cause</p>
               </div>
               <div>
-                <p className="font-display text-2xl text-ink">₹1.61 crores</p>
+                <p className="font-display text-2xl text-ink">{totals.raisedShortLabel}</p>
                 <p className="text-xs text-muted mt-0.5">Raised</p>
               </div>
             </div>

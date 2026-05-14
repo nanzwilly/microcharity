@@ -225,6 +225,7 @@ model User {
   approvals           Donation[]
   reviewedApplications CauseApplication[]
   announcementsSent   CauseAnnouncement[]
+  siteStatUpdates     SiteStat[]
 
   createdAt       DateTime   @default(now())
 }
@@ -371,6 +372,22 @@ model AnnouncementRecipient {
   @@unique([announcementId, donorEmail])
   @@index([announcementId, status])
   @@index([donorEmail])
+}
+
+// ---------- Site-wide editable stats ----------
+//
+// Singleton (id = 1 always). Admin edits the two numbers from the dashboard;
+// the home page reads from here. Decoupled from the real Donation totals so
+// Jisso can publish legacy-era figures + manual offsets without re-deriving
+// from the DB.
+
+model SiteStat {
+  id            Int       @id @default(1)
+  donationCount Int       @default(0)
+  raisedAmount  Int       @default(0)     // INR rupees, integer
+  updatedAt     DateTime  @updatedAt
+  updatedById   String?
+  updatedBy     User?     @relation(fields: [updatedById], references: [id])
 }
 
 // ---------- Rate limiting ----------

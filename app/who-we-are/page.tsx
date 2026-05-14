@@ -1,10 +1,13 @@
 import PageHero from "@/components/PageHero";
 import { site } from "@/lib/data/site";
 import { team, patron } from "@/lib/data/team";
+import { getSiteTotals } from "@/lib/data/stats";
 
 export const metadata = { title: "Who We Are" };
+export const revalidate = 60;
 
-export default function WhoWeArePage() {
+export default async function WhoWeArePage() {
+  const totals = await getSiteTotals();
   return (
     <>
       <PageHero
@@ -25,7 +28,7 @@ export default function WhoWeArePage() {
           <p>So we tried something simple. We picked one specific case at a time — a surgery, a school fee, a small shop — collected what was needed, and made sure it got there. Then we did it again. And again.</p>
 
           <h2>Where we are today</h2>
-          <p>Over the last two decades, MicroCharity has grown into a network of {site.totalDonations}+ donors and 14 family units of volunteers spread across cities and continents. Every one of us a volunteer. Nobody on payroll. That's how we run on <strong>0% administrative expenses</strong> — every rupee you donate reaches the cause.</p>
+          <p>Over the last two decades, MicroCharity has grown into a network of {totals.donationCountLabel}+ donors and 14 family units of volunteers spread across cities and continents. Every one of us a volunteer. Nobody on payroll. That's how we run on <strong>0% administrative expenses</strong> — every rupee you donate reaches the cause.</p>
         </div>
       </div>
 

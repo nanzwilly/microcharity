@@ -30,7 +30,9 @@ export type AuditAction =
   | "application.notes.save"
   // Launch announcements (bulk mailer)
   | "announcement.send.start"
-  | "announcement.send.cancel";
+  | "announcement.send.cancel"
+  // Site-wide settings
+  | "sitestat.update";
 
 export type AuditInput = {
   action: AuditAction;
