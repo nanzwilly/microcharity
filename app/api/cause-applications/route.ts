@@ -11,6 +11,7 @@ import {
 import { sendApplicationToAdmin, sendApplicationConfirmation, type EmailAttachment } from "@/lib/email";
 import { rateLimit, callerIp, LIMITS } from "@/lib/rate-limit";
 import { retryOnUniqueViolation } from "@/lib/retry";
+import { uploadToBlob } from "@/lib/uploads";
 
 // Bot-trap thresholds. The form has 30+ fields across multiple sections; even with
 // browser autofill a human takes >2 seconds. Any submission below this is treated
@@ -73,9 +74,12 @@ export async function POST(req: Request) {
     }
 
     // Read + validate attachments. We only iterate the slots we know about; anything
-    // else in the multipart body is ignored.
+    // else in the multipart body is ignored. Files captured here are: (a) attached
+    // to the admin email and (b) uploaded to Vercel Blob after the row is created
+    // so admins can also click through from the Forms panel later.
     const attachmentMeta: AttachmentMeta[] = [];
     const attachments: EmailAttachment[] = [];
+    const filesToUpload: Array<{ field: AttachmentMeta["field"]; file: File }> = [];
     let totalSize = 0;
     for (const field of Object.keys(ATTACHMENT_RULES) as Array<keyof typeof ATTACHMENT_RULES>) {
       const file = form.get(field);
@@ -94,6 +98,7 @@ export async function POST(req: Request) {
       const buf = Buffer.from(await file.arrayBuffer());
       attachments.push({ filename: file.name, content: buf, contentType: file.type });
       attachmentMeta.push({ field, filename: file.name, size: file.size, mimeType: file.type });
+      filesToUpload.push({ field, file });
     }
 
     const ip = req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ?? null;
@@ -117,6 +122,33 @@ export async function POST(req: Request) {
         },
       });
     }));
+
+    // Upload each attachment to Vercel Blob and patch the row's attachmentMeta with
+    // the resulting URLs. Application number is sanitised for use as a path prefix
+    // (e.g. "MC/EDU/26-27/001" → "MC-EDU-26-27-001"). Upload failures are logged
+    // but the row stays — the email forward is the backup distribution channel.
+    if (filesToUpload.length > 0) {
+      const slugSafeAppNo = created.applicationNo.replace(/[^A-Za-z0-9_-]+/g, "-");
+      const updatedMeta: AttachmentMeta[] = [];
+      for (const { field, file } of filesToUpload) {
+        const baseMeta: AttachmentMeta = { field, filename: file.name, size: file.size, mimeType: file.type };
+        try {
+          const result = await uploadToBlob({
+            file,
+            pathPrefix: `applications/${slugSafeAppNo}`,
+            slot: field,
+          });
+          updatedMeta.push({ ...baseMeta, url: result.url });
+        } catch (e) {
+          console.error(`[cause-applications] Blob upload failed for ${field} (continuing)`, e);
+          updatedMeta.push(baseMeta);
+        }
+      }
+      await prisma.causeApplication.update({
+        where: { id: created.id },
+        data: { attachmentMeta: updatedMeta as never },
+      });
+    }
 
     // Forward to admin (with attachments) — awaited so failures surface to the caller.
     try {

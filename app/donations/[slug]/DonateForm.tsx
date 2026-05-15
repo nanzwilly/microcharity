@@ -50,15 +50,20 @@ export default function DonateForm({ slug }: { slug: string }) {
 
     const form = new FormData(e.currentTarget);
     const donor = readDonor(form);
+    // Payment screenshot only relevant for the two manual methods. Razorpay payments
+    // are gateway-verified so no proof is needed.
+    const screenshot = (method === "offline" || method === "qr")
+      ? (form.get("screenshot") as File | null)
+      : null;
 
     try {
       if (method === "razorpay") {
         await runRazorpay(donor);
       } else if (method === "offline") {
-        await runOffline(donor);
+        await runOffline(donor, screenshot);
         setDone({ amount: donor.amount, name: donor.name, method });
       } else {
-        await runQr(donor);
+        await runQr(donor, screenshot);
         setDone({ amount: donor.amount, name: donor.name, method });
       }
     } catch (err) {
@@ -115,24 +120,31 @@ export default function DonateForm({ slug }: { slug: string }) {
     rzp.open();
   }
 
-  async function runOffline(d: ReturnType<typeof readDonor>) {
-    const res = await fetch("/api/donate/offline", {
-      method: "POST",
-      headers: { "content-type": "application/json" },
-      body: JSON.stringify(d),
-    });
+  async function runOffline(d: ReturnType<typeof readDonor>, screenshot: File | null) {
+    const res = await fetch("/api/donate/offline", { method: "POST", body: buildBody(d, screenshot) });
     const j = await res.json();
     if (!res.ok) throw new Error(j.error ?? "Could not submit.");
   }
 
-  async function runQr(d: ReturnType<typeof readDonor>) {
-    const res = await fetch("/api/donate/qr", {
-      method: "POST",
-      headers: { "content-type": "application/json" },
-      body: JSON.stringify(d),
-    });
+  async function runQr(d: ReturnType<typeof readDonor>, screenshot: File | null) {
+    const res = await fetch("/api/donate/qr", { method: "POST", body: buildBody(d, screenshot) });
     const j = await res.json();
     if (!res.ok) throw new Error(j.error ?? "Could not submit.");
+  }
+
+  // The offline + QR endpoints accept multipart so they can take an optional
+  // screenshot. Donor fields are still simple key/value entries.
+  function buildBody(d: ReturnType<typeof readDonor>, screenshot: File | null): FormData {
+    const fd = new FormData();
+    fd.set("slug", d.slug);
+    fd.set("amount", String(d.amount));
+    fd.set("name", d.name);
+    fd.set("phone", d.phone);
+    fd.set("email", d.email);
+    fd.set("pan", d.pan);
+    if (d.address) fd.set("address", d.address);
+    if (screenshot && screenshot.size > 0) fd.set("screenshot", screenshot);
+    return fd;
   }
 
   if (done) {
@@ -208,6 +220,7 @@ export default function DonateForm({ slug }: { slug: string }) {
             </p>
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img src="/qr-code.jpg" alt="UPI QR code for MicroCharity" className="block mx-auto w-48 h-48 object-contain rounded-lg bg-white border border-[var(--color-line)]" />
+            <ScreenshotField label="Screenshot of UPI payment (optional)" />
           </div>
         )}
 
@@ -224,6 +237,7 @@ export default function DonateForm({ slug }: { slug: string }) {
               <li><span className="text-muted">IFSC Code</span> — SIBL0000583</li>
             </ul>
             <p className="text-muted leading-relaxed">All contributions will be gratefully acknowledged and are tax deductible.</p>
+            <ScreenshotField label="Screenshot / bank-transfer receipt (optional)" />
           </div>
         )}
 
@@ -279,6 +293,21 @@ function MethodOption({
         <div className="text-xs text-muted">{sub}</div>
       </div>
     </label>
+  );
+}
+
+function ScreenshotField({ label }: { label: string }) {
+  return (
+    <div>
+      <label className="block text-xs font-semibold text-ink mb-1">{label}</label>
+      <input
+        type="file"
+        name="screenshot"
+        accept="image/*,application/pdf"
+        className="block w-full text-xs text-ink file:mr-3 file:rounded-md file:border file:border-[var(--color-line)] file:bg-white file:px-3 file:py-1.5 file:text-xs file:font-semibold file:text-ink hover:file:border-accent-600 file:cursor-pointer"
+      />
+      <p className="text-xs text-muted mt-1">JPG, PNG, or PDF. Up to 8 MB. Helps admin verify your payment faster.</p>
+    </div>
   );
 }
 

@@ -150,6 +150,17 @@ export default async function DonationsAdminPage({ searchParams }: { searchParam
                   <td className="px-4 py-3 text-ink">
                     {d.donorNameSnapshot}
                     <span className="block text-xs text-muted">{d.donorEmailSnapshot}</span>
+                    {d.attachmentUrl && (
+                      <a
+                        href={d.attachmentUrl}
+                        target="_blank"
+                        rel="noopener"
+                        className="inline-flex items-center gap-1 mt-1 text-xs font-semibold text-accent-700 hover:text-accent-600"
+                      >
+                        View screenshot
+                        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M7 17 17 7"/><path d="M7 7h10v10"/></svg>
+                      </a>
+                    )}
                   </td>
                   <td className="px-4 py-3 text-muted truncate max-w-[18rem]">
                     <Link href={`/donations/${d.cause.slug}`} target="_blank" className="hover:text-accent-600">{d.cause.title}</Link>

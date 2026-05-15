@@ -4,13 +4,15 @@ import { createUnverifiedDonation } from "@/lib/donations";
 import { sendDonationAck } from "@/lib/email";
 import { parseDonorPayload } from "@/lib/donate-input";
 import { rateLimit, callerIp, LIMITS } from "@/lib/rate-limit";
+import { uploadToBlob } from "@/lib/uploads";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
 // Donor-facing offline donation submission.
-// - Persists a PENDING donation (admin approves later)
-// - Sends an acknowledgment email immediately (per spec)
+// - Multipart: donor fields + an optional payment screenshot.
+// - Persists a PENDING donation (admin approves later) with screenshot URL.
+// - Sends an acknowledgment email immediately (per spec).
 // - 80G receipt is sent only after admin approval — wired in approveDonationAction.
 export async function POST(req: Request) {
   try {
@@ -22,8 +24,8 @@ export async function POST(req: Request) {
       );
     }
 
-    const data = await req.json().catch(() => ({} as Record<string, unknown>));
-    const parsed = parseDonorPayload(data);
+    const form = await req.formData();
+    const parsed = parseDonorPayload(formDataToRecord(form));
     if ("error" in parsed) return NextResponse.json({ error: parsed.error }, { status: 400 });
 
     const cause = await prisma.cause.findUnique({
@@ -47,10 +49,29 @@ export async function POST(req: Request) {
       paymentDate: parsed.paymentDate,
     });
 
-    // Await the ack email — fire-and-forget on Vercel's serverless runtime gets
-    // killed when the function response returns, so the email never sends. We catch
-    // and log so a transient SMTP failure still returns success to the donor (their
-    // donation is already saved; admin can resend if needed).
+    // Optional payment screenshot. Uploaded to Vercel Blob after the row exists
+    // so we can use the donation id as the key prefix. Failure here is logged but
+    // not fatal — the donation itself is already saved.
+    const screenshot = form.get("screenshot");
+    if (screenshot instanceof File && screenshot.size > 0) {
+      try {
+        const result = await uploadToBlob({
+          file: screenshot,
+          pathPrefix: `donations/${donation.id}`,
+          slot: "screenshot",
+        });
+        await prisma.donation.update({
+          where: { id: donation.id },
+          data: {
+            attachmentUrl: result.url,
+            attachmentMeta: { filename: result.filename, size: result.size, mimeType: result.mimeType } as never,
+          },
+        });
+      } catch (e) {
+        console.error("[donate/offline] screenshot upload failed (continuing)", e);
+      }
+    }
+
     try {
       await sendDonationAck({
         donorName: parsed.name,
@@ -72,3 +93,16 @@ export async function POST(req: Request) {
   }
 }
 
+// Pull the donor-form text fields out of multipart into the shape parseDonorPayload
+// expects (it predates the screenshot feature, hence the JSON-record signature).
+function formDataToRecord(form: FormData): Record<string, unknown> {
+  return {
+    slug:    form.get("slug"),
+    amount:  form.get("amount"),
+    name:    form.get("name"),
+    phone:   form.get("phone"),
+    email:   form.get("email"),
+    pan:     form.get("pan"),
+    address: form.get("address"),
+  };
+}

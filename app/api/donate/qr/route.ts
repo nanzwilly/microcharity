@@ -4,15 +4,16 @@ import { createUnverifiedDonation } from "@/lib/donations";
 import { sendDonationAck } from "@/lib/email";
 import { parseDonorPayload } from "@/lib/donate-input";
 import { rateLimit, callerIp, LIMITS } from "@/lib/rate-limit";
+import { uploadToBlob } from "@/lib/uploads";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
 // Donor-facing UPI / QR code donation submission.
-// Donor pays out-of-band via UPI (scanning the QR shown on the donation page), then
-// submits the form with their contact details. We persist a PENDING donation and email
-// an immediate acknowledgment. Admin reconciles the bank statement against the donor's
-// name / amount / date to approve. 80G receipt waits for that approval.
+// Multipart: donor fields + an optional payment screenshot. Donor pays out of
+// band via UPI, then submits this form. We persist a PENDING donation, store
+// the screenshot URL on the row, and email an immediate acknowledgment. 80G
+// receipt waits for admin verification.
 export async function POST(req: Request) {
   try {
     const rl = await rateLimit(LIMITS.donateQr, callerIp(req));
@@ -23,8 +24,8 @@ export async function POST(req: Request) {
       );
     }
 
-    const data = await req.json().catch(() => ({} as Record<string, unknown>));
-    const parsed = parseDonorPayload(data);
+    const form = await req.formData();
+    const parsed = parseDonorPayload(formDataToRecord(form));
     if ("error" in parsed) return NextResponse.json({ error: parsed.error }, { status: 400 });
 
     const cause = await prisma.cause.findUnique({
@@ -45,8 +46,26 @@ export async function POST(req: Request) {
       type: "QR",
     });
 
-    // Await the ack email — fire-and-forget gets killed when the serverless function
-    // response returns. Catch+log so a transient SMTP failure still returns success.
+    const screenshot = form.get("screenshot");
+    if (screenshot instanceof File && screenshot.size > 0) {
+      try {
+        const result = await uploadToBlob({
+          file: screenshot,
+          pathPrefix: `donations/${donation.id}`,
+          slot: "screenshot",
+        });
+        await prisma.donation.update({
+          where: { id: donation.id },
+          data: {
+            attachmentUrl: result.url,
+            attachmentMeta: { filename: result.filename, size: result.size, mimeType: result.mimeType } as never,
+          },
+        });
+      } catch (e) {
+        console.error("[donate/qr] screenshot upload failed (continuing)", e);
+      }
+    }
+
     try {
       await sendDonationAck({
         donorName: parsed.name,
@@ -66,4 +85,16 @@ export async function POST(req: Request) {
     console.error("[donate/qr]", e);
     return NextResponse.json({ error: "Could not submit donation. Please try again." }, { status: 500 });
   }
+}
+
+function formDataToRecord(form: FormData): Record<string, unknown> {
+  return {
+    slug:    form.get("slug"),
+    amount:  form.get("amount"),
+    name:    form.get("name"),
+    phone:   form.get("phone"),
+    email:   form.get("email"),
+    pan:     form.get("pan"),
+    address: form.get("address"),
+  };
 }

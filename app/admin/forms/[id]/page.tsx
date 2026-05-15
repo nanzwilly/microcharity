@@ -70,7 +70,7 @@ export default async function AdminFormDetailPage({ params }: { params: Promise<
     : Object.fromEntries(
         Object.entries(fullData).filter(([k]) => k !== "bankDetails")
       );
-  const attachments = (app.attachmentMeta as Array<{ field: string; filename: string; size: number; mimeType: string }> | null) ?? [];
+  const attachments = (app.attachmentMeta as Array<{ field: string; filename: string; size: number; mimeType: string; url?: string }> | null) ?? [];
 
   return (
     <div className="space-y-6 max-w-4xl">
@@ -130,23 +130,37 @@ export default async function AdminFormDetailPage({ params }: { params: Promise<
         ))}
       </div>
 
-      {/* Attachments — metadata only; the actual files were emailed to info@microcharity.com */}
+      {/* Attachments — stored on Vercel Blob; also forwarded to info@microcharity.com
+          on submission as a backup. Older rows (pre-Blob integration) have no url
+          on the meta — they live only in the admin email. */}
       <section className="rounded-2xl bg-white border border-[var(--color-line)] p-6">
         <h2 className="font-display text-lg text-ink mb-3">Attachments</h2>
         {attachments.length === 0 ? (
           <p className="text-sm text-muted">No attachments uploaded with this submission. The applicant may have emailed supporting documents separately to info@microcharity.com.</p>
         ) : (
-          <>
-            <p className="text-xs text-muted mb-3">Files were forwarded once to <strong>info@microcharity.com</strong> on submission. Open that email to access the actual documents.</p>
-            <ul className="text-sm space-y-1">
-              {attachments.map((a, i) => (
-                <li key={i} className="text-ink">
+          <ul className="text-sm space-y-2">
+            {attachments.map((a, i) => (
+              <li key={i} className="text-ink flex items-baseline justify-between gap-3">
+                <span>
                   <strong>{lbl(a.field)}:</strong> {a.filename}{" "}
                   <span className="text-xs text-muted">({(a.size / 1024).toFixed(0)} KB · {a.mimeType})</span>
-                </li>
-              ))}
-            </ul>
-          </>
+                </span>
+                {a.url ? (
+                  <a
+                    href={a.url}
+                    target="_blank"
+                    rel="noopener"
+                    className="inline-flex items-center gap-1 text-xs font-semibold text-accent-700 hover:text-accent-600 whitespace-nowrap"
+                  >
+                    Open
+                    <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M7 17 17 7"/><path d="M7 7h10v10"/></svg>
+                  </a>
+                ) : (
+                  <span className="text-xs text-muted whitespace-nowrap">via email</span>
+                )}
+              </li>
+            ))}
+          </ul>
         )}
       </section>
 

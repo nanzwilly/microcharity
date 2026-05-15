@@ -155,6 +155,10 @@ model Donation {
   panEncrypted       String?
   addressSnapshot    String?
   adminNotes         String?
+  // Optional payment-proof file uploaded by the donor (UPI / Offline flows).
+  // URL points at Vercel Blob with an unguessable random suffix.
+  attachmentUrl      String?
+  attachmentMeta     Json?          // { filename, size, mimeType }
 
   // Receipt
   receipt            Receipt?

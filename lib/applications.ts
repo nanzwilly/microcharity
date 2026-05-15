@@ -142,6 +142,9 @@ export type AttachmentMeta = {
   filename: string;
   size: number;
   mimeType: string;
+  // Populated after the file is uploaded to Vercel Blob. Old rows (pre-Blob
+  // integration) won't have this — admin UI handles the absence gracefully.
+  url?: string;
 };
 
 // ---------- Per-form-type payloads ----------
