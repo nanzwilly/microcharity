@@ -177,6 +177,7 @@ export type ReceiptPdfInput = {
   receiptDate: Date;
   donorName: string;
   donorPan?: string | null;    // already decrypted by the caller
+  donorAddress?: string | null;
   causeTitle: string;          // shown as the line-item description
   causeMcId?: string | null;
   amount: number;              // INR rupees, integer
@@ -239,8 +240,24 @@ export async function buildReceiptPdf(input: ReceiptPdfInput): Promise<Uint8Arra
   // Left: donor block.
   drawText(ctx, "Donations Received From", M_LEFT, cursorY, 9, { color: MUTED });
   drawText(ctx, input.donorName, M_LEFT, cursorY - 14, 11, { bold: true });
+  let donorY = cursorY - 28;
+  const addr = (input.donorAddress ?? "").trim();
+  if (addr) {
+    for (const line of wrap(addr, 56)) {
+      drawText(ctx, line, M_LEFT, donorY, 9, { color: BODY });
+      donorY -= 12;
+    }
+  }
   if (input.donorPan) {
-    drawText(ctx, `PAN : ${input.donorPan}`, M_LEFT, cursorY - 28, 9, { color: BODY });
+    drawText(ctx, `PAN : ${input.donorPan}`, M_LEFT, donorY, 9, { color: BODY });
+    donorY -= 12;
+  }
+  // Ensure the donor block doesn't push into the table — extend cursorY only
+  // if the address pushed past the original 3-line allowance.
+  const donorBlockBottom = donorY;
+  const minBottom = cursorY - 40;
+  if (donorBlockBottom < minBottom) {
+    cursorY -= (minBottom - donorBlockBottom);
   }
 
   // Right: donation date + payment mode block. Labels left-aligned within the

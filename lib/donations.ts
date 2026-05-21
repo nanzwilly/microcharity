@@ -336,6 +336,7 @@ export async function issueReceiptForDonation(donationId: string): Promise<void>
       receiptDate: new Date(),
       donorName: d.donorNameSnapshot,
       donorPan,
+      donorAddress: d.addressSnapshot,
       causeTitle: d.cause.title,
       causeMcId: d.cause.mcId ?? null,
       amount: d.amount,
