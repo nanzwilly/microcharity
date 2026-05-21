@@ -5,6 +5,7 @@ import { getAllCampaigns, findCampaign } from "@/lib/data/causes";
 export const revalidate = 60;
 import { inrShort } from "@/lib/format";
 import DonateForm from "./DonateForm";
+import LivePoller from "./LivePoller";
 import ShareButtons from "@/components/ShareButtons";
 
 export async function generateStaticParams() {
@@ -52,6 +53,7 @@ export default async function CausePage({ params }: { params: Promise<{ slug: st
 
   return (
     <>
+      <LivePoller />
       <section className="border-b border-[var(--color-line)]">
         <div className="container-page py-6 text-sm text-muted">
           <Link href="/current-causes" className="hover:text-accent-600">Causes</Link>
