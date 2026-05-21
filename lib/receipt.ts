@@ -266,9 +266,11 @@ export async function buildReceiptPdf(input: ReceiptPdfInput): Promise<Uint8Arra
   drawText(ctx, "Donation Date :", META_LABEL_X, cursorY, 9, { color: BODY });
   textRight(ctx, fmtDate(input.paymentDate), M_RIGHT, cursorY, 10);
   drawText(ctx, "Payment Mode :", META_LABEL_X, cursorY - 14, 9, { color: BODY });
-  // Payment mode might be long — wrap to two lines at a comfortable width.
-  const modeLines = wrap(input.paymentMode, 30);
-  let modeY = cursorY - 14;
+  // Payment mode can be long ("Bank Transfer - NEFT / IMPS / RTGS"). Drop the
+  // value to its own line(s) below the label so it never collides with the
+  // "Payment Mode :" text when wrapping.
+  const modeLines = wrap(input.paymentMode, 38);
+  let modeY = cursorY - 28;
   for (const line of modeLines) {
     textRight(ctx, line, M_RIGHT, modeY, 10);
     modeY -= 12;
