@@ -10,7 +10,7 @@ export default async function DonorsAdminPage() {
   // exists in the DB for history / restore, just hidden from the UI.
   const donors = await prisma.donor.findMany({
     where: { deletedAt: null },
-    orderBy: [{ totalDonated: "desc" }, { lastDonationAt: "desc" }],
+    orderBy: [{ donationCount: "desc" }, { totalDonated: "desc" }, { lastDonationAt: "desc" }],
   });
 
   return (
