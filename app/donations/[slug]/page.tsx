@@ -155,6 +155,10 @@ export default async function CausePage({ params }: { params: Promise<{ slug: st
 
         <aside className="lg:col-span-5 lg:pl-4">
           <div className="lg:sticky lg:top-28 space-y-6">
+            {/* Informational causes (goal=0) skip the entire donation card —
+                no progress bar, no donate form, no "closed" stub. The right
+                column collapses to just Share + Other campaigns. */}
+            {campaign.goal > 0 && (
             <div className="rounded-2xl border border-[var(--color-line)] bg-white p-6 md:p-8">
               {/*
                 "Support MicroCharity" is the unrestricted-giving page — no goal, no
@@ -193,6 +197,7 @@ export default async function CausePage({ params }: { params: Promise<{ slug: st
                 </>
               )}
             </div>
+            )}
 
             {/* Share — pulls OG image + description from page metadata when shared */}
             <div className="rounded-2xl border border-[var(--color-line)] bg-white p-6">

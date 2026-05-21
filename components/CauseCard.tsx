@@ -46,20 +46,29 @@ export default function CauseCard({ beneficiary }: Props) {
         )}
 
         <div className="mt-auto">
-          <div className="flex items-baseline justify-between text-xs mb-1.5">
-            <span className="font-semibold text-ink">{fmt(c.raised)} <span className="font-normal text-muted">raised</span></span>
-            <span className="text-muted">of {fmt(c.goal)}</span>
-          </div>
-          <div className="h-1.5 rounded-full bg-[var(--color-line)] overflow-hidden">
-            <div className="h-full bg-accent-600 rounded-full" style={{ width: `${pct}%` }}></div>
-          </div>
+          {/* Informational causes (goal=0) skip the raised/goal bar entirely
+              — there's nothing to fundraise toward, so the progress UI is
+              just noise. Cards collapse to title + summary + a Details CTA. */}
+          {c.goal > 0 && (
+            <>
+              <div className="flex items-baseline justify-between text-xs mb-1.5">
+                <span className="font-semibold text-ink">{fmt(c.raised)} <span className="font-normal text-muted">raised</span></span>
+                <span className="text-muted">of {fmt(c.goal)}</span>
+              </div>
+              <div className="h-1.5 rounded-full bg-[var(--color-line)] overflow-hidden">
+                <div className="h-full bg-accent-600 rounded-full" style={{ width: `${pct}%` }}></div>
+              </div>
+            </>
+          )}
           <div className="mt-4 flex items-center justify-between gap-3">
-            <span className="text-xs font-semibold text-ink">{pct}% funded</span>
+            {c.goal > 0 && (
+              <span className="text-xs font-semibold text-ink">{pct}% funded</span>
+            )}
             {otherCount > 0 && (
               <span className="text-xs text-muted">+ {otherCount} past campaign{otherCount > 1 ? "s" : ""}</span>
             )}
             <Link href={`/donations/${c.slug}`} className="inline-flex items-center gap-1 text-sm font-semibold text-accent-600 hover:text-accent-700 ml-auto">
-              {c.status === "active" ? "Donate" : "Details"}
+              {c.goal === 0 ? "Read more" : (c.status === "active" ? "Donate" : "Details")}
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
             </Link>
           </div>
