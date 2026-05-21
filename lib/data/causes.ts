@@ -81,9 +81,14 @@ async function loadGrouped(): Promise<Beneficiary[]> {
     g.campaigns.sort((a, b) => (a.datePosted || "").localeCompare(b.datePosted || ""));
   }
 
-  // Active beneficiaries first; within each group, alphabetical for stability.
+  // Active beneficiaries first; within each tier, newest campaign first
+  // (by the latest datePosted across the beneficiary's campaigns). Key
+  // breaks ties for stability when two beneficiaries share a date.
   return [...groups.values()].sort((a, b) => {
     if (a.hasActive !== b.hasActive) return a.hasActive ? -1 : 1;
+    const aLatest = a.campaigns.reduce((m, c) => c.datePosted > m ? c.datePosted : m, "");
+    const bLatest = b.campaigns.reduce((m, c) => c.datePosted > m ? c.datePosted : m, "");
+    if (aLatest !== bLatest) return bLatest.localeCompare(aLatest); // desc
     return a.key.localeCompare(b.key);
   });
 }
