@@ -1,5 +1,6 @@
 import PageHero from "@/components/PageHero";
 import { site } from "@/lib/data/site";
+import { TRUST } from "@/lib/trust";
 
 export const metadata = { title: "Legal & Financial Information" };
 
@@ -36,7 +37,12 @@ export default function LegalFinancialPage() {
             <li><strong>Registration:</strong> {site.registration}, registered under the Indian Trust Act at the Sub-Registrar&apos;s office, Kengeri, Bangalore – 560060</li>
             <li><strong>Established:</strong> {site.established}</li>
             <li><strong>Banking:</strong> MicroCharity operates with a single bank account at South Indian Bank.</li>
-            <li><strong>Tax exemption:</strong> Donations are eligible for exemption under Section 80G of the Income Tax Act.</li>
+            <li><strong>PAN:</strong> {TRUST.pan}</li>
+            <li><strong>CSR registration:</strong> {TRUST.csrNumber}</li>
+            <li>
+              <strong>Tax exemption:</strong> Donations are eligible for exemption under Section 80G of the Income Tax Act.<br />
+              <span className="text-sm text-muted">80G Order No: <span className="font-mono text-ink">{TRUST.exemption80G}</span></span>
+            </li>
           </ul>
 
           <h2>Annual audited financial reports</h2>
