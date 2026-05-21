@@ -1,6 +1,36 @@
+import { Fragment } from "react";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { getAllCampaigns, findCampaign } from "@/lib/data/causes";
+
+// Renders a single paragraph of cause body / summary text with inline
+// markdown-style links — `[label](https://url)` becomes a real <a>. Anything
+// outside the link syntax is rendered as plain text (no other markdown is
+// recognised, so existing copy with brackets / parens stays unaffected as
+// long as it doesn't match the full `](http...)` pattern).
+function renderParagraph(text: string): React.ReactNode {
+  const re = /\[([^\]]+)\]\((https?:\/\/[^\s)]+)\)/g;
+  const parts: React.ReactNode[] = [];
+  let last = 0;
+  let m: RegExpExecArray | null;
+  let key = 0;
+  while ((m = re.exec(text)) !== null) {
+    if (m.index > last) parts.push(<Fragment key={key++}>{text.slice(last, m.index)}</Fragment>);
+    const [, label, url] = m;
+    // Same-origin links stay client-side via next/link; external open in a new
+    // tab. Same-host detection is permissive — anything microcharity.com is ours.
+    const isInternal = /^https?:\/\/(www\.)?microcharity\.(com|vercel\.app)/.test(url);
+    if (isInternal) {
+      const path = url.replace(/^https?:\/\/[^/]+/, "") || "/";
+      parts.push(<Link key={key++} href={path} className="text-accent-600 hover:text-accent-700 underline underline-offset-2">{label}</Link>);
+    } else {
+      parts.push(<a key={key++} href={url} target="_blank" rel="noopener noreferrer" className="text-accent-600 hover:text-accent-700 underline underline-offset-2">{label}</a>);
+    }
+    last = m.index + m[0].length;
+  }
+  if (last < text.length) parts.push(<Fragment key={key++}>{text.slice(last)}</Fragment>);
+  return parts;
+}
 
 export const revalidate = 60;
 import { inrShort } from "@/lib/format";
@@ -133,7 +163,7 @@ export default async function CausePage({ params }: { params: Promise<{ slug: st
                             <p className="text-xs font-semibold text-accent-600 uppercase tracking-wider mb-2">{u.caption}</p>
                           )}
                           <div className="prose-mc max-w-none">
-                            {u.body.split(/\r?\n\r?\n/).map(p => p.trim()).filter(Boolean).map((p, j) => <p key={j}>{p}</p>)}
+                            {u.body.split(/\r?\n\r?\n/).map(p => p.trim()).filter(Boolean).map((p, j) => <p key={j}>{renderParagraph(p)}</p>)}
                           </div>
                         </article>
                       ))}
@@ -143,7 +173,7 @@ export default async function CausePage({ params }: { params: Promise<{ slug: st
                 if (campaign.summary) {
                   return (
                     <div className="prose-mc max-w-none">
-                      {campaign.summary.split(/\r?\n\r?\n/).map(p => p.trim()).filter(Boolean).map((p, i) => <p key={i}>{p}</p>)}
+                      {campaign.summary.split(/\r?\n\r?\n/).map(p => p.trim()).filter(Boolean).map((p, i) => <p key={i}>{renderParagraph(p)}</p>)}
                     </div>
                   );
                 }
