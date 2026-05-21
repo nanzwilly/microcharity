@@ -14,13 +14,16 @@ export default function PrivacyPage() {
           <p>Our website is maintained by MicroCharity, with headquarters at {site.address}.</p>
 
           <h2>What personally identifiable information is collected?</h2>
-          <p>When you visit our website, you may provide us with personal information (name, address, email, phone, and/or credit/debit card information) that you knowingly choose to disclose. We collect this for purposes such as registering for newsletters, requesting further information, donating, ordering merchandise, submitting a form, or asking a question. We do not collect personal information from you unless you provide it. You are free to browse the site without revealing any personally identifiable information.</p>
+          <p>When you visit our website, you may provide us with personal information (name, address, email, and phone) that you knowingly choose to disclose. We collect this for purposes such as registering for newsletters, requesting further information, donating, ordering merchandise, submitting a form, or asking a question. We do not collect personal information from you unless you provide it. You are free to browse the site without revealing any personally identifiable information.</p>
+
+          <h2>Payment information</h2>
+          <p>All online card, UPI, and net-banking payments on this site are processed by <a href="https://razorpay.com/" target="_blank" rel="noopener noreferrer">Razorpay</a>, our PCI&nbsp;DSS-compliant payment gateway. Card numbers, CVV, OTPs, UPI PINs, and bank credentials are entered directly on Razorpay&apos;s secure interface and <strong>are never seen, stored, or processed by MicroCharity</strong>. MicroCharity only receives the donation amount, a Razorpay transaction reference, and the contact details you supply for the donation receipt. Refer to <a href="https://razorpay.com/privacy/" target="_blank" rel="noopener noreferrer">Razorpay&apos;s privacy policy</a> for how they handle payment data.</p>
 
           <h2>How we use your information</h2>
           <p>When you supply information for a specific purpose, we use it only for that purpose. We use return email addresses to answer the email we receive; such addresses are not used for any other purpose and are not shared with outside parties. <strong>MicroCharity does not sell, rent, give away or share its email addresses or other information with outside sources.</strong></p>
 
           <h2>Data security</h2>
-          <p>Personally identifiable information is stored on our server and is not publicly accessible. It is only accessed by MicroCharity personnel on a &quot;need to know&quot; basis. Sensitive data such as credit card numbers are encrypted using SSL and other industry-standard measures.</p>
+          <p>Personally identifiable information is stored on our server and is not publicly accessible. It is only accessed by MicroCharity personnel on a &quot;need to know&quot; basis. Sensitive fields we do hold (such as PAN, when you choose to provide it for an 80G receipt) are encrypted at rest, and all traffic between your browser and our site is protected with HTTPS / TLS. Card and bank credentials are handled exclusively by Razorpay as described above and are not stored on our infrastructure.</p>
 
           <h2>Choice / opt-out</h2>
           <p>If you have registered to receive email communications and later change your mind, you may contact us to have your name removed from our distribution lists.</p>
