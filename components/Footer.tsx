@@ -18,12 +18,16 @@ export default function Footer() {
           {/* Contact block — address, phone, email. Address is rendered as
               an <address> for semantics; phone uses a tel: link so mobile
               browsers offer to dial; email opens the user's mail client. */}
-          <address className="not-italic mt-5 space-y-1.5 text-sm text-muted max-w-md leading-relaxed">
-            <p>{site.address}</p>
+          {/* Address + phone are bumped to the ink (primary) colour and
+              weighted medium so they read as a distinct contact card rather
+              than disappearing into the body copy. Email keeps the muted
+              colour to avoid three competing emphasis lines. */}
+          <address className="not-italic mt-5 space-y-1.5 text-sm max-w-md leading-relaxed">
+            <p className="text-ink font-medium">{site.address}</p>
             <p>
-              <a href={`tel:${site.phone.replace(/\s+/g, "")}`} className="hover:text-accent-600 underline-offset-4 hover:underline">{site.phone}</a>
+              <a href={`tel:${site.phone.replace(/\s+/g, "")}`} className="text-accent-600 font-semibold hover:text-accent-700 underline-offset-4 hover:underline">{site.phone}</a>
             </p>
-            <p>
+            <p className="text-muted">
               <a href={`mailto:${site.email}`} className="hover:text-accent-600 underline-offset-4 hover:underline">{site.email}</a>
             </p>
           </address>
