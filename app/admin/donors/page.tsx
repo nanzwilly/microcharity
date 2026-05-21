@@ -1,11 +1,15 @@
 import { prisma } from "@/lib/prisma";
 import { inrShort } from "@/lib/format";
+import { ActiveToggle, SubscribedToggle, DeleteButton } from "./DonorRowActions";
 
 export const metadata = { title: "Donors — Admin" };
 export const dynamic = "force-dynamic";
 
 export default async function DonorsAdminPage() {
+  // Soft-deleted donors are filtered out of the admin list — the row still
+  // exists in the DB for history / restore, just hidden from the UI.
   const donors = await prisma.donor.findMany({
+    where: { deletedAt: null },
     orderBy: [{ totalDonated: "desc" }, { lastDonationAt: "desc" }],
   });
 
@@ -29,8 +33,8 @@ export default async function DonorsAdminPage() {
           </p>
         </div>
       ) : (
-        <div className="rounded-2xl bg-white border border-[var(--color-line)] overflow-hidden">
-          <table className="w-full text-sm">
+        <div className="rounded-2xl bg-white border border-[var(--color-line)] overflow-x-auto">
+          <table className="w-full text-sm min-w-[960px]">
             <thead className="bg-[var(--color-soft)] text-xs uppercase tracking-wider text-muted">
               <tr>
                 <th className="text-left font-semibold px-4 py-3">Name</th>
@@ -39,6 +43,9 @@ export default async function DonorsAdminPage() {
                 <th className="text-right font-semibold px-4 py-3">Donations</th>
                 <th className="text-right font-semibold px-4 py-3">Total given</th>
                 <th className="text-left font-semibold px-4 py-3">Last donated</th>
+                <th className="text-left font-semibold px-3 py-3">User</th>
+                <th className="text-left font-semibold px-3 py-3">Email</th>
+                <th className="text-right font-semibold px-4 py-3 w-20">Actions</th>
               </tr>
             </thead>
             <tbody>
@@ -50,6 +57,9 @@ export default async function DonorsAdminPage() {
                   <td className="px-4 py-3 text-right tabular-nums">{d.donationCount}</td>
                   <td className="px-4 py-3 text-right tabular-nums">{inrShort(d.totalDonated)}</td>
                   <td className="px-4 py-3 text-xs text-muted">{d.lastDonationAt?.toLocaleDateString("en-IN") ?? "—"}</td>
+                  <td className="px-3 py-3"><ActiveToggle donorId={d.id} active={d.active} /></td>
+                  <td className="px-3 py-3"><SubscribedToggle donorId={d.id} subscribed={!d.unsubscribed} /></td>
+                  <td className="px-4 py-3 text-right whitespace-nowrap"><DeleteButton donorId={d.id} donorName={d.name} /></td>
                 </tr>
               ))}
             </tbody>

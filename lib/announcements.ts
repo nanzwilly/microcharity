@@ -198,7 +198,7 @@ export async function createAnnouncement(input: {
   const recipients: Array<{ name: string; email: string }> = isTest
     ? input.testRecipients!
     : (await prisma.donor.findMany({
-        where: { unsubscribed: false, email: { contains: "@" } },
+        where: { unsubscribed: false, deletedAt: null, email: { contains: "@" } },
         select: { name: true, email: true },
       }));
 

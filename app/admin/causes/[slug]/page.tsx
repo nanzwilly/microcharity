@@ -32,7 +32,7 @@ export default async function AdminCauseDetailPage({ params }: { params: Promise
 
   // Announcements: only ADMIN-role users get the trigger UI. Editors see history.
   const [optedInDonorCount, announcementsRaw] = await Promise.all([
-    prisma.donor.count({ where: { unsubscribed: false, email: { contains: "@" } } }),
+    prisma.donor.count({ where: { unsubscribed: false, deletedAt: null, email: { contains: "@" } } }),
     prisma.causeAnnouncement.findMany({
       where: { causeId: cause.id },
       orderBy: { startedAt: "desc" },

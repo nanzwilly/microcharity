@@ -32,7 +32,13 @@ export type AuditAction =
   | "announcement.send.start"
   | "announcement.send.cancel"
   // Site-wide settings
-  | "sitestat.update";
+  | "sitestat.update"
+  // Donors
+  | "donor.activate"
+  | "donor.deactivate"
+  | "donor.subscribe"
+  | "donor.unsubscribe"
+  | "donor.softDelete";
 
 export type AuditInput = {
   action: AuditAction;

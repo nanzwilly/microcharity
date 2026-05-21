@@ -119,6 +119,16 @@ model Donor {
   donationCount   Int        @default(0)
   unsubscribed    Boolean    @default(false)
 
+  // Active is an admin-controlled label only — set to false when a donor has
+  // asked us to scrub their record but we haven't deleted them yet. No
+  // functional filtering hangs off this flag (email opt-out lives on
+  // `unsubscribed`); it just shows up as a status badge in the admin list.
+  active          Boolean    @default(true)
+  // Soft delete — set instead of removing the row so donation history and
+  // receipts stay intact. Admin lists and announcement recipient queries
+  // filter on `deletedAt: null`.
+  deletedAt       DateTime?
+
   donations       Donation[]
 
   createdAt       DateTime   @default(now())
