@@ -4,6 +4,7 @@ import { prisma } from "@/lib/prisma";
 import { inrShort } from "@/lib/format";
 import PendingActions from "./PendingActions";
 import ResendReceiptButton from "./ResendReceiptButton";
+import ExportPanel from "./ExportPanel";
 
 export const metadata = { title: "Donations — Admin" };
 export const dynamic = "force-dynamic";
@@ -72,6 +73,14 @@ export default async function DonationsAdminPage({ searchParams }: { searchParam
 
   const baseParams = { type, q: q || undefined };
 
+  // Default the export range to the start of the current Indian financial
+  // year (April 1) through today — covers the most common auditor request.
+  const now = new Date();
+  const fyStartYear = now.getMonth() >= 3 ? now.getFullYear() : now.getFullYear() - 1;
+  const defaultFrom = `${fyStartYear}-04-01`;
+  const defaultTo = now.toISOString().slice(0, 10);
+
+
   return (
     <div className="space-y-6">
       <div className="flex flex-wrap items-end justify-between gap-4">
@@ -88,6 +97,12 @@ export default async function DonationsAdminPage({ searchParams }: { searchParam
           + Add donation
         </Link>
       </div>
+
+      {/* Auditor export: pick a date range, download an .xlsx with every
+          field for every donation created in that window. Status filter is
+          optional — leave blank to include pending / rejected / failed too. */}
+      <ExportPanel defaultFrom={defaultFrom} defaultTo={defaultTo} />
+
 
       {sp.created && (
         <div className="rounded-lg bg-green-50 border border-green-200 px-4 py-3 text-sm text-green-800">

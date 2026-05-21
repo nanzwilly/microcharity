@@ -13,6 +13,7 @@ export type AuditAction =
   | "donation.approve"
   | "donation.reject"
   | "donation.create.manual"
+  | "donation.export"
   // Causes
   | "cause.create"
   | "cause.publish"
