@@ -6,7 +6,6 @@ import { inrShort } from "@/lib/format";
 import { deleteCauseUpdateAction } from "../actions";
 import CauseStatusButton from "../CauseStatusButton";
 import AnnouncementPanel from "./AnnouncementPanel";
-import { TEST_ANNOUNCEMENT_RECIPIENTS } from "@/lib/trust";
 
 export const dynamic = "force-dynamic";
 
@@ -138,7 +137,7 @@ export default async function AdminCauseDetailPage({ params }: { params: Promise
               causeSlug={cause.slug}
               causeTitle={cause.title}
               optedInDonorCount={optedInDonorCount}
-              testRecipientEmails={TEST_ANNOUNCEMENT_RECIPIENTS.map((r) => r.email)}
+              currentUserEmail={me.email}
               history={announcements}
             />
           </div>

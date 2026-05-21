@@ -19,8 +19,9 @@ type Props = {
   causeSlug: string;
   causeTitle: string;
   optedInDonorCount: number;
-  // Fixed list of admin reviewers who receive test sends (lib/trust.ts).
-  testRecipientEmails: string[];
+  // Prefill value for the test-emails textbox — the logged-in admin's email.
+  // They can edit / add more comma-separated addresses before sending.
+  currentUserEmail: string;
   history: AnnouncementProgress[];
 };
 
@@ -30,11 +31,9 @@ export default function AnnouncementPanel(props: Props) {
   const inFlight = props.history.find((h) => h.status === "PENDING" || h.status === "SENDING") ?? null;
   const [active, setActive] = useState<AnnouncementProgress | null>(inFlight);
   const [history, setHistory] = useState<AnnouncementProgress[]>(props.history);
-  const [starting, setStarting] = useState(false);
+  const [starting, setStarting] = useState<"test" | "real" | null>(null);
   const [error, setError] = useState<string | null>(null);
-  // Defaults to TRUE — sending the real broadcast must be an explicit opt-in
-  // every time. Anyone who clicks Send without thinking gets the test send.
-  const [testMode, setTestMode] = useState(true);
+  const [testEmails, setTestEmails] = useState(props.currentUserEmail);
 
   useEffect(() => {
     if (!active || active.status === "COMPLETED" || active.status === "CANCELLED") return;
@@ -58,18 +57,46 @@ export default function AnnouncementPanel(props: Props) {
     return () => { cancelled = true; clearInterval(t); };
   }, [active]);
 
-  async function onStart() {
-    const testList = props.testRecipientEmails.join(", ");
-    const msg = testMode
-      ? `Send a TEST email of "${props.causeTitle}" to the admin reviewer list:\n\n${testList}\n\nNothing goes out to the donor list.`
-      : `Send the real launch announcement for "${props.causeTitle}" to ALL ${props.optedInDonorCount} opted-in donors?\n\nThis can't be undone. Donors who unsubscribe later will still get this email.`;
-    if (!confirm(msg)) return;
-    setStarting(true);
+  function parseTestEmails(raw: string): string[] {
+    return Array.from(
+      new Set(
+        raw.split(/[,\s;]+/).map((e) => e.trim().toLowerCase()).filter(Boolean)
+      )
+    );
+  }
+
+  async function startSend(mode: "test" | "real") {
+    const emails = parseTestEmails(testEmails);
+
+    if (mode === "test") {
+      if (emails.length === 0) {
+        setError("Add at least one email to test with.");
+        return;
+      }
+      const bad = emails.filter((e) => !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e));
+      if (bad.length) {
+        setError(`Invalid email(s): ${bad.join(", ")}`);
+        return;
+      }
+      if (!confirm(`Send a TEST email of "${props.causeTitle}" to:\n\n${emails.join(", ")}\n\nNothing goes out to the donor list.`)) {
+        return;
+      }
+    } else {
+      if (props.optedInDonorCount === 0) return;
+      if (!confirm(`Send the real launch announcement for "${props.causeTitle}" to ALL ${props.optedInDonorCount} opted-in donors?\n\nThis can't be undone. Donors who unsubscribe later will still get this email.`)) {
+        return;
+      }
+    }
+
+    setStarting(mode);
     setError(null);
     try {
       const fd = new FormData();
       fd.set("causeId", props.causeId);
-      if (testMode) fd.set("test", "1");
+      if (mode === "test") {
+        fd.set("test", "1");
+        fd.set("testEmails", emails.join(", "));
+      }
       const res = await fetch("/api/cause-announcements", { method: "POST", body: fd });
       const j = await res.json();
       if (!res.ok) throw new Error(j.error ?? "Failed to start.");
@@ -79,7 +106,7 @@ export default function AnnouncementPanel(props: Props) {
     } catch (e) {
       setError(e instanceof Error ? e.message : "Failed to start.");
     } finally {
-      setStarting(false);
+      setStarting(null);
     }
   }
 
@@ -94,40 +121,57 @@ export default function AnnouncementPanel(props: Props) {
       </div>
 
       {!active && (
-        <div className="rounded-lg border border-[var(--color-line)] bg-[var(--color-soft)] p-4 space-y-3">
-          <label className="flex items-start gap-3 cursor-pointer">
-            <input
-              type="checkbox"
-              checked={testMode}
-              onChange={(e) => setTestMode(e.target.checked)}
-              className="mt-1 accent-accent-600"
+        <div className="space-y-4">
+          {/* Test send — admin-defined recipient list. Defaults to the
+              current admin's email so the simplest "send myself a preview"
+              flow is one click. */}
+          <div className="rounded-lg border border-[var(--color-line)] bg-[var(--color-soft)] p-4 space-y-3">
+            <div>
+              <p className="text-sm font-semibold text-ink">Test announcement</p>
+              <p className="text-xs text-muted mt-0.5">
+                Send a preview to one or more email addresses. Comma-separated. Donors are not affected.
+              </p>
+            </div>
+            <textarea
+              value={testEmails}
+              onChange={(e) => setTestEmails(e.target.value)}
+              rows={2}
+              placeholder="you@example.com, teammate@example.com"
+              className="w-full rounded-lg border border-[var(--color-line)] bg-white focus:border-accent-600 focus:ring-2 focus:ring-accent-100 outline-none px-3 py-2 text-sm font-mono"
             />
-            <span className="text-sm text-ink leading-relaxed">
-              <strong>Send test to the admin reviewer list</strong>
-              <span className="block text-xs text-muted mt-0.5">
-                Sends to {props.testRecipientEmails.length} reviewers ({props.testRecipientEmails.join(", ")}).
-                Recommended for the first send. Uncheck when the template looks right
-                and you&apos;re ready to fire to all {props.optedInDonorCount} donors.
-              </span>
-            </span>
-          </label>
-          <div className="flex items-center justify-between gap-3">
-            <p className="text-xs text-muted">
-              {testMode
-                ? <>Will send <strong className="text-ink">{props.testRecipientEmails.length} emails</strong> to the reviewer list.</>
-                : <>Will send <strong className="text-accent-700">{props.optedInDonorCount} emails</strong> to every opted-in donor. <strong>Not reversible.</strong></>
-              }
-            </p>
-            <button
-              type="button"
-              onClick={onStart}
-              disabled={starting || (!testMode && props.optedInDonorCount === 0)}
-              className={`rounded-full text-white text-sm font-semibold px-4 py-2 transition disabled:opacity-60 ${
-                testMode ? "bg-ink hover:bg-ink/80" : "bg-accent-600 hover:bg-accent-700"
-              }`}
-            >
-              {starting ? "Starting…" : testMode ? "Send test to reviewers" : "Send to all donors"}
-            </button>
+            <div className="flex items-center justify-end">
+              <button
+                type="button"
+                onClick={() => startSend("test")}
+                disabled={starting !== null}
+                className="rounded-full bg-ink text-white text-sm font-semibold px-4 py-2 hover:bg-ink/80 transition disabled:opacity-60"
+              >
+                {starting === "test" ? "Sending…" : "Send test"}
+              </button>
+            </div>
+          </div>
+
+          {/* Real send — full donor broadcast. Visually separated and the
+              button is the accent colour so it can't be confused with the
+              test action above. */}
+          <div className="rounded-lg border border-accent-200 bg-accent-50/30 p-4 space-y-3">
+            <div>
+              <p className="text-sm font-semibold text-ink">Send announcement to all donors</p>
+              <p className="text-xs text-muted mt-0.5">
+                Will email <strong className="text-accent-700">{props.optedInDonorCount}</strong> opted-in donors.
+                Sent in batches of 50 every minute. <strong>Not reversible.</strong>
+              </p>
+            </div>
+            <div className="flex items-center justify-end">
+              <button
+                type="button"
+                onClick={() => startSend("real")}
+                disabled={starting !== null || props.optedInDonorCount === 0}
+                className="rounded-full bg-accent-600 text-white text-sm font-semibold px-4 py-2 hover:bg-accent-700 transition disabled:opacity-60"
+              >
+                {starting === "real" ? "Sending…" : `Send to all ${props.optedInDonorCount} donors`}
+              </button>
+            </div>
           </div>
         </div>
       )}

@@ -30,9 +30,36 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "Publish the cause before announcing it." }, { status: 400 });
   }
 
-  // "Send test to me" — sender's own email is the only recipient. Required for
-  // safe template iteration without spamming the full donor list.
+  // Test sends go to an arbitrary admin-supplied recipient list ("testEmails"
+  // form field, comma-separated). Falls back to the trust-defined reviewer
+  // list when test=1 is set without explicit emails — keeps existing callers
+  // working. When `test` is empty/omitted, the broadcast goes to all opted-in
+  // donors and ignores any testEmails supplied.
   const isTest = String(form.get("test") ?? "") === "1";
+  const rawTestEmails = String(form.get("testEmails") ?? "").trim();
+  let testRecipients: Array<{ name: string; email: string }> | undefined;
+  if (isTest) {
+    if (rawTestEmails) {
+      const emails = Array.from(
+        new Set(
+          rawTestEmails
+            .split(/[,\s;]+/)
+            .map((e) => e.trim().toLowerCase())
+            .filter(Boolean)
+        )
+      );
+      const bad = emails.filter((e) => !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e));
+      if (bad.length) {
+        return NextResponse.json({ error: `Invalid email(s): ${bad.join(", ")}` }, { status: 400 });
+      }
+      if (emails.length === 0) {
+        return NextResponse.json({ error: "Add at least one test email." }, { status: 400 });
+      }
+      testRecipients = emails.map((email) => ({ email, name: email.split("@")[0] ?? email }));
+    } else {
+      testRecipients = TEST_ANNOUNCEMENT_RECIPIENTS;
+    }
+  }
   const testSubject = isTest ? `[TEST] ${cause.title}` : `MicroCharity announces support for a new cause: ${cause.title}`;
 
   try {
@@ -40,8 +67,7 @@ export async function POST(req: Request) {
       causeId: cause.id,
       subject: testSubject,
       sentByUserId: await safeUserId(user.userId),
-      // Test mode sends to a fixed list of admin reviewers (see lib/trust.ts).
-      testRecipients: isTest ? TEST_ANNOUNCEMENT_RECIPIENTS : undefined,
+      testRecipients,
     });
 
     await audit({
