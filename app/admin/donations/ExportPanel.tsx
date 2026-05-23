@@ -20,9 +20,11 @@ export default function ExportPanel({ defaultFrom, defaultTo }: { defaultFrom: s
   const [to, setTo] = useState(defaultTo);
   const [status, setStatus] = useState("");
   const [error, setError] = useState<string | null>(null);
+  const [busy, setBusy] = useState(false);
 
   function onDownload(e: React.FormEvent) {
     e.preventDefault();
+    if (busy) return;
     setError(null);
     if (!/^\d{4}-\d{2}-\d{2}$/.test(from) || !/^\d{4}-\d{2}-\d{2}$/.test(to)) {
       setError("Pick valid From and To dates.");
@@ -34,6 +36,13 @@ export default function ExportPanel({ defaultFrom, defaultTo }: { defaultFrom: s
     }
     const qs = new URLSearchParams({ from, to });
     if (status) qs.set("status", status);
+    // The Excel build takes a few seconds for large date ranges; show busy
+    // state so the user gets immediate feedback before the browser's
+    // download UI kicks in. Reset after ~8s as a safety net — by then the
+    // file has either started downloading or the request errored, and we
+    // don't want the button stuck forever.
+    setBusy(true);
+    setTimeout(() => setBusy(false), 8000);
     // Plain top-level navigation triggers the browser's download UI.
     window.location.href = `/api/admin/donations/export?${qs.toString()}`;
   }
@@ -74,9 +83,16 @@ export default function ExportPanel({ defaultFrom, defaultTo }: { defaultFrom: s
       </div>
       <button
         type="submit"
-        className="rounded-full bg-ink hover:bg-ink/80 text-white text-sm font-semibold px-4 py-2 transition"
+        disabled={busy}
+        aria-busy={busy}
+        className="inline-flex items-center gap-1.5 rounded-full bg-ink hover:bg-ink/80 disabled:bg-ink/70 disabled:cursor-wait text-white text-sm font-semibold px-4 py-2 transition"
       >
-        Download Excel
+        {busy && (
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" className="animate-spin" aria-hidden="true">
+            <path d="M21 12a9 9 0 1 1-6.2-8.55" />
+          </svg>
+        )}
+        {busy ? "Preparing…" : "Download Excel"}
       </button>
       <p className="text-xs text-muted basis-full">
         Date range is inclusive. Excel includes every field on file —
