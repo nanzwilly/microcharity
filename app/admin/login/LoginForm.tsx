@@ -11,6 +11,10 @@ export default function LoginForm() {
 
   async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
+    // Defense in depth — even though the button's `disabled` attribute blocks
+    // the click, a fast double-tap or Enter-twice still fires the form's
+    // submit event. Bail out if a request is already in flight.
+    if (busy) return;
     setError(null);
     setBusy(true);
     const data = Object.fromEntries(new FormData(e.currentTarget).entries());
@@ -31,9 +35,16 @@ export default function LoginForm() {
         : "/admin";
       router.push(next);
       router.refresh();
+      // Deliberately leave `busy` = true on the success path. router.push()
+      // returns synchronously but the actual navigation takes a few hundred
+      // ms — flipping busy back to false here would re-enable the button
+      // while the user is still on the login page, and impatient retries
+      // were firing duplicate login requests against the still-mounted form.
+      // The form unmounts when navigation completes, taking the busy state
+      // with it; no need to reset.
+      return;
     } catch (e) {
       setError(e instanceof Error ? e.message : "Login failed");
-    } finally {
       setBusy(false);
     }
   }
@@ -60,7 +71,22 @@ export default function LoginForm() {
       {error && (
         <p className="text-sm text-accent-700 bg-accent-50 border border-accent-200 rounded-lg px-3 py-2">{error}</p>
       )}
-      <button type="submit" disabled={busy} className="w-full inline-flex items-center justify-center gap-2 rounded-full bg-accent-600 hover:bg-accent-700 disabled:opacity-60 text-white font-semibold px-6 py-3 transition">
+      <button
+        type="submit"
+        disabled={busy}
+        aria-busy={busy}
+        className="w-full inline-flex items-center justify-center gap-2 rounded-full bg-accent-600 hover:bg-accent-700 disabled:bg-accent-600/70 disabled:cursor-wait text-white font-semibold px-6 py-3 transition"
+      >
+        {busy && (
+          <svg
+            width="16" height="16" viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" strokeWidth="3" strokeLinecap="round"
+            className="animate-spin"
+            aria-hidden="true"
+          >
+            <path d="M21 12a9 9 0 1 1-6.2-8.55" />
+          </svg>
+        )}
         {busy ? "Signing in…" : "Sign in"}
       </button>
     </form>
