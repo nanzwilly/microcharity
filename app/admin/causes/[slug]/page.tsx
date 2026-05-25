@@ -3,10 +3,10 @@ import { notFound } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { getCurrentUser } from "@/lib/session";
 import { inrShort } from "@/lib/format";
-import { deleteCauseUpdateAction } from "../actions";
 import CauseStatusButton from "../CauseStatusButton";
 import AnnouncementPanel from "./AnnouncementPanel";
 import AddTimelineEntryForm from "./AddTimelineEntryForm";
+import DeleteUpdateButton from "./DeleteUpdateButton";
 
 export const dynamic = "force-dynamic";
 
@@ -111,13 +111,11 @@ export default async function AdminCauseDetailPage({ params }: { params: Promise
                     )}
                     <p className="text-sm text-body whitespace-pre-wrap leading-relaxed">{u.body}</p>
                   </div>
-                  <form action={deleteCauseUpdateAction}>
-                    <input type="hidden" name="id" value={u.id} />
-                    <input type="hidden" name="slug" value={cause.slug} />
-                    <button type="submit" className="text-xs font-semibold text-muted hover:text-accent-600 flex-shrink-0">
-                      Delete
-                    </button>
-                  </form>
+                  <DeleteUpdateButton
+                    id={u.id}
+                    slug={cause.slug}
+                    preview={u.caption?.trim() || u.body.trim().split(/\r?\n/)[0]}
+                  />
                 </div>
               </li>
             ))}
