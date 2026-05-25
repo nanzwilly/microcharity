@@ -105,24 +105,41 @@ export default function CauseForm({ predecessor }: { predecessor?: Predecessor }
 
         <h2 className="font-display text-xl text-ink">New entry details</h2>
 
-        <div className="grid sm:grid-cols-2 gap-4">
-          <div>
-            <label className="block text-sm font-semibold text-ink mb-2">Date *</label>
-            <input type="date" name="date" defaultValue={todayISO()} required className={inputCls} />
-            <p className="text-xs text-muted mt-1">Used as the date prefix on the new timeline entry.</p>
+        {predecessor ? (
+          // When duplicating, the Place is inherited from the predecessor and
+          // re-entering it every round adds friction with no value (Saniya
+          // has always been in Pala, etc.). Pipe it through as a hidden
+          // input so the server action still receives the value, and only
+          // surface the Date field visibly.
+          <>
+            <input type="hidden" name="location" value={predecessor.location ?? ""} />
+            <div>
+              <label className="block text-sm font-semibold text-ink mb-2">Date *</label>
+              <input type="date" name="date" defaultValue={todayISO()} required className={inputCls} />
+              <p className="text-xs text-muted mt-1">Used as the date prefix on the new timeline entry. Place is inherited from {predecessor.title}{predecessor.location ? ` (${predecessor.location})` : ""}.</p>
+            </div>
+          </>
+        ) : (
+          // First-time cause (no predecessor) — both Date and Place need to
+          // be entered by the admin.
+          <div className="grid sm:grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm font-semibold text-ink mb-2">Date *</label>
+              <input type="date" name="date" defaultValue={todayISO()} required className={inputCls} />
+              <p className="text-xs text-muted mt-1">Used as the date prefix on the new timeline entry.</p>
+            </div>
+            <div>
+              <label className="block text-sm font-semibold text-ink mb-2">Place</label>
+              <input
+                type="text"
+                name="location"
+                className={inputCls}
+                placeholder="e.g. Pala, Kerala"
+              />
+              <p className="text-xs text-muted mt-1">Shown on the new timeline entry caption.</p>
+            </div>
           </div>
-          <div>
-            <label className="block text-sm font-semibold text-ink mb-2">Place</label>
-            <input
-              type="text"
-              name="location"
-              defaultValue={predecessor?.location ?? ""}
-              className={inputCls}
-              placeholder="e.g. Pala, Kerala"
-            />
-            <p className="text-xs text-muted mt-1">Shown on the new timeline entry caption.</p>
-          </div>
-        </div>
+        )}
 
         <div>
           <label className="block text-sm font-semibold text-ink mb-2">Title *</label>
