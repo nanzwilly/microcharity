@@ -59,6 +59,73 @@ export async function deleteCauseUpdateAction(formData: FormData) {
   revalidatePath(`/donations/${slug}`);
 }
 
+export type AddUpdateState = { error?: string; ok?: true };
+
+// Format a YYYY-MM-DD date string as "Mon D, YYYY" to match the caption
+// convention used by every existing timeline entry (e.g. "Mar 17, 2025").
+function formatCaptionDate(iso: string): string {
+  // Parse as a date-only at UTC noon so toLocaleDateString never shifts a day
+  // backwards across timezones (admin browsers in IST got off-by-one earlier).
+  const d = new Date(`${iso}T12:00:00.000Z`);
+  if (isNaN(d.getTime())) return iso;
+  return d.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric", timeZone: "UTC" });
+}
+
+// Add a new timeline entry to a cause. Used after publish to log follow-up
+// activity ("Fund Raising Approved", "Fund Raising Closed", progress
+// updates, etc.) without having to duplicate the entire cause.
+//
+// The form has three fields:
+//   * date        — YYYY-MM-DD (HTML <input type="date">)
+//   * title       — short caption suffix (e.g. "Fund Raising Approved")
+//   * description — the body paragraph(s)
+//
+// Caption is built as "Mon D, YYYY - Title" so the new entry matches the
+// formatting of every existing legacy entry.
+export async function addCauseUpdateAction(_prev: AddUpdateState, formData: FormData): Promise<AddUpdateState> {
+  await requireAdmin();
+  const causeId = String(formData.get("causeId") ?? "").trim();
+  const slug = String(formData.get("slug") ?? "").trim();
+  const dateRaw = String(formData.get("date") ?? "").trim();
+  const title = String(formData.get("title") ?? "").trim();
+  const body = String(formData.get("body") ?? "").trim();
+
+  if (!causeId || !slug) return { error: "Missing cause reference." };
+  if (!dateRaw) return { error: "Pick a date for this entry." };
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(dateRaw)) return { error: "Date must be a valid YYYY-MM-DD value." };
+  if (!title) return { error: "Title is required (e.g. 'Fund Raising Approved')." };
+  if (!body) return { error: "Description is required." };
+
+  const cause = await prisma.cause.findUnique({ where: { id: causeId }, select: { id: true, slug: true } });
+  if (!cause || cause.slug !== slug) return { error: "Cause not found." };
+
+  // Append to the end of the timeline. The Cause detail page orders updates
+  // by sortOrder asc, so taking max+1 puts this entry below every existing
+  // row without renumbering.
+  const last = await prisma.causeUpdate.findFirst({
+    where: { causeId },
+    orderBy: { sortOrder: "desc" },
+    select: { sortOrder: true },
+  });
+  const nextSort = (last?.sortOrder ?? -1) + 1;
+
+  await prisma.causeUpdate.create({
+    data: {
+      causeId,
+      caption: `${formatCaptionDate(dateRaw)} - ${title}`,
+      body,
+      sortOrder: nextSort,
+      postedAt: new Date(`${dateRaw}T12:00:00.000Z`),
+    },
+  });
+
+  revalidatePath(`/admin/causes/${slug}`);
+  revalidatePath(`/donations/${slug}`);
+  revalidatePath("/current-causes");
+  revalidatePath("/success-stories");
+  return { ok: true };
+}
+
 export async function createCauseAction(_prev: CauseFormState, formData: FormData): Promise<CauseFormState> {
   const user = await requireAdmin();
 

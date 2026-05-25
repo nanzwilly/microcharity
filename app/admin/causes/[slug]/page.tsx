@@ -6,6 +6,7 @@ import { inrShort } from "@/lib/format";
 import { deleteCauseUpdateAction } from "../actions";
 import CauseStatusButton from "../CauseStatusButton";
 import AnnouncementPanel from "./AnnouncementPanel";
+import AddTimelineEntryForm from "./AddTimelineEntryForm";
 
 export const dynamic = "force-dynamic";
 
@@ -124,9 +125,11 @@ export default async function AdminCauseDetailPage({ params }: { params: Promise
         )}
       </div>
 
-      {/* Timeline entries are not added in-place anymore. Use Duplicate from the
-          Causes list to create a follow-up cause — that flow carries over prior
-          entries and lets you append a new one as part of a fresh cause. */}
+      {/* Add a new timeline entry to this cause. Works at any status —
+          DRAFT, PUBLISHED, or CLOSED — so admins can log fund-raising
+          approvals / closures / progress without having to duplicate the
+          whole cause. */}
+      <AddTimelineEntryForm causeId={cause.id} slug={cause.slug} />
 
       {/* Launch announcement (bulk donor mailer). Hidden for the support-microcharity
           cause itself — it'd loop. ADMIN-role only. */}
