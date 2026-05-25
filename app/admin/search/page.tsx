@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { prisma } from "@/lib/prisma";
 import { inrShort } from "@/lib/format";
-import { setCauseStatusAction } from "../causes/actions";
+import CauseRowMenu from "../causes/CauseRowMenu";
 
 export const metadata = { title: "Search — Admin" };
 export const dynamic = "force-dynamic";
@@ -71,7 +71,7 @@ export default async function AdminSearchPage({ searchParams }: { searchParams: 
                   <th className="text-left font-semibold px-4 py-3">Title</th>
                   <th className="text-left font-semibold px-3 py-3 w-[7rem]">Status</th>
                   <th className="text-right font-semibold px-3 py-3 w-[8rem]">Raised / Goal</th>
-                  <th className="text-right font-semibold px-4 py-3 w-[14rem]">Actions</th>
+                  <th className="text-right font-semibold px-4 py-3 w-16">Actions</th>
                 </tr>
               </thead>
               <tbody>
@@ -95,35 +95,16 @@ export default async function AdminSearchPage({ searchParams }: { searchParams: 
                         <span className="block text-xs text-muted">of {inrShort(c.goalAmount)} · {pct}%</span>
                       </td>
                       <td className="px-4 py-3 text-right whitespace-nowrap">
-                        <div className="inline-flex items-center gap-x-3 gap-y-1 flex-wrap justify-end">
-                          {c.status === "PUBLISHED" && (
-                            <form action={setCauseStatusAction}>
-                              <input type="hidden" name="id" value={c.id} />
-                              <input type="hidden" name="status" value="CLOSED" />
-                              <button type="submit" className="text-xs font-semibold text-accent-600 hover:text-accent-700">Close</button>
-                            </form>
-                          )}
-                          {c.status === "CLOSED" && (
-                            <form action={setCauseStatusAction}>
-                              <input type="hidden" name="id" value={c.id} />
-                              <input type="hidden" name="status" value="PUBLISHED" />
-                              <button type="submit" className="text-xs font-semibold text-muted hover:text-ink">Re-open</button>
-                            </form>
-                          )}
-                          {c.status === "DRAFT" && (
-                            <form action={setCauseStatusAction}>
-                              <input type="hidden" name="id" value={c.id} />
-                              <input type="hidden" name="status" value="PUBLISHED" />
-                              <button type="submit" className="text-xs font-semibold text-accent-600 hover:text-accent-700">Publish</button>
-                            </form>
-                          )}
-                          <Link href={`/admin/causes/new?from=${encodeURIComponent(c.slug)}`} className="text-xs font-semibold text-ink hover:text-accent-600" title="Create a follow-up campaign with these details pre-filled">
-                            Duplicate
-                          </Link>
-                          <Link href={`/donations/${c.slug}`} target="_blank" className="text-xs font-semibold text-accent-600 hover:text-accent-700">
-                            View →
-                          </Link>
-                        </div>
+                        <CauseRowMenu
+                          causeId={c.id}
+                          slug={c.slug}
+                          statusVariant={
+                            c.status === "PUBLISHED" ? "close" :
+                            c.status === "CLOSED"    ? "reopen" :
+                            c.status === "DRAFT"     ? "publish" :
+                            null
+                          }
+                        />
                       </td>
                     </tr>
                   );
