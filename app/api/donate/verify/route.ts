@@ -1,4 +1,4 @@
-import { NextResponse } from "next/server";
+import { after, NextResponse } from "next/server";
 import crypto from "node:crypto";
 import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/prisma";
@@ -58,16 +58,31 @@ export async function POST(req: Request) {
       });
     }
 
-    // Razorpay path: 80G receipt goes out immediately (no separate ack email).
-    // Idempotent — webhook may also call this; second call is a no-op.
-    await issueReceiptForDonation(donation.id);
-
     // Bust ISR caches so the cause page reflects the new "raised" total on the donor's
     // very next request (instead of waiting for the 60s revalidate window or the webhook
     // hop, which may not be configured in test mode).
     revalidatePath("/");
     revalidatePath("/current-causes");
     revalidatePath(`/donations/${donation.cause.slug}`);
+
+    // Receipt issuance — PDF generation (1-2s) plus two Gmail SMTP sends
+    // (2-5s each) was adding 5-12 seconds of synchronous wait before the
+    // browser saw the success response. The donation is already approved
+    // and the cause total bumped at this point; the receipt only needs to
+    // exist eventually, not before the donor sees their thank-you.
+    //
+    // Defer via after() — Vercel keeps the function alive past the response,
+    // PDF + emails finish in the background, donor sees instant confirmation.
+    // issueReceiptForDonation is idempotent so the webhook (also deferred)
+    // calling it a second time is a no-op. Failures are logged and admins
+    // can manually trigger a resend from /admin/donations.
+    after(async () => {
+      try {
+        await issueReceiptForDonation(donation.id);
+      } catch (e) {
+        console.error("[donate/verify] background receipt issuance failed", { donationId: donation.id, error: e });
+      }
+    });
 
     return NextResponse.json({ ok: true });
   } catch (e) {
