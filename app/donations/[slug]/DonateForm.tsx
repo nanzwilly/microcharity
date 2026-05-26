@@ -75,7 +75,7 @@ export default function DonateForm({ slug }: { slug: string }) {
     }
   }
 
-  async function runRazorpay(d: { slug: string; amount: number; name: string; email: string; phone: string; pan: string }) {
+  async function runRazorpay(d: { slug: string; amount: number; name: string; email: string; phone: string; pan: string; address?: string }) {
     const orderRes = await fetch("/api/donate/online", {
       method: "POST",
       headers: { "content-type": "application/json" },

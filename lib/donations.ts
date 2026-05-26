@@ -138,6 +138,11 @@ export async function createOnlineDonationOrder(input: {
   donorEmail: string;
   donorPhone?: string;
   donorPan?: string;
+  // Optional donor address — captured per-donation as a snapshot and also
+  // mirrored onto the Donor profile so subsequent donations from the same
+  // donor pre-fill. Surfaces on the 80G receipt below the donor name.
+  // Mirrors the createUnverifiedDonation contract (QR / OFFLINE paths).
+  donorAddress?: string;
   amount: number;            // INR rupees (integer)
   razorpayOrderId: string;
 }) {
@@ -149,12 +154,14 @@ export async function createOnlineDonationOrder(input: {
       update: {
         name: input.donorName,
         phone: input.donorPhone ?? undefined,
+        ...(input.donorAddress ? { address: input.donorAddress } : {}),
         ...(panCipher ? { panEncrypted: panCipher } : {}),
       },
       create: {
         email,
         name: input.donorName,
         phone: input.donorPhone,
+        address: input.donorAddress,
         panEncrypted: panCipher,
       },
     });
@@ -164,6 +171,7 @@ export async function createOnlineDonationOrder(input: {
         donorId: donor.id,
         donorNameSnapshot: input.donorName,
         donorEmailSnapshot: email,
+        addressSnapshot: input.donorAddress,
         panEncrypted: panCipher,
         amount: input.amount,
         type: "ONLINE",

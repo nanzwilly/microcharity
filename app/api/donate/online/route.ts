@@ -27,10 +27,14 @@ export async function POST(req: Request) {
     const body = await req.json().catch(() => ({} as Record<string, unknown>));
     const slug   = String(body.slug ?? "").trim();
     const amount = Number(body.amount);
-    const name   = String(body.name ?? "").trim();
-    const email  = String(body.email ?? "").trim().toLowerCase();
-    const phone  = String(body.phone ?? "").trim();
-    const pan    = normalizePan(body.pan);
+    const name    = String(body.name ?? "").trim();
+    const email   = String(body.email ?? "").trim().toLowerCase();
+    const phone   = String(body.phone ?? "").trim();
+    const pan     = normalizePan(body.pan);
+    // Address is optional but pulled here so it can be snapshotted onto the
+    // donation. Without this, the 80G receipt rendered for online (Razorpay)
+    // donations had no address — the QR / OFFLINE flows always captured it.
+    const address = String(body.address ?? "").trim();
 
     if (!slug)                   return NextResponse.json({ error: "Cause is required." }, { status: 400 });
     if (!Number.isFinite(amount) || amount < 100) {
@@ -72,6 +76,7 @@ export async function POST(req: Request) {
       donorEmail: email,
       donorPhone: phone,
       donorPan: pan,
+      donorAddress: address || undefined,
       amount: Math.round(amount),
       razorpayOrderId: order.id,
     });
