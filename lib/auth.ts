@@ -2,7 +2,11 @@
 // Used by login API, middleware, and admin server components to identify the user.
 
 import { SignJWT, jwtVerify } from "jose";
-import bcrypt from "bcryptjs";
+// @node-rs/bcrypt is a Rust implementation (~10x faster than bcryptjs at the
+// same cost factor on Vercel serverless). API is a drop-in replacement —
+// hash() / compare() take the same args, produce/accept the same format,
+// so every existing $2a$... hash in the DB keeps working without migration.
+import bcrypt from "@node-rs/bcrypt";
 
 const COOKIE_NAME = "mc_session";
 const ALG = "HS256";
