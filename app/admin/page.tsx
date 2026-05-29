@@ -9,12 +9,29 @@ export const dynamic = "force-dynamic";
 export default async function AdminHome() {
   const user = await getCurrentUser();
 
-  const [activeCount, totalCauses, totalDonationCount, totalDonors, raisedAgg, siteStat] = await Promise.all([
-    prisma.cause.count({ where: { status: "PUBLISHED" } }),
-    prisma.cause.count(),
-    prisma.donation.count({ where: { status: "APPROVED" } }),
-    prisma.donor.count(),
-    prisma.cause.aggregate({ _sum: { raisedAmount: true } }),
+  // One Neon round-trip for all five KPIs. Previously six parallel
+  // Promise.all queries, which on a cold Neon compute could stack 2-5
+  // seconds of per-query connection latency on top of each other. This
+  // collapses to a single statement; the siteStat lookup stays separate
+  // because it involves an upsert + relation include.
+  const [kpiRow, siteStat] = await Promise.all([
+    prisma.$queryRaw<Array<{
+      active_count: bigint;
+      total_causes: bigint;
+      total_donations: bigint;
+      total_donors: bigint;
+      total_raised: bigint | null;
+    }>>`
+      SELECT
+        (SELECT COUNT(*) FROM "Cause" WHERE "status" = 'PUBLISHED')             AS active_count,
+        (SELECT COUNT(*) FROM "Cause")                                          AS total_causes,
+        (SELECT COUNT(*) FROM "Donation" WHERE "status" = 'APPROVED')           AS total_donations,
+        -- Donors KPI excludes soft-deleted rows so the dashboard reflects the
+        -- real donor count (matches what /admin/donors lists). The 87 spam
+        -- rows soft-deleted on May 24 would otherwise pad this number.
+        (SELECT COUNT(*) FROM "Donor" WHERE "deletedAt" IS NULL)                AS total_donors,
+        (SELECT COALESCE(SUM("raisedAmount"), 0) FROM "Cause")                  AS total_raised
+    `,
     prisma.siteStat.upsert({
       where: { id: 1 },
       create: { id: 1, donationCount: 4505, raisedAmount: 16112720 },
@@ -22,6 +39,12 @@ export default async function AdminHome() {
       include: { updatedBy: { select: { name: true } } },
     }),
   ]);
+  const k = kpiRow[0];
+  const activeCount = Number(k.active_count);
+  const totalCauses = Number(k.total_causes);
+  const totalDonationCount = Number(k.total_donations);
+  const totalDonors = Number(k.total_donors);
+  const raisedAgg = { _sum: { raisedAmount: Number(k.total_raised ?? 0) } };
 
   const kpis = [
     { label: "Active causes", value: String(activeCount) },
