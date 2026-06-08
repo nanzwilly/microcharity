@@ -48,7 +48,17 @@ export default async function DonationsAdminPage({ searchParams }: { searchParam
       where,
       orderBy: { createdAt: "desc" },
       take: 100,
-      include: { cause: { select: { title: true, slug: true } } },
+      include: {
+        cause: { select: { title: true, slug: true } },
+        // We need to know whether the 80G receipt has actually been emailed
+        // for this donation so the button can read "Send receipt" (first
+        // time) vs "Resend receipt" (re-issue). receipt is null when the
+        // PDF was never generated — happens for OFFLINE / QR / MANUAL
+        // donations that were Approved (pledge confirmed) but money hasn't
+        // landed yet. sentAt is null when the row exists but the email
+        // hasn't gone out (transient SMTP failure case).
+        receipt: { select: { sentAt: true } },
+      },
     }),
     prisma.donation.count(),
     prisma.donation.count({ where: { status: "PENDING" } }),
@@ -199,7 +209,13 @@ export default async function DonationsAdminPage({ searchParams }: { searchParam
                         {d.paymentReference && (
                           <span className="text-xs text-muted" title={d.paymentReference}>ref · {d.paymentReference}</span>
                         )}
-                        <ResendReceiptButton donationId={d.id} />
+                        {/* receiptSent === false here means: donation was
+                            approved (pledge confirmed, raised total bumped)
+                            but the 80G email hasn't been sent. Button reads
+                            "Send receipt" and is visually emphasised so Jisso
+                            can spot pending receipts at a glance. Once sent,
+                            it reverts to a muted "Resend receipt". */}
+                        <ResendReceiptButton donationId={d.id} receiptSent={!!d.receipt?.sentAt} />
                       </div>
                     ) : d.paymentReference ? (
                       <span className="text-xs text-muted block text-right" title={d.paymentReference}>ref · {d.paymentReference}</span>

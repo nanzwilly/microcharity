@@ -91,13 +91,14 @@ export async function approveDonationAction(formData: FormData) {
     }
   }
 
-  // Grab the cause slug along with the donation amount up-front so we can revalidate
-  // the public cause page after approval. Without this, the page kept showing the
-  // pre-approval `raisedAmount` until the 60s ISR window expired — even though the
-  // DB already had the incremented total.
+  // Grab the cause slug + donation type up-front so we can (a) revalidate the
+  // public cause page after approval and (b) decide whether to fire the
+  // receipt automatically. Without this, the page kept showing the
+  // pre-approval `raisedAmount` until the 60s ISR window expired — even
+  // though the DB already had the incremented total.
   const before = await prisma.donation.findUnique({
     where: { id },
-    select: { amount: true, cause: { select: { slug: true } } },
+    select: { amount: true, type: true, cause: { select: { slug: true } } },
   });
   await approveDonation(id, user.userId, { editedAmount });
   await audit({
@@ -116,24 +117,24 @@ export async function approveDonationAction(formData: FormData) {
   revalidatePath("/current-causes");
   if (before?.cause.slug) revalidatePath(`/donations/${before.cause.slug}`);
 
-  // Receipt issuance (PDF generation 1-2s + two Gmail SMTP sends 2-5s each)
-  // was the entire wait the admin felt after clicking Approve — 5-12s on top
-  // of the actually-relevant work. The donation is already APPROVED, the
-  // cause total is already bumped, and the donor list will refresh on the
-  // next request. The receipt only needs to exist eventually, not before
-  // the admin sees the row update.
-  //
-  // Defer via after() — Vercel keeps the function alive past the response,
-  // PDF + emails finish in the background. issueReceiptForDonation is
-  // idempotent (early-returns if sentAt is set), so a manual Resend Receipt
-  // click later is safe. Failures are logged for monitoring.
-  after(async () => {
-    try {
-      await issueReceiptForDonation(id);
-    } catch (e) {
-      console.error("[approveDonationAction] background receipt issuance failed", { donationId: id, error: e });
-    }
-  });
+  // Receipt issuance is only auto-fired for Razorpay (ONLINE) donations,
+  // where the money has demonstrably moved through the gateway. For
+  // OFFLINE / QR / MANUAL donations the admin's Approve click confirms a
+  // *pledge* — the donor said they'd transfer money, but the bank may not
+  // have received anything yet. The cause's raisedAmount goes up (it's a
+  // commitment) but the 80G receipt is withheld until Jisso confirms the
+  // money actually landed and clicks "Send receipt" separately. Prevents
+  // an awkward situation where a donor receives a receipt without ever
+  // having sent money.
+  if (before?.type === "ONLINE") {
+    after(async () => {
+      try {
+        await issueReceiptForDonation(id);
+      } catch (e) {
+        console.error("[approveDonationAction] background receipt issuance failed", { donationId: id, error: e });
+      }
+    });
+  }
 }
 
 export async function resendReceiptAction(formData: FormData) {
