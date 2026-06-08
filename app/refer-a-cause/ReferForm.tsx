@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 
 const inputCls = "w-full rounded-lg border border-[var(--color-line)] focus:border-accent-600 focus:ring-2 focus:ring-accent-100 outline-none px-3 py-2.5 text-sm";
 
@@ -8,13 +8,22 @@ export default function ReferForm() {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [done, setDone] = useState<{ name: string; beneficiary: string } | null>(null);
+  // Stamp mount time so the server can verify the submission took at least a
+  // few seconds (real humans) vs sub-second (bot). Same pattern as the
+  // contact and cause-application forms.
+  const mountedAtRef = useRef<number | null>(null);
+  if (mountedAtRef.current === null && typeof window !== "undefined") {
+    mountedAtRef.current = Date.now();
+  }
 
   async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setBusy(true);
     setError(null);
     const fd = new FormData(e.currentTarget);
-    const payload = Object.fromEntries(fd.entries());
+    const payload = Object.fromEntries(fd.entries()) as Record<string, string>;
+    // Bot-trap fields: honeypot from the hidden input, elapsed time since mount.
+    payload.elapsedMs = String(Date.now() - (mountedAtRef.current ?? Date.now()));
     try {
       const res = await fetch("/api/refer-cause", {
         method: "POST",
@@ -57,6 +66,26 @@ export default function ReferForm() {
 
   return (
     <form onSubmit={onSubmit} className="space-y-5">
+      {/* Honeypot input — hidden from humans via off-screen positioning,
+          excluded from tab order, and aria-hidden so screen readers skip it.
+          Bots that fill every input populate it; the server rejects any
+          submission with a non-empty value. */}
+      <div
+        style={{ position: "absolute", left: "-9999px", width: 1, height: 1, overflow: "hidden" }}
+        aria-hidden="true"
+      >
+        <label>
+          Your website
+          <input
+            type="text"
+            name="website"
+            tabIndex={-1}
+            autoComplete="off"
+            defaultValue=""
+          />
+        </label>
+      </div>
+
       <div className="grid sm:grid-cols-2 gap-4">
         <div>
           <label className="block text-sm font-semibold text-ink mb-2">Your name</label>

@@ -5,6 +5,12 @@ import { rateLimit, callerIp, LIMITS } from "@/lib/rate-limit";
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
+// Minimum time (ms) between the form mounting in the browser and the user
+// submitting. Real humans take 5-60 seconds to type a contact message; bots
+// fire submissions in tens of milliseconds. 2 seconds is a comfortable
+// threshold that won't false-positive even fast typers.
+const MIN_FILL_MS = 2000;
+
 export async function POST(req: Request) {
   const rl = await rateLimit(LIMITS.contact, callerIp(req));
   if (!rl.ok) {
@@ -16,6 +22,26 @@ export async function POST(req: Request) {
 
   const data = await req.json().catch(() => ({} as Record<string, unknown>));
   const get = (k: string) => (typeof data[k] === "string" ? (data[k] as string).trim() : "");
+
+  // Bot trap — checked before any validation or email work. Two complementary
+  // checks:
+  //   1. Honeypot input ("website" field) is hidden from humans via CSS but
+  //      filled by bots that blindly populate every input they see.
+  //   2. elapsedMs measures how long the form was on screen before submission;
+  //      below MIN_FILL_MS strongly suggests an automated submission.
+  // On match we return 200 OK as if accepted but silently discard — bots can't
+  // distinguish success from rejection, so they can't tune their payload to
+  // bypass the check. Logging captures the trigger for monitoring.
+  const honeypot = get("website");
+  const elapsedMs = Number(data.elapsedMs ?? 0);
+  if (honeypot || !Number.isFinite(elapsedMs) || elapsedMs < MIN_FILL_MS) {
+    console.warn("[contact] bot-trap fired", {
+      honeypotFilled: !!honeypot,
+      elapsedMs,
+      ip: callerIp(req),
+    });
+    return NextResponse.json({ ok: true, queued: true });
+  }
 
   const name    = get("name");
   const email   = get("email");

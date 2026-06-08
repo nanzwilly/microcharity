@@ -5,6 +5,11 @@ import { rateLimit, callerIp, LIMITS } from "@/lib/rate-limit";
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
+// Same bot-trap minimum-fill threshold as the contact form. 2 seconds is
+// well below what a human takes to read the form, fill it, and submit, but
+// far above what a script needs.
+const MIN_FILL_MS = 2000;
+
 export async function POST(req: Request) {
   const rl = await rateLimit(LIMITS.referCause, callerIp(req));
   if (!rl.ok) {
@@ -16,6 +21,21 @@ export async function POST(req: Request) {
 
   const data = await req.json().catch(() => ({} as Record<string, unknown>));
   const get = (k: string) => (typeof data[k] === "string" ? (data[k] as string).trim() : "");
+
+  // Bot-trap — honeypot input + minimum fill duration. On hit, return 200
+  // OK with the same body shape as a real success so the bot can't tune
+  // its payload. Nothing persists, no emails sent. See contact route for
+  // the same pattern.
+  const honeypot = get("website");
+  const elapsedMs = Number(data.elapsedMs ?? 0);
+  if (honeypot || !Number.isFinite(elapsedMs) || elapsedMs < MIN_FILL_MS) {
+    console.warn("[refer-cause] bot-trap fired", {
+      honeypotFilled: !!honeypot,
+      elapsedMs,
+      ip: callerIp(req),
+    });
+    return NextResponse.json({ ok: true, queued: true });
+  }
 
   const referrerName  = get("referrer_name");
   const referrerEmail = get("referrer_email");

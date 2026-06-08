@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 
 const inputCls = "w-full rounded-lg border border-[var(--color-line)] focus:border-accent-600 focus:ring-2 focus:ring-accent-100 outline-none px-3 py-2.5 text-sm";
 
@@ -8,12 +8,25 @@ export default function ContactForm() {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [done, setDone] = useState<{ name: string } | null>(null);
+  // Stamp the moment the component mounts so we can measure how long the user
+  // spent filling the form. Bots usually submit within milliseconds; humans
+  // take seconds. The server rejects anything under MIN_FILL_MS (2 seconds).
+  const mountedAtRef = useRef<number | null>(null);
+  if (mountedAtRef.current === null && typeof window !== "undefined") {
+    mountedAtRef.current = Date.now();
+  }
 
   async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setBusy(true);
     setError(null);
-    const data = Object.fromEntries(new FormData(e.currentTarget).entries());
+    const formData = new FormData(e.currentTarget);
+    const data = Object.fromEntries(formData.entries()) as Record<string, string>;
+    // Append bot-trap fields. Honeypot value comes from the hidden input (real
+    // users leave it blank; bots fill every visible input including hidden ones).
+    // elapsedMs is how long since the form mounted — sub-2-second submissions
+    // are treated as bot activity server-side.
+    data.elapsedMs = String(Date.now() - (mountedAtRef.current ?? Date.now()));
     try {
       const res = await fetch("/api/contact", {
         method: "POST",
@@ -52,6 +65,27 @@ export default function ContactForm() {
 
   return (
     <form onSubmit={onSubmit} className="space-y-5">
+      {/* Honeypot — invisible to humans, irresistible to dumb bots. Real users
+          never tab here (tabIndex=-1, aria-hidden, off-screen), but bots that
+          blindly fill every input will populate it. Server-side, any value
+          here marks the submission as spam and silently discards it. Field
+          name "website" matches the pattern used in cause-applications. */}
+      <div
+        style={{ position: "absolute", left: "-9999px", width: 1, height: 1, overflow: "hidden" }}
+        aria-hidden="true"
+      >
+        <label>
+          Your website
+          <input
+            type="text"
+            name="website"
+            tabIndex={-1}
+            autoComplete="off"
+            defaultValue=""
+          />
+        </label>
+      </div>
+
       <div className="grid sm:grid-cols-2 gap-4">
         <div>
           <label className="block text-sm font-semibold text-ink mb-2">Your name</label>
