@@ -8,6 +8,13 @@ import ExportPanel from "./ExportPanel";
 
 export const metadata = { title: "Donations — Admin" };
 export const dynamic = "force-dynamic";
+// Server actions invoked from this page (approve, resend receipt, manual create)
+// can take 5-15 seconds — receipt resend in particular synchronously runs PDF
+// generation + 2 Gmail SMTP sends so the button label updates correctly. The
+// default Vercel function timeout sits right at the edge of that, so admins
+// occasionally saw "server-side exception" pages even when the underlying work
+// (email actually delivered) had succeeded. Raise the ceiling to 60s.
+export const maxDuration = 60;
 
 type Search = {
   status?: string;
