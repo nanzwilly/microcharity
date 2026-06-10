@@ -6,8 +6,7 @@ import { inrShort } from "@/lib/format";
 import CauseStatusButton from "../CauseStatusButton";
 import AnnouncementPanel from "./AnnouncementPanel";
 import AddTimelineEntryForm from "./AddTimelineEntryForm";
-import DeleteUpdateButton from "./DeleteUpdateButton";
-import EditTimelineEntryButton from "./EditTimelineEntryButton";
+import TimelineEntryCard from "./TimelineEntryCard";
 
 export const dynamic = "force-dynamic";
 
@@ -104,32 +103,14 @@ export default async function AdminCauseDetailPage({ params }: { params: Promise
         ) : (
           <ul className="space-y-3">
             {cause.updates.map((u) => (
-              // `relative` so the inline EditTimelineEntryButton's edit
-              // form (absolute, inset-0) overlays this li cleanly when open.
-              <li key={u.id} className="relative rounded-2xl bg-white border border-[var(--color-line)] p-5">
-                <div className="flex items-start justify-between gap-3">
-                  <div className="min-w-0 flex-1">
-                    {u.caption && (
-                      <p className="text-xs font-semibold text-accent-600 uppercase tracking-wider mb-2">{u.caption}</p>
-                    )}
-                    <p className="text-sm text-body whitespace-pre-wrap leading-relaxed">{u.body}</p>
-                  </div>
-                  <div className="flex items-center gap-4 flex-shrink-0">
-                    <EditTimelineEntryButton
-                      id={u.id}
-                      slug={cause.slug}
-                      caption={u.caption ?? ""}
-                      body={u.body}
-                      postedAt={u.postedAt.toISOString()}
-                    />
-                    <DeleteUpdateButton
-                      id={u.id}
-                      slug={cause.slug}
-                      preview={u.caption?.trim() || u.body.trim().split(/\r?\n/)[0]}
-                    />
-                  </div>
-                </div>
-              </li>
+              <TimelineEntryCard
+                key={u.id}
+                id={u.id}
+                slug={cause.slug}
+                caption={u.caption ?? ""}
+                body={u.body}
+                postedAt={u.postedAt.toISOString()}
+              />
             ))}
           </ul>
         )}

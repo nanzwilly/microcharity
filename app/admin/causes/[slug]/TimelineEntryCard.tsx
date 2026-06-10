@@ -3,84 +3,81 @@
 import { useActionState, useEffect, useState } from "react";
 import { useFormStatus } from "react-dom";
 import { updateCauseUpdateAction, type UpdateCauseUpdateState } from "../actions";
+import DeleteUpdateButton from "./DeleteUpdateButton";
 
-// Toggle between display and edit modes for a single timeline entry.
-// Display mode: small "Edit" link beside the existing Delete button.
-// Edit mode: inline form with date / title / body inputs, prefilled from the
-// existing entry. Save submits the updateCauseUpdateAction; Cancel reverts
-// to display without writing anything.
+// One timeline entry card with two in-flow modes:
+//   * Display — caption + body + Edit / Delete links.
+//   * Edit    — the card's content is REPLACED by a prefilled form (date /
+//               title / description) with Save + Cancel.
 //
-// The parent (cause detail page) renders the entry's caption + body for
-// display; this component only contributes the Edit button OR the edit
-// form, depending on state. The form replaces the display markup when
-// open by rendering inline above its toggle position — the parent passes
-// the full entry data so the form can prefill correctly.
+// The form renders in normal document flow (not an absolute overlay) so a
+// taller form simply grows the card — the earlier overlay approach clipped
+// at the original card height and bled over the entries below it.
 
 type Props = {
   id: string;
   slug: string;
-  // The full existing caption like "Mon D, YYYY - Title (MCID-…)". We parse
-  // the date and title out of it for the form's default values; the MCID
-  // (if present) is preserved server-side automatically.
   caption: string;
   body: string;
   postedAt: string; // ISO date string from the server
 };
 
-export default function EditTimelineEntryButton({
-  id,
-  slug,
-  caption,
-  body,
-  postedAt,
-}: Props) {
-  const [open, setOpen] = useState(false);
+export default function TimelineEntryCard({ id, slug, caption, body, postedAt }: Props) {
+  const [editing, setEditing] = useState(false);
   const initial: UpdateCauseUpdateState = {};
   const [state, action] = useActionState(updateCauseUpdateAction, initial);
 
-  // Close the form once a save succeeds. The revalidatePath in the action
-  // re-renders the parent with the new entry, so we no longer need the form.
+  // Close the form once a save succeeds — revalidatePath re-renders the
+  // parent with fresh data, so the display mode shows the updated entry.
   useEffect(() => {
-    if (state?.ok) setOpen(false);
+    if (state?.ok) setEditing(false);
   }, [state]);
 
-  // Default date for the date input: the entry's postedAt. The DB stores it
-  // at 12:00 UTC so timezone shifts can't push it across midnight, but we
-  // still need to slice to YYYY-MM-DD for the <input type="date"/>.
   const defaultDate = (postedAt || "").slice(0, 10);
 
-  // The caption looks like "Aug 4, 2023 - Fund Raising Approved (MCID-…)" or
-  // "Jun 10, 2026 (MCID-102-26-27)" (no separator when title was blank at
-  // creation). Extract just the title portion for the form — strip the
-  // leading date and the trailing "(MCID-…)" if present.
+  // Captions come in three shapes:
+  //   "Mon D, YYYY - Title (MCID-…)"  → prefill Title
+  //   "Mon D, YYYY (MCID-…)"          → Title was blank at creation
+  //   "Mon D, YYYY - Title"           → prefill Title, no MCID
   function extractTitleFromCaption(c: string): string {
     if (!c) return "";
-    // Drop the trailing (MCID-...) tag first.
-    let s = c.replace(/\s*\(MCID-[A-Z0-9-]+\)\s*$/, "").trim();
-    // Drop the leading date portion. Captions use "Mon D, YYYY - " as
-    // separator OR sometimes "DD-Mon-YYYY - " — match both, then take what
-    // comes after the first " - ". If there's no " - ", the title was blank
-    // at creation, so we return "" and let the admin type in the right one.
+    const s = c.replace(/\s*\(MCID-[A-Z0-9-]+\)\s*$/, "").trim();
     const sepIdx = s.indexOf(" - ");
     if (sepIdx === -1) return "";
     return s.slice(sepIdx + 3).trim();
   }
-  const defaultTitle = extractTitleFromCaption(caption);
 
-  if (!open) {
+  if (!editing) {
     return (
-      <button
-        type="button"
-        onClick={() => setOpen(true)}
-        className="text-xs font-semibold text-muted hover:text-accent-600 flex-shrink-0"
-      >
-        Edit
-      </button>
+      <li className="rounded-2xl bg-white border border-[var(--color-line)] p-5">
+        <div className="flex items-start justify-between gap-3">
+          <div className="min-w-0 flex-1">
+            {caption && (
+              <p className="text-xs font-semibold text-accent-600 uppercase tracking-wider mb-2">{caption}</p>
+            )}
+            <p className="text-sm text-body whitespace-pre-wrap leading-relaxed">{body}</p>
+          </div>
+          <div className="flex items-center gap-4 flex-shrink-0">
+            <button
+              type="button"
+              onClick={() => setEditing(true)}
+              className="text-xs font-semibold text-muted hover:text-accent-600"
+            >
+              Edit
+            </button>
+            <DeleteUpdateButton
+              id={id}
+              slug={slug}
+              preview={caption?.trim() || body.trim().split(/\r?\n/)[0]}
+            />
+          </div>
+        </div>
+      </li>
     );
   }
 
   return (
-    <div className="absolute inset-0 z-10 bg-white border border-accent-200 rounded-2xl p-5 shadow-md">
+    <li className="rounded-2xl bg-white border border-accent-300 ring-2 ring-accent-100 p-5">
       <form action={action} className="space-y-3">
         <input type="hidden" name="id" value={id} />
         <input type="hidden" name="slug" value={slug} />
@@ -102,7 +99,7 @@ export default function EditTimelineEntryButton({
               type="text"
               name="title"
               required
-              defaultValue={defaultTitle}
+              defaultValue={extractTitleFromCaption(caption)}
               placeholder="Fund Raising Approved"
               className="w-full rounded-lg border border-[var(--color-line)] focus:border-accent-600 focus:ring-2 focus:ring-accent-100 outline-none px-3 py-2 text-sm"
             />
@@ -120,7 +117,7 @@ export default function EditTimelineEntryButton({
           />
           <p className="text-xs text-muted mt-1">
             Paragraphs are separated by a blank line. Inline links via <code className="font-mono">[label](https://url)</code>.
-            {caption.match(/\(MCID-[A-Z0-9-]+\)/) && <> The original MCID tag is preserved automatically.</>}
+            {/\(MCID-[A-Z0-9-]+\)/.test(caption) && <> The original MCID tag is preserved automatically.</>}
           </p>
         </div>
 
@@ -131,7 +128,7 @@ export default function EditTimelineEntryButton({
         <div className="flex items-center justify-end gap-3">
           <button
             type="button"
-            onClick={() => setOpen(false)}
+            onClick={() => setEditing(false)}
             className="text-xs font-semibold text-muted hover:text-ink"
           >
             Cancel
@@ -139,7 +136,7 @@ export default function EditTimelineEntryButton({
           <SaveButton />
         </div>
       </form>
-    </div>
+    </li>
   );
 }
 
