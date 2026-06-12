@@ -40,6 +40,16 @@ export const TEST_ANNOUNCEMENT_RECIPIENTS: Array<{ name: string; email: string }
   { name: "Nanz Willy",  email: "nanzwilly@gmail.com" },
 ];
 
+// Admins who get a heads-up email every time a new donation comes in (online
+// payment captured, or an offline / UPI submission landing for approval). The
+// team asked for this because pending offline/UPI donations were sometimes
+// sitting unnoticed. Edit this list to change who's notified.
+export const DONATION_NOTIFY_RECIPIENTS: string[] = [
+  "jissojose@microcharity.com",
+  "biijuu@gmail.com",
+  "nanzwilly@gmail.com",
+];
+
 // NEFT / IMPS / RTGS bank details shown to donors who choose Offline mode.
 export const BANK = {
   accountName: "MicroCharity Trust",

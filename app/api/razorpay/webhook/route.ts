@@ -4,6 +4,8 @@ import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/prisma";
 import { razorpayWebhookSecret } from "@/lib/razorpay";
 import { approveDonation, failDonationByOrderId, issueReceiptForDonation } from "@/lib/donations";
+import { sendNewDonationAlert } from "@/lib/email";
+import { DONATION_NOTIFY_RECIPIENTS } from "@/lib/trust";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -54,14 +56,24 @@ export async function POST(req: Request) {
 
       const donation = await prisma.donation.findUnique({
         where: { razorpayOrderId: orderId },
-        select: { id: true, status: true, causeId: true, cause: { select: { slug: true } } },
+        select: {
+          id: true, status: true, causeId: true, amount: true,
+          donorNameSnapshot: true, donorEmailSnapshot: true,
+          cause: { select: { slug: true, title: true } },
+          donor: { select: { phone: true } },
+        },
       });
       if (!donation) {
         console.warn(`[razorpay/webhook] no donation for order=${orderId}`);
         return NextResponse.json({ ok: true, skipped: "unknown order" });
       }
 
-      if (donation.status === "PENDING") {
+      // Only the request that flips PENDING → APPROVED fires the admin alert.
+      // Both this webhook and /api/donate/verify race to approve; the fresh-
+      // approval guard (status was PENDING here) means exactly one of them
+      // sends the alert, never both.
+      const isFreshApproval = donation.status === "PENDING";
+      if (isFreshApproval) {
         await approveDonation(donation.id, null, {
           razorpayPaymentId: payment?.id,
           razorpaySignature: signature,
@@ -73,6 +85,26 @@ export async function POST(req: Request) {
       }
       // Razorpay path: 80G receipt sent immediately. Idempotent across verify + webhook hops.
       await issueReceiptForDonation(donation.id);
+
+      if (isFreshApproval) {
+        try {
+          await sendNewDonationAlert({
+            recipients: DONATION_NOTIFY_RECIPIENTS,
+            donorName: donation.donorNameSnapshot,
+            donorEmail: donation.donorEmailSnapshot,
+            donorPhone: donation.donor?.phone ?? null,
+            causeTitle: donation.cause.title,
+            causeSlug: donation.cause.slug,
+            amount: donation.amount,
+            paymentMethod: "Online - Razorpay",
+            status: "APPROVED",
+            reference: payment?.id ?? null,
+            origin: new URL(req.url).origin,
+          });
+        } catch (e) {
+          console.error("[razorpay/webhook] admin alert failed", e);
+        }
+      }
       return NextResponse.json({ ok: true });
     }
 

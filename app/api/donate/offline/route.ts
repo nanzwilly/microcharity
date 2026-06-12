@@ -1,10 +1,11 @@
 import { NextResponse, after } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { createUnverifiedDonation } from "@/lib/donations";
-import { sendDonationAck } from "@/lib/email";
+import { sendDonationAck, sendNewDonationAlert } from "@/lib/email";
 import { parseDonorPayload } from "@/lib/donate-input";
 import { rateLimit, callerIp, LIMITS } from "@/lib/rate-limit";
 import { uploadToBlob } from "@/lib/uploads";
+import { DONATION_NOTIFY_RECIPIENTS } from "@/lib/trust";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -87,6 +88,23 @@ export async function POST(req: Request) {
         });
       } catch (e) {
         console.error("[donate/offline] ack email failed (background)", e);
+      }
+      try {
+        await sendNewDonationAlert({
+          recipients: DONATION_NOTIFY_RECIPIENTS,
+          donorName: parsed.name,
+          donorEmail: parsed.email,
+          donorPhone: parsed.phone,
+          causeTitle: cause.title,
+          causeSlug: cause.slug,
+          amount: parsed.amount,
+          paymentMethod: "Bank Transfer (NEFT / IMPS / RTGS)",
+          status: "PENDING",
+          reference: parsed.reference,
+          origin: new URL(req.url).origin,
+        });
+      } catch (e) {
+        console.error("[donate/offline] admin alert failed (background)", e);
       }
     });
 

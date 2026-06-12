@@ -4,6 +4,8 @@ import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/prisma";
 import { razorpayKeySecret } from "@/lib/razorpay";
 import { approveDonation, issueReceiptForDonation } from "@/lib/donations";
+import { sendNewDonationAlert } from "@/lib/email";
+import { DONATION_NOTIFY_RECIPIENTS } from "@/lib/trust";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -45,13 +47,23 @@ export async function POST(req: Request) {
 
     const donation = await prisma.donation.findUnique({
       where: { razorpayOrderId: orderId },
-      select: { id: true, status: true, causeId: true, cause: { select: { slug: true } } },
+      select: {
+        id: true, status: true, causeId: true, amount: true,
+        donorNameSnapshot: true, donorEmailSnapshot: true,
+        cause: { select: { slug: true, title: true } },
+        donor: { select: { phone: true } },
+      },
     });
     if (!donation) {
       return NextResponse.json({ error: "Donation not found." }, { status: 404 });
     }
 
-    if (donation.status === "PENDING") {
+    // Capture whether THIS request is the one that approves the donation.
+    // The route is idempotent (webhook may also hit it), so we only fire the
+    // admin alert on the fresh PENDING → APPROVED transition — not on repeat
+    // verifications of an already-approved payment.
+    const isFreshApproval = donation.status === "PENDING";
+    if (isFreshApproval) {
       await approveDonation(donation.id, null, {
         razorpayPaymentId: paymentId,
         razorpaySignature: signature,
@@ -81,6 +93,27 @@ export async function POST(req: Request) {
         await issueReceiptForDonation(donation.id);
       } catch (e) {
         console.error("[donate/verify] background receipt issuance failed", { donationId: donation.id, error: e });
+      }
+      // Admin heads-up for the new online donation — only on the fresh
+      // approval so repeat verify / webhook hits don't double-notify.
+      if (isFreshApproval) {
+        try {
+          await sendNewDonationAlert({
+            recipients: DONATION_NOTIFY_RECIPIENTS,
+            donorName: donation.donorNameSnapshot,
+            donorEmail: donation.donorEmailSnapshot,
+            donorPhone: donation.donor?.phone ?? null,
+            causeTitle: donation.cause.title,
+            causeSlug: donation.cause.slug,
+            amount: donation.amount,
+            paymentMethod: "Online - Razorpay",
+            status: "APPROVED",
+            reference: paymentId,
+            origin: new URL(req.url).origin,
+          });
+        } catch (e) {
+          console.error("[donate/verify] admin alert failed (background)", e);
+        }
       }
     });
 
