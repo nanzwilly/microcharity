@@ -26,6 +26,11 @@ export default function DeleteUpdateButton({
   return (
     <form
       action={deleteCauseUpdateAction}
+      // inline-flex (not the default block) so this form sits on the exact
+      // same baseline as the sibling bare <button> "Edit" in the parent
+      // flex row — otherwise the block form box dropped Delete a couple of
+      // pixels below Edit and they read as being on different lines.
+      className="inline-flex items-center"
       onSubmit={(e) => {
         const trimmed = preview.length > 80 ? preview.slice(0, 77).trimEnd() + "…" : preview;
         const ok = window.confirm(
