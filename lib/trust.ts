@@ -45,7 +45,7 @@ export const TEST_ANNOUNCEMENT_RECIPIENTS: Array<{ name: string; email: string }
 // team asked for this because pending offline/UPI donations were sometimes
 // sitting unnoticed. Edit this list to change who's notified.
 export const DONATION_NOTIFY_RECIPIENTS: string[] = [
-  "jissojose@microcharity.com",
+  "jissojose@gmail.com",
   "biijuu@gmail.com",
   "nanzwilly@gmail.com",
 ];
